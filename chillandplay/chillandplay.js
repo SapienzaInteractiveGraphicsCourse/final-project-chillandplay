@@ -4,6 +4,12 @@ var frog;
 var sheep;
 var fish;
 var plane;
+var oldSelectedID = 11;
+
+var objectID;
+const frogID = 10;
+const sheepID = 11;
+const fishID = 12;
 
 // ---------------------------------------------------------------------
 const scene = new THREE.Scene();
@@ -20,6 +26,11 @@ renderer.shadowMapSoft = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.shadowMap.enabled = true;
 document.body.appendChild( renderer.domElement );
+
+
+// --------- RAYCASTER ----------------------------------------------
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
 
 
 // ------------- LIGHTS -------------------------------------------
@@ -42,33 +53,38 @@ function createLights(){
 
 // ------------- GEOMETRIES ----------------------------------------
 
-function createFrog(){
+function createFrog(scale){
     const frogGeometry = new THREE.BoxGeometry( 1, 1, 1 );
     const frogMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00} );
     frog = new THREE.Mesh( frogGeometry, frogMaterial );
     frog.receiveShadow = true;
     frog.castShadow = true;
+    frog.translateX(-3);
+    frog.scale.multiplyScalar(scale);
+
     scene.add( frog );
+
 }
 
-function createSheep(){
+function createSheep(scale){
     const sheepGeometry = new THREE.BoxGeometry( 1, 1, 1 );
     const sheepMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00} );
     sheep = new THREE.Mesh( sheepGeometry, sheepMaterial );
     sheep.receiveShadow = true;
     sheep.castShadow = true;
-    sheep.translateX(-3);
+    sheep.scale.multiplyScalar(scale);
 
     scene.add( sheep );
 }
 
-function createFish(){
+function createFish(scale){
     const fishGeometry = new THREE.BoxGeometry( 1, 1, 1 );
     const fishMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00} );
     fish = new THREE.Mesh( fishGeometry, fishMaterial );
     fish.receiveShadow = true;
     fish.castShadow = true;
     fish.translateX(3);
+    fish.scale.multiplyScalar(scale);
 
     scene.add( fish );
 }
@@ -97,16 +113,78 @@ function animate() {
     fish.rotation.x += 0.01;
     fish.rotation.y += 0.01;
 
-    renderer.render( scene, camera );
+    renderer.render(scene, camera);
+
 };
 
-createFrog();
-createSheep();
+function render(){
+    renderer.render(scene, camera);
+}
+
+createFrog(1);
+createSheep(2);
+createFish(1);
 createPlane();
-createFish();
 createLights();
 animate();
+render();
 
+window.addEventListener('onclick', onclick);
+var onclick = function(event){
+
+    mouse = new THREE.Vector2(
+        ( event.clientX / window.innerWidth ) * 2 - 1,
+      - ( event.clientY / window.innerHeight ) * 2 + 1);
+
+    raycaster.setFromCamera( mouse, camera );
+    var intersects = raycaster.intersectObjects(scene.children);
+    console.log(intersects[0].object.id);
+    objectID = intersects.length > 0 ? intersects[0].object.id : "objectID";
+    
+    console.log(objectID);
+    switch (objectID) {
+        case frogID:
+            console.log(frogID);
+            resetScale(oldSelectedID);
+            oldSelectedID = objectID;
+            frog.scale.multiplyScalar(2);
+            render();
+            break;
+        case sheepID:
+            console.log(sheepID);
+            resetScale(oldSelectedID);
+            oldSelectedID = objectID;
+            sheep.scale.multiplyScalar(2);
+            break;
+        case fishID:
+            console.log(fishID);
+            resetScale(oldSelectedID);
+            oldSelectedID = objectID;
+            fish.scale.multiplyScalar(2);
+            break;
+        default:
+            //do nothing
+            break;
+    }
+    
+    
+}
+
+function resetScale(oldSelectedID){
+    switch (oldSelectedID){
+        case frogID:
+            frog.scale.multiplyScalar(0.5);
+            break;
+        case sheepID:
+            sheep.scale.multiplyScalar(0.5);
+            break;
+        case fishID:
+            fish.scale.multiplyScalar(0.5);
+            break;
+        default:
+            break;
+    }
+}
 
 window.addEventListener('resize', onWindowResize);
 function onWindowResize() {
