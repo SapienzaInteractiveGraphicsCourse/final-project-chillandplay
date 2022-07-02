@@ -1,6 +1,7 @@
 // -------------- VARIABLES DECLARATION ----------------------------------
 
-var frogBody, frogHead, frogEyeR, frogEyeL, frogPupilR, frogPupilL;
+var frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
+var sheep;
 var sheep;
 var fish;
 var plane;
@@ -57,7 +58,7 @@ function createFrog(scale){
 
     //Body
     const frogBodyGeometry = new THREE.BoxGeometry( 0.66, 1, 0.75 );
-    const frogBodyMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00} );
+    const frogBodyMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
     frogBody = new THREE.Mesh( frogBodyGeometry, frogBodyMaterial );
     frogBodyGeometry.attributes.position.array[5]=0.25;
     frogBodyGeometry.attributes.position.array[14]=0.25;
@@ -71,16 +72,48 @@ function createFrog(scale){
     frogBody.scale.multiplyScalar(scale);
     scene.add( frogBody );
 
+    //Belly
+    const frogBellyGeometry = new THREE.SphereGeometry( 0.25, 32, 100 );
+    const frogBellyMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff} );
+    frogBelly = new THREE.Mesh( frogBellyGeometry, frogBellyMaterial );
+    frogBelly.translateZ(0.3);
+    frogBelly.translateY(-0.1);
+    frogBelly.scale.y = 1.4;
+    frogBody.add( frogBelly );
+
     //Head
     const frogHeadGeometry = new THREE.BoxGeometry( 0.9, 0.66, 0.6 );
-    const frogHeadMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00} );
+    const frogHeadMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
     frogHead = new THREE.Mesh( frogHeadGeometry, frogHeadMaterial );
     frogHead.receiveShadow = true;
     frogHead.castShadow = true;
     frogHead.translateY(0.8);
     frogHead.translateZ(0.3);
+    frogHead.rotateX(-0.52);
     frogHead.scale.multiplyScalar(scale);
     frogBody.add( frogHead );
+
+    //Mouth
+    const frogMouthGeometry = new THREE.BoxGeometry( 0.9, 0.2, 0.6 );
+    const loader = new THREE.TextureLoader();
+
+    const materials = [
+        new THREE.MeshStandardMaterial( { color: 0x4bcb4b}),
+        new THREE.MeshStandardMaterial( { color: 0x4bcb4b}),
+        new THREE.MeshBasicMaterial({map: loader.load('textures/mouth.jpg')}),
+        new THREE.MeshStandardMaterial( { color: 0x4bcb4b}),
+        new THREE.MeshStandardMaterial( { color: 0x4bcb4b}),
+        new THREE.MeshStandardMaterial( { color: 0x4bcb4b})
+    ];
+
+    frogMouth = new THREE.Mesh( frogMouthGeometry, materials );
+    frogMouth.receiveShadow = true;
+    frogMouth.castShadow = true;
+    frogMouth.translateY(-0.21);
+    frogMouth.rotateX(1);
+    frogMouth.scale.multiplyScalar(scale);
+    frogHead.add( frogMouth );
+
 
     //Right Eye
     const frogEyeRGeometry = new THREE.BoxGeometry( 0.3, 0.3, 0.15 ).toNonIndexed();
@@ -90,7 +123,7 @@ function createFrog(scale){
     const colorEyeR = new THREE.Color();
     for (let i = 0; i <= positionAttributeEyeR.count; i += 6) {
         if (i>=20 && i<=24) colorEyeR.setHex(0xff8c1a);
-        else colorEyeR.setHex(0x00ff00);
+        else colorEyeR.setHex(0x4bcb4b);
 
         colorsEyeR.push(colorEyeR.r, colorEyeR.g, colorEyeR.b);
         colorsEyeR.push(colorEyeR.r, colorEyeR.g, colorEyeR.b);
@@ -119,7 +152,7 @@ function createFrog(scale){
     const colorEyeL = new THREE.Color();
     for (let i = 0; i <= positionAttributeEyeL.count; i += 6) {
         if (i>=20 && i<=24) colorEyeL.setHex(0xff8c1a);
-        else colorEyeL.setHex(0x00ff00);
+        else colorEyeL.setHex(0x4bcb4b);
 
         colorsEyeL.push(colorEyeL.r, colorEyeL.g, colorEyeL.b);
         colorsEyeL.push(colorEyeL.r, colorEyeL.g, colorEyeL.b);
@@ -160,7 +193,79 @@ function createFrog(scale){
     frogPupilL.scale.multiplyScalar(scale);
     frogEyeL.add( frogPupilL );
 
+    //Upper Right Leg
+    const frogUpperRightLegGeometry = new THREE.BoxGeometry( 0.4, 0.6, 0.2 );
+    const frogUpperRightLegMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    frogUpperRightLeg = new THREE.Mesh( frogUpperRightLegGeometry, frogUpperRightLegMaterial );
+    frogUpperRightLeg.receiveShadow = true;
+    frogUpperRightLeg.castShadow = true;
+    frogUpperRightLeg.rotateY(1.55)
+    frogUpperRightLeg.rotateX(0.6)
+    frogUpperRightLeg.translateOnAxis(frogUpperRightLeg.worldToLocal(new THREE.Vector3(0,1,0)), 0.3);
+    frogUpperRightLeg.translateOnAxis(frogUpperRightLeg.worldToLocal(new THREE.Vector3(0,0,1)), 0.5);
+    frogUpperRightLeg.scale.multiplyScalar(scale);
+    frogBody.add( frogUpperRightLeg );
 
+    //Upper Left Leg
+    const frogUpperLeftLegGeometry = new THREE.BoxGeometry( 0.4, 0.6, 0.2 );
+    const frogUpperLeftLegMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    frogUpperLeftLeg = new THREE.Mesh( frogUpperLeftLegGeometry, frogUpperLeftLegMaterial );
+    frogUpperLeftLeg.receiveShadow = true;
+    frogUpperLeftLeg.castShadow = true;
+    frogUpperLeftLeg.rotateY(1.55)
+    frogUpperLeftLeg.rotateX(-0.6)
+    frogUpperLeftLeg.translateOnAxis(frogUpperLeftLeg.worldToLocal(new THREE.Vector3(0,1,0)), 0.3);
+    frogUpperLeftLeg.translateOnAxis(frogUpperLeftLeg.worldToLocal(new THREE.Vector3(0,0,1)), -0.5);
+    frogUpperLeftLeg.scale.multiplyScalar(scale);
+    frogBody.add( frogUpperLeftLeg );
+
+    //Lower Right Leg
+    const frogLowerRightLegGeometry = new THREE.BoxGeometry( 0.4, 0.18, 0.2 );
+    const frogLowerRightLegMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    frogLowerRightLeg = new THREE.Mesh( frogLowerRightLegGeometry, frogLowerRightLegMaterial );
+    frogLowerRightLeg.receiveShadow = true;
+    frogLowerRightLeg.castShadow = true;
+    frogLowerRightLegGeometry.attributes.position.array[14] = -0.25;
+    frogLowerRightLegGeometry.attributes.position.array[17] = 0.25;
+    frogLowerRightLegGeometry.attributes.position.array[20] = -0.25;
+    frogLowerRightLegGeometry.attributes.position.array[23] = 0.25;
+    frogLowerRightLegGeometry.attributes.position.array[26] = -0.25;
+    frogLowerRightLegGeometry.attributes.position.array[32] = 0.25;
+    frogLowerRightLegGeometry.attributes.position.array[38] = 0.25;
+    frogLowerRightLegGeometry.attributes.position.array[44] = -0.25;
+    frogLowerRightLegGeometry.attributes.position.array[50] = 0.25;
+    frogLowerRightLegGeometry.attributes.position.array[56] = 0.25;
+    frogLowerRightLegGeometry.attributes.position.array[65] = -0.25;
+    frogLowerRightLegGeometry.attributes.position.array[71] = -0.25;
+    frogLowerRightLeg.rotateY(1.57)
+    frogLowerRightLeg.rotateZ(-0.65)
+    frogLowerRightLeg.translateOnAxis(frogLowerRightLeg.worldToLocal(new THREE.Vector3(0,1,0)),-0.36);
+    frogLowerRightLeg.scale.multiplyScalar(scale);
+    frogUpperRightLeg.add( frogLowerRightLeg );
+
+    //Lower Left Leg
+    const frogLowerLeftLegGeometry = new THREE.BoxGeometry( 0.4, 0.18, 0.2 );
+    const frogLowerLeftLegMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    frogLowerLeftLeg = new THREE.Mesh( frogLowerLeftLegGeometry, frogLowerLeftLegMaterial );
+    frogLowerLeftLeg.receiveShadow = true;
+    frogLowerLeftLeg.castShadow = true;
+    frogLowerLeftLegGeometry.attributes.position.array[14] = -0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[17] = 0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[20] = -0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[23] = 0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[26] = -0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[32] = 0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[38] = 0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[44] = -0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[50] = 0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[56] = 0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[65] = -0.25;
+    frogLowerLeftLegGeometry.attributes.position.array[71] = -0.25;
+    frogLowerLeftLeg.rotateY(-1.57)
+    frogLowerLeftLeg.rotateZ(-0.65)
+    frogLowerLeftLeg.translateOnAxis(frogLowerRightLeg.worldToLocal(new THREE.Vector3(0,1,0)),-0.36);
+    frogLowerLeftLeg.scale.multiplyScalar(scale);
+    frogUpperLeftLeg.add( frogLowerLeftLeg );
 }
 
 function createSheep(scale){
