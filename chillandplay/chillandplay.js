@@ -3,7 +3,7 @@
 var frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
 var sheepBody, sheepForehead, sheepFace, sheepWool, sheepRightEye, sheepLeftEye, sheepRightEar, sheepLeftEar, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg;
 
-var fishBody, fishHead, fishEyeR, fishEyeL, fishPupilR, fishPupilL;
+var fishBody, fishHead, fishEyeR, fishEyeL, fishPupilR, fishPupilL, fishTail, fishRightSideFin, fishLeftSideFin;
 var plane;
 var oldSelectedID = 11;
 
@@ -507,7 +507,7 @@ function createFish(scale){
     fishHead.add( fishEyeL );
 
     //Right Pupil
-    const fishPupilRGeometry = new THREE.BoxGeometry( 0.1, 0.2, 0.05 );
+    const fishPupilRGeometry = new THREE.BoxGeometry( 0.15, 0.15, 0.05 );
     const fishPupilRMaterial = new THREE.MeshStandardMaterial( { color: 0x7ec8e3} );
     fishPupilR = new THREE.Mesh( fishPupilRGeometry, fishPupilRMaterial );
     fishPupilR.receiveShadow = true;
@@ -517,7 +517,7 @@ function createFish(scale){
     fishEyeR.add( fishPupilR );
 
     //Left Pupil
-    const fishPupilLGeometry = new THREE.BoxGeometry( 0.1, 0.2, 0.05 );
+    const fishPupilLGeometry = new THREE.BoxGeometry( 0.15, 0.15, 0.05 );
     const fishPupilLMaterial = new THREE.MeshStandardMaterial( { color: 0x7ec8e3} );
     fishPupilL = new THREE.Mesh( fishPupilLGeometry, fishPupilLMaterial );
     fishPupilL.receiveShadow = true;
@@ -525,6 +525,49 @@ function createFish(scale){
     fishPupilL.translateZ(0.1);
     fishPupilL.scale.multiplyScalar(scale);
     fishEyeL.add( fishPupilL );
+
+    //Tail 
+    const fishTailGeometry = new THREE.ConeGeometry( 0.4, 1.0, 5.0 );
+    const fishFishMaterial = new THREE.MeshBasicMaterial( {color: 0x003060} );
+    fishTail = new THREE.Mesh( fishTailGeometry, fishFishMaterial );
+    fishTail.receiveShadow = true; // non funziona l'omombra sul cono...
+    fishTail.castShadow = true;
+    fishTail.translateY(-0.8);
+    fishTail.scale.multiplyScalar(scale);
+    fishBody.add( fishTail );
+
+    //Upper fin 
+    const fishUpperFinGeometry = new THREE.BoxGeometry( 0.1, 0.7, 0.5 );
+    const fishUpperFinMaterial = new THREE.MeshBasicMaterial( {color: 0x003060} );
+    fishUpperFin = new THREE.Mesh( fishUpperFinGeometry, fishUpperFinMaterial );
+    fishUpperFin.receiveShadow = true; // non funziona l'omombra sul cono...
+    fishUpperFin.castShadow = true;
+    fishUpperFin.translateX(0.2);
+    fishUpperFin.translateZ(-0.2); //nb x e z devono essere uguali per centrarli nel lato 
+    fishUpperFin.rotateY(2.355);
+    fishUpperFin.scale.multiplyScalar(scale);
+    fishBody.add( fishUpperFin );
+
+    //Side fin 
+    const fishSideFinGeometry = new THREE.BoxGeometry( 0.1, 0.7, 0.3 );
+    const fishSideFinMaterial = new THREE.MeshBasicMaterial( {color: 0x003060} );
+    fishRightSideFin = new THREE.Mesh( fishSideFinGeometry, fishSideFinMaterial );
+    fishRightSideFin.receiveShadow = true; // non funziona l'omombra sul cono...
+    fishRightSideFin.castShadow = true;
+    fishRightSideFin.translateX(0.3);
+    fishRightSideFin.translateZ(0.3); //nb x e z devono essere uguali per centrarli nel lato 
+    fishRightSideFin.rotateY(-2.355);
+    fishRightSideFin.scale.multiplyScalar(scale);
+    fishBody.add( fishRightSideFin );
+
+    fishLeftSideFin = new THREE.Mesh( fishSideFinGeometry, fishSideFinMaterial );
+    fishLeftSideFin.receiveShadow = true; // non funziona l'omombra sul cono...
+    fishLeftSideFin.castShadow = true;
+    fishLeftSideFin.translateX(-0.3);
+    fishLeftSideFin.translateZ(-0.3);
+    fishLeftSideFin.rotateY(-2.355);
+    fishLeftSideFin.scale.multiplyScalar(scale);
+    fishBody.add( fishLeftSideFin );
     
 }
 
@@ -532,7 +575,7 @@ function createPlane(){
     //Create a plane that receives shadows (but does not cast them)
     const planeGeometry = new THREE.PlaneGeometry( 30, 30);
     const planeMaterial = new THREE.ShadowMaterial();
-    planeMaterial.opacity = 0.2;
+    planeMaterial.opacity = -0.2;
     plane = new THREE.Mesh( planeGeometry, planeMaterial );
     plane.rotateX(-1); //to rotate the plane
     plane.translateZ(-1);
