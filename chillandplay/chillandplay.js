@@ -14,6 +14,7 @@ const frogID = 10;
 const sheepID = 26;
 const fishID = 39;
 
+
 // ---------------------------------------------------------------------
 const scene = new THREE.Scene();
 
