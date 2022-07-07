@@ -1,9 +1,15 @@
 import * as THREE from '../node_modules/three/build/three.module.js';
+//import {TextGeometry} from "three";
+//import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry";
+//import {TextGeometry} from '../node_modules/three/examples/jsm/geometries/TextGeometry.js';
+////import { TextGeometry } from 'https://unpkg.com/three@0.138.3/examples/jsm/geometries/TextGeometry.js';
+//  import 'TextGeometry';
+//import {TextGeometry} from "three";
 // -------------- VARIABLES DECLARATION ----------------------------------
 
 var frogArea, frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
 var sheepArea, sheepBody, sheepForehead, sheepFace, sheepWool, sheepRightEye, sheepLeftEye, sheepRightEar, sheepLeftEar, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg;
-
+var button;
 var fishArea, fishBody, fishHead, fishEyeR, fishEyeL, fishPupilR, fishPupilL, fishTail, fishRightSideFin, fishLeftSideFin, fishUpperFin;
 var plane;
 var oldSelectedID = 11;
@@ -22,7 +28,8 @@ scene.background = new THREE.Color(0xbfe3dd);
 const camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 20; //settare a 10 per la visione full screen
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.shadowMap.enabled = true;
 renderer.shadowMapSoft = true;
@@ -66,7 +73,8 @@ function createFrog(scale){
     frogAreaMaterial.transparent = true;
     frogAreaMaterial.opacity = 0;
     frogArea = new THREE.Mesh( frogAreaGeometry, frogAreaMaterial );
-    //scene.add(frogArea);
+    frogArea.translateX(-4);
+    scene.add(frogArea);
 
     //Body
     const frogBodyGeometry = new THREE.BoxGeometry( 0.66, 1, 0.75 );
@@ -83,7 +91,6 @@ function createFrog(scale){
     frogBody.translateX(-4);
     frogBody.scale.multiplyScalar(scale);
     scene.add( frogBody );
-    frogBody.add(frogArea);
 
     //Belly
     const frogBellyGeometry = new THREE.SphereGeometry( 0.25, 32, 100 );
@@ -613,7 +620,7 @@ function createFish(scale){
     const fishSideFinGeometry = new THREE.BoxGeometry( 0.1, 0.7, 0.3 );
     const fishSideFinMaterial = new THREE.MeshBasicMaterial( {color: 0x003060} );
     fishRightSideFin = new THREE.Mesh( fishSideFinGeometry, fishSideFinMaterial );
-    fishRightSideFin.receiveShadow = true; // non funziona l'omombra sul cono...
+    fishRightSideFin.receiveShadow = true; // non funziona l'ombra sul cono...
     fishRightSideFin.castShadow = true;
     fishRightSideFin.translateX(0.3);
     fishRightSideFin.translateZ(0.3); //nb x e z devono essere uguali per centrarli nel lato 
@@ -669,7 +676,9 @@ createSheep(2);
 createFish(1);
 createPlane();
 createLights();
-createButton(10, frogBody); 
+createButton();
+createButton();
+createButton();
 animate();
 render();
 
@@ -690,6 +699,7 @@ let onclick = function (event) {
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
             frogBody.scale.multiplyScalar(2);
+            frogArea.add(button);
             render();
             break;
         case sheepID:
@@ -697,12 +707,14 @@ let onclick = function (event) {
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
             sheepBody.scale.multiplyScalar(2);
+            sheepArea.add(button);
             break;
         case fishID:
             console.log(fishID);
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
             fishBody.scale.multiplyScalar(2);
+            fishArea.add(button);
             break;
         default:
             //do nothing
@@ -741,7 +753,16 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-function createButton(idObject, body){ 
-    //const button = new THREE.TextGeometry(1,30); 
-    //scene.add(button); 
+function createButton(){
+    console.log()
+    const buttonGeometry = new THREE.CircleGeometry(0.5,32,0, 6.283185307179586);
+   // const buttonMaterial = new THREE.MeshStandardMaterial({color: 0x00060});
+    const loader = new THREE.TextureLoader();
+    const buttonMaterial =
+        new THREE.MeshBasicMaterial({
+            map:  loader.load('textures/mouth.jpg'),
+            side: THREE.DoubleSide
+        });
+    button = new THREE.Mesh( buttonGeometry, new THREE.MeshBasicMaterial(buttonMaterial) );
+    button.translateY(-2.5);
 } 
