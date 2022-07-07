@@ -1,6 +1,5 @@
 import * as THREE from '../node_modules/three/build/three.module.js';
 // -------------- VARIABLES DECLARATION ----------------------------------
-
 var frogArea, frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
 var sheepArea, sheepBody, sheepForehead, sheepFace, sheepWool, sheepRightEye, sheepLeftEye, sheepRightEar, sheepLeftEar, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg;
 
@@ -675,7 +674,7 @@ render();
 
 window.addEventListener('onclick', onclick);
 var onclick = function(event){
-    console.log()
+    console.log("eccomi");
 
     mouse = new THREE.Vector2(
         ( event.clientX / window.innerWidth ) * 2 - 1,
