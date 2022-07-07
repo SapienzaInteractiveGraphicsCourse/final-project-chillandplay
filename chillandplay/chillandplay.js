@@ -1,6 +1,8 @@
+//import * as ThreeMeshUI from "three-mesh-ui";
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 // -------------- VARIABLES DECLARATION ----------------------------------
 
-var frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
+var frogArea, frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
 var sheepBody, sheepForehead, sheepFace, sheepWool, sheepRightEye, sheepLeftEye, sheepRightEar, sheepLeftEar, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg;
 
 var fishBody, fishHead, fishEyeR, fishEyeL, fishPupilR, fishPupilL, fishTail, fishRightSideFin, fishLeftSideFin;
@@ -9,8 +11,8 @@ var oldSelectedID = 11;
 
 var objectID;
 const frogID = 10;
-const sheepID = 11;
-const fishID = 12;
+const sheepID = 26;
+const fishID = 39;
 
 // ---------------------------------------------------------------------
 const scene = new THREE.Scene();
@@ -26,8 +28,10 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMapSoft = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.shadowMap.enabled = true;
+document.body.appendChild(createButton( renderer ) );
 document.body.appendChild( renderer.domElement );
 
+console.log(renderer.domElement);
 
 // --------- RAYCASTER ----------------------------------------------
 var raycaster = new THREE.Raycaster();
@@ -56,6 +60,14 @@ function createLights(){
 
 function createFrog(scale){
 
+    //Clickable area
+    const frogAreaGeometry = new THREE.BoxGeometry(3, 3, 3);
+    const frogAreaMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    frogAreaMaterial.transparent = true;
+    frogAreaMaterial.opacity = 0;
+    frogArea = new THREE.Mesh( frogAreaGeometry, frogAreaMaterial );
+    //scene.add(frogArea);
+
     //Body
     const frogBodyGeometry = new THREE.BoxGeometry( 0.66, 1, 0.75 );
     const frogBodyMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
@@ -68,9 +80,12 @@ function createFrog(scale){
     frogBodyGeometry.attributes.position.array[65]=0.25;
     frogBody.receiveShadow = true;
     frogBody.castShadow = true;
-    frogBody.translateX(-3);
+    frogBody.translateX(-4);
     frogBody.scale.multiplyScalar(scale);
     scene.add( frogBody );
+    frogBody.add(frogArea);
+
+    console.log(frogArea);
 
     //Belly
     const frogBellyGeometry = new THREE.SphereGeometry( 0.25, 32, 100 );
@@ -299,9 +314,42 @@ function createFrog(scale){
     frogLowerLeftLeg.translateOnAxis(frogLowerRightLeg.worldToLocal(new THREE.Vector3(0,1,0)),-0.36);
     frogLowerLeftLeg.scale.multiplyScalar(scale);
     frogUpperLeftLeg.add( frogLowerLeftLeg );
+
+
+    const container = new ThreeMeshUI.Block({
+        width: 2,
+        height: 0.5,
+        padding: 0.05,
+        justifyContent: "center",
+        textAlign: "center",
+        fontFamily: '"/assets/Roboto-msdf.json"',
+        fontTexture: "/assets/index.png"
+      });
+    
+      container.position.set(0, 1, -1.8);
+      container.rotation.x = -0.55;
+      frogBody.add(container);
+    
+      container.add(
+        new ThreeMeshUI.Text({
+          content: "three-mesh-ui npm package",
+          fontSize: 0.125
+        })
+      );
+    ThreeMeshUI.update();
+
 }
 
 function createSheep(scale){
+
+    //Clickable area
+    const sheepAreaGeometry = new THREE.BoxGeometry(3, 3, 3);
+    const sheepAreaMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    sheepAreaMaterial.transparent = true;
+    sheepAreaMaterial.opacity = 0;
+    sheepArea = new THREE.Mesh( sheepAreaGeometry, sheepAreaMaterial );
+
+
     const sheepBodyGeometry = new THREE.IcosahedronGeometry(0.6, 0);
     const sheepBodyMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff} );
     sheepBody = new THREE.Mesh( sheepBodyGeometry, sheepBodyMaterial );
@@ -311,6 +359,7 @@ function createSheep(scale){
     sheepBody.scale.multiplyScalar(scale);
     
     scene.add( sheepBody );
+    scene.add(sheepArea);
 
     const foreheadGeometry = new THREE.BoxGeometry(0.7, 0.4, 0.7);
     const foreheadMaterial = new THREE.MeshStandardMaterial({color: 0xffaf8b });
@@ -412,10 +461,22 @@ function createSheep(scale){
     sheepBackLeftLeg.rotation.x = -sheepFrontLeftLeg.rotation.x;
     sheepBody.add(sheepBackLeftLeg);
 
+    sheepBody.scale.multiplyScalar(0.8);
+
     
 }
 
 function createFish(scale){
+
+    //Clickable area
+    const fishAreaGeometry = new THREE.BoxGeometry(3, 3, 3);
+    const fishAreaMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    fishAreaMaterial.transparent = true;
+    fishAreaMaterial.opacity = 0;
+    fishArea = new THREE.Mesh( fishAreaGeometry, fishAreaMaterial );
+    fishArea.translateX(4);
+    scene.add(fishArea);
+    
     //Body
     const fishGeometry = new THREE.CylinderGeometry(0.7, 0.4, 1.3, 4, 1)
     const fishMaterial = new THREE.MeshStandardMaterial( { color: 0x4682b4} );
@@ -427,7 +488,7 @@ function createFish(scale){
     
     //console.log(fishGeometry.attributes.position.array);
     
-    fishBody.translateX(3);
+    fishBody.translateX(4);
     fishBody.rotateY(2.355);
     fishBody.scale.multiplyScalar(scale);
     scene.add( fishBody );
@@ -575,7 +636,7 @@ function createPlane(){
     //Create a plane that receives shadows (but does not cast them)
     const planeGeometry = new THREE.PlaneGeometry( 30, 30);
     const planeMaterial = new THREE.ShadowMaterial();
-    planeMaterial.opacity = -0.2;
+    planeMaterial.opacity = 0.2;
     plane = new THREE.Mesh( planeGeometry, planeMaterial );
     plane.rotateX(-1); //to rotate the plane
     plane.translateZ(-1);
@@ -629,20 +690,20 @@ var onclick = function(event){
             console.log(frogID);
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
-            frog.scale.multiplyScalar(2);
+            frogBody.scale.multiplyScalar(2);
             render();
             break;
         case sheepID:
             console.log(sheepID);
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
-            sheep.scale.multiplyScalar(2);
+            sheepBody.scale.multiplyScalar(2);
             break;
         case fishID:
             console.log(fishID);
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
-            fish.scale.multiplyScalar(2);
+            fishBody.scale.multiplyScalar(2);
             break;
         default:
             //do nothing
@@ -655,13 +716,13 @@ var onclick = function(event){
 function resetScale(oldSelectedID){
     switch (oldSelectedID){
         case frogID:
-            frog.scale.multiplyScalar(0.5);
+            frogBody.scale.multiplyScalar(0.5);
             break;
         case sheepID:
-            sheep.scale.multiplyScalar(0.5);
+            sheepBody.scale.multiplyScalar(0.5);
             break;
         case fishID:
-            fish.scale.multiplyScalar(0.5);
+            fishBody.scale.multiplyScalar(0.5);
             break;
         default:
             break;

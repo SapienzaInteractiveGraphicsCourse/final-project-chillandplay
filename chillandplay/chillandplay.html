@@ -2,15 +2,25 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+
 		<title>My first three.js app</title>
 		<style>
 			body { 
                 margin: 0; 
             }
+			#frogButton {
+				position: relative;
+				bottom: 400px;
+				left: 150px;
+			}
+			
 		</style>
 	</head>
 	<body>
 		<script src="../node_modules/three/build/three.js"></script>
+		<script src="../node_modules/three-mesh-ui/build/three-mesh-ui.js"></script>
+		
 		<script src="chillandplay.js"></script>
+		<button id="frogButton" type="button">GO</button>	
 	</body>
 </html>
