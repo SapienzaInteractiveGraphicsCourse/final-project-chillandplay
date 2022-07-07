@@ -368,7 +368,7 @@ function createSheep(scale){
     sheepForehead.receiveShadow = true;
     sheepForehead.position.z = 0.6;
     sheepForehead.position.y = 0.4;
-    sheepForehead.rotation.x = -0,523599; //radianti di 45
+    sheepForehead.rotation.x = -0.523599; //radianti di 45
     sheepForehead.scale.multiplyScalar(0.25*scale);
     sheepBody.add(sheepForehead);
 
@@ -389,7 +389,7 @@ function createSheep(scale){
     const woolMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
     sheepWool = new THREE.Mesh(woolGeometry, woolMaterial);
     sheepWool.position.y = 0.25;
-    sheepWool.rotation.x = 0,349066; //radianti di 20
+    sheepWool.rotation.x = 0.349066; //radianti di 20
     sheepWool.scale.multiplyScalar(0.45*scale);
 
     sheepForehead.add(sheepWool);
@@ -658,7 +658,7 @@ function animate() {
 
     renderer.render(scene, camera);
 
-};
+}
 
 function render(){
     renderer.render(scene, camera);
@@ -673,19 +673,16 @@ createButton(10, frogBody);
 animate();
 render();
 
-window.addEventListener('onclick', onclick);
-var onclick = function(event){
-    console.log()
-
+let onclick = function (event) {
     mouse = new THREE.Vector2(
-        ( event.clientX / window.innerWidth ) * 2 - 1,
-      - ( event.clientY / window.innerHeight ) * 2 + 1);
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1);
 
-    raycaster.setFromCamera( mouse, camera );
+    raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(scene.children);
     console.log(intersects[0].object.id);
     objectID = intersects.length > 0 ? intersects[0].object.id : "objectID";
-    
+
     console.log(objectID);
     switch (objectID) {
         case frogID:
@@ -711,9 +708,11 @@ var onclick = function(event){
             //do nothing
             break;
     }
-    
-    
-}
+
+
+};
+window.addEventListener('click', onclick);
+
 
 function resetScale(oldSelectedID){
     switch (oldSelectedID){
