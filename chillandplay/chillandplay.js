@@ -14,11 +14,18 @@ var fishArea, fishBody, fishHead, fishEyeR, fishEyeL, fishPupilR, fishPupilL, fi
 var plane;
 var oldSelectedID = 11;
 
+//materials
+var grey_color = new THREE.MeshLambertMaterial({ color: 0xf3f2f7 });
+var dark_color = new THREE.MeshLambertMaterial({ color: 0x5a6e6c });
+
+var eyeballs;
+
+const pi = Math.PI;
 var objectID;
 const frogID = 10;
 const sheepID = 26;
-const fishID = 39;
-const buttonID = 55;
+const fishID = 43;
+const buttonID = 59;
 var buttonFlag = true;
 
 
@@ -329,30 +336,6 @@ function createFrog(scale){
     frogLowerLeftLeg.scale.multiplyScalar(scale);
     frogUpperLeftLeg.add( frogLowerLeftLeg );
 
-    /*
-    const container = new ThreeMeshUI.Block({
-        width: 2,
-        height: 0.5,
-        padding: 0.05,
-        justifyContent: "center",
-        textAlign: "center",
-        fontFamily: '"/assets/Roboto-msdf.json"',
-        fontTexture: "/assets/index.png"
-      });
-    
-      container.position.set(0, 1, -1.8);
-      container.rotation.x = -0.55;
-      frogBody.add(container);
-    
-      container.add(
-        new ThreeMeshUI.Text({
-          content: "three-mesh-ui npm package",
-          fontSize: 0.125
-        })
-      );
-    ThreeMeshUI.update();
-    */
-
 }
 
 
@@ -366,97 +349,92 @@ function createSheep(scale){
     sheepArea = new THREE.Mesh( sheepAreaGeometry, sheepAreaMaterial );
 
     //Sheep body
-    const sheepBodyGeometry = new THREE.IcosahedronGeometry(0.6, 0);
-    const sheepBodyMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff} );
+    const sheepBodyGeometry = new THREE.IcosahedronGeometry(0.5, 0);
+    const sheepBodyMaterial = new THREE.MeshStandardMaterial( { color: 0xffc9c8} );
     sheepBody = new THREE.Mesh( sheepBodyGeometry, sheepBodyMaterial );
     sheepBody.receiveShadow = true;
     sheepBody.castShadow = true;
     sheepBody.scale.multiplyScalar(scale);
-    sheepBody.translateY(0.44);
+    sheepBody.scale.multiplyScalar(1.1);
+    sheepBody.translateY(0.5);
     
     scene.add( sheepBody );
     scene.add(sheepArea);
 
-    const foreheadGeometry = new THREE.BoxGeometry(0.7, 0.4, 0.7);
-    const foreheadMaterial = new THREE.MeshStandardMaterial({color: 0xffaf8b });
-    sheepForehead = new THREE.Mesh(foreheadGeometry, foreheadMaterial);
-    sheepForehead.castShadow = true;
-    sheepForehead.receiveShadow = true;
-    sheepForehead.position.z = 0.6;
-    sheepForehead.position.y = 0.4;
-    sheepForehead.rotation.x = -0.523599; //radianti di 45
-    sheepForehead.scale.multiplyScalar(0.25*scale);
-    sheepBody.add(sheepForehead);
+    //Sheep head
+    var sheepHeadGeometry = new THREE.IcosahedronGeometry(1, 0);
+    var sheepHead = new THREE.Mesh(sheepHeadGeometry, dark_color);
+    sheepHead.castShadow = true;
+    sheepHead.scale.z = 0.6;
+    sheepHead.scale.y = 1.1;
+    sheepHead.scale.multiplyScalar(0.30);
+    sheepHead.position.y = 0.1;
+    sheepHead.rotation.x = -0.2;
+    sheepHead.position.z = 0.55;
+    sheepBody.add(sheepHead);
+
+    //eyes
+    var geo_eye = new THREE.CylinderGeometry(0.3, 0.2, 0.3, 8);
+    var eyes = [];
+    for (var i = 0; i < 2; i++) {
+        eyes[i] = new THREE.Mesh(geo_eye, grey_color);
+        sheepHead.add(eyes[i]);
+        eyes[i].castShadow = true;
+        eyes[i].position.set(0, sheepHead.position.y + 0.1, 0.7);
+        eyes[i].rotation.x = pi / 2 - pi / 15;
+    }
+    eyes[0].position.x = 0.3;
+    eyes[1].position.x = -eyes[0].position.x;
+
+    eyes[0].rotation.z = -pi / 15;
+    eyes[1].rotation.z = -eyes[0].rotation.z;
+
+    //eyeballs
+    var geo_eyeball = new THREE.SphereGeometry(0.11, 8, 8);
+    eyeballs = [];
+    for (var i = 0; i < 2; i++) {
+        eyeballs[i] = new THREE.Mesh(geo_eyeball, dark_color);
+        eyes[i].add(eyeballs[i]);
+        eyeballs[i].castShadow = true;
+        eyeballs[i].position.set(0, 0.2, 0); //ATTENZIONE!!! Il terzo parametro le muove in verticale, il secondo in profondità
+    }
+
+    //Sheep tail
+    var geo_tail = new THREE.IcosahedronGeometry(0.5, 0);
+    var tail = new THREE.Mesh(geo_tail, grey_color);
+    tail.position.set(0, 0.23, -0.5);
+    tail.castShadow = true;
+    tail.scale.multiplyScalar(0.35);
+    sheepBody.add(tail);
+
+    //Sheep hair
+    var hair = [];
+    var geo_hair = new THREE.IcosahedronGeometry(0.4, 0);
+    for (var i = 0; i < 5; i++) {
+    hair[i] = new THREE.Mesh(geo_hair, grey_color);
+    hair[i].castShadow = true;
+    sheepHead.add(hair[i]);
+    }
+    hair[0].position.set(-0.4, sheepHead.position.y + 0.9, -0.1);
+    hair[1].position.set(0, sheepHead.position.y + 1, -0.1);
+    hair[2].position.set(0.4, sheepHead.position.y + 0.9, -0.1);
+    hair[3].position.set(-0.1, sheepHead.position.y + 0.9, -0.4);
+    hair[4].position.set(0.12, sheepHead.position.y + 0.9, -0.4);
+
+    hair[0].scale.set(0.6, 0.6, 0.6);
+    hair[2].scale.set(0.8, 0.8, 0.8);
+    hair[3].scale.set(0.7, 0.7, 0.7);
+    hair[4].scale.set(0.6, 0.6, 0.6);
 
     
-    
-    const faceGeometry = new THREE.CylinderGeometry(0.5, 0.15, 0.4, 4, 1);
-    const faceMaterial = new THREE.MeshStandardMaterial({color: 0xffaf8b });
-    sheepFace = new THREE.Mesh(faceGeometry, faceMaterial);
-    sheepFace.castShadow = true;
-    sheepFace.receiveShadow = true;
-    sheepFace.position.y = -0.4;
-    sheepFace.rotation.y = 0.785398; //radianti di 45
-
-    sheepFace.scale.multiplyScalar(0.5*scale);
-    sheepForehead.add(sheepFace);
-
-    const woolGeometry = new THREE.BoxGeometry(0.84, 0.46, 0.9);
-    const woolMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    sheepWool = new THREE.Mesh(woolGeometry, woolMaterial);
-    sheepWool.position.y = 0.25;
-    sheepWool.rotation.x = 0.349066; //radianti di 20
-    sheepWool.scale.multiplyScalar(0.45*scale);
-
-    sheepForehead.add(sheepWool);
-    
-    const rightEyeGeometry = new THREE.CylinderGeometry(0.08, 0.1, 0.06, 6);
-    const rightEyeMaterial = new THREE.MeshStandardMaterial({ color: 0x4b4553 }); //cambiare colore
-    sheepRightEye = new THREE.Mesh(rightEyeGeometry, rightEyeMaterial);
-    sheepRightEye.castShadow = true;
-    sheepRightEye.receiveShadow = true;
-    sheepRightEye.position.set(0.34, -0.25, 0.3);
-    sheepRightEye.rotation.set(2.26893, 0, -0.785398);
-    
-    sheepRightEye.scale.multiplyScalar(0.5*scale);
-
-    sheepForehead.add(sheepRightEye);
-    
-    sheepLeftEye = sheepRightEye.clone();
-    sheepLeftEye.position.x = -sheepRightEye.position.x;
-    sheepLeftEye.rotation.z = -sheepRightEye.rotation.z;
-    //sheepLeftEye.scale.multiplyScalar(0.5*scale);
-
-    sheepForehead.add(sheepLeftEye);
-   
-    
-    const rightEarGeometry = new THREE.BoxGeometry(0.12, 0.5, 0.3);
-    rightEarGeometry.translate(0, -0.25, 0);
-    const rightEarMaterial = new THREE.MeshStandardMaterial({ color: 0xffaf8b });
-   
-    sheepRightEar = new THREE.Mesh(rightEarGeometry, rightEarMaterial);
-    sheepRightEar.castShadow = true;
-    sheepRightEar.receiveShadow = true;
-    sheepRightEar.position.set(0.35, -0.12, -0.07);
-    sheepRightEar.rotation.set(0.349066, 0, 0.872665); // radians
-    sheepRightEar.scale.multiplyScalar(0.4*scale);
-
-    sheepForehead.add(sheepRightEar);  
-
-    sheepLeftEar = sheepRightEar.clone();
-    sheepLeftEar.position.x = -sheepRightEar.position.x;
-    sheepLeftEar.rotation.z = -sheepRightEar.rotation.z;
-    //sheepLeftEar.scale.multiplyScalar(0.4*scale);
-
-    sheepForehead.add(sheepLeftEar); 
-
-    const legGeometry = new THREE.CylinderGeometry(0.3, 0.15, 1, 4);
+    //Sheep legs
+    const legGeometry = new THREE.CylinderGeometry(0.2, 0.15, 1, 4);
     legGeometry.translate(0, -0.5, 0);
-    const legMaterial = new THREE.MeshStandardMaterial({ color: 0x4b4553 });
+    const legMaterial = dark_color;
     sheepFrontRightLeg = new THREE.Mesh(legGeometry, legMaterial);
     sheepFrontRightLeg.castShadow = true;
     sheepFrontRightLeg.receiveShadow = true;
-    sheepFrontRightLeg.position.set(0.25, -0.2, 0.33);
+    sheepFrontRightLeg.position.set(0.20, -0.2, 0.18);
     sheepFrontRightLeg.rotation.x = -0.20944; //rad -12
     sheepFrontRightLeg.scale.multiplyScalar(0.2*scale);
 
@@ -663,14 +641,14 @@ function createPlane(){
 function animate() {
     requestAnimationFrame( animate );
 
-    //frogBody.rotation.x += 0.01;
-    //frogBody.rotation.y += 0.01;
+    frogBody.rotation.x += 0.01;
+    frogBody.rotation.y += 0.01;
 
-    //sheepBody.rotation.x += 0.01;
-    //sheepBody.rotation.y += 0.01;
+    sheepBody.rotation.x += 0.01;
+    sheepBody.rotation.y += 0.01;
 
-    //fishBody.rotation.x += 0.01;
-    //fishBody.rotation.y += 0.01;
+    fishBody.rotation.x += 0.01;
+    fishBody.rotation.y += 0.01;
 
     renderer.render(scene, camera);
 
@@ -702,6 +680,7 @@ let onclick = function (event) {
     console.log(objectID);
     switch (objectID) {
         case frogID:
+            scene.background = new THREE.Color(0xfafad2);
             resetButton(oldSelectedID);
             console.log(frogID);
             resetScale(oldSelectedID);
@@ -711,6 +690,7 @@ let onclick = function (event) {
             oldSelectedID = objectID;
             break;
         case sheepID:
+            scene.background = new THREE.Color(0xc9f0cf);
             resetButton(oldSelectedID);
             console.log(sheepID);
             resetScale(oldSelectedID);
@@ -719,6 +699,7 @@ let onclick = function (event) {
             sheepArea.add(button);
             break;
         case fishID:
+            scene.background = new THREE.Color(0xafdcfa);
             resetButton(oldSelectedID);
             console.log(fishID);
             resetScale(oldSelectedID);
