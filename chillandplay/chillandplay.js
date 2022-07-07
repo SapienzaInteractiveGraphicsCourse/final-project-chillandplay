@@ -1,11 +1,10 @@
-//import * as ThreeMeshUI from "three-mesh-ui";
-import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
+import * as THREE from '../node_modules/three/build/three.module.js';
 // -------------- VARIABLES DECLARATION ----------------------------------
 
 var frogArea, frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
-var sheepBody, sheepForehead, sheepFace, sheepWool, sheepRightEye, sheepLeftEye, sheepRightEar, sheepLeftEar, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg;
+var sheepArea, sheepBody, sheepForehead, sheepFace, sheepWool, sheepRightEye, sheepLeftEye, sheepRightEar, sheepLeftEar, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg;
 
-var fishBody, fishHead, fishEyeR, fishEyeL, fishPupilR, fishPupilL, fishTail, fishRightSideFin, fishLeftSideFin;
+var fishArea, fishBody, fishHead, fishEyeR, fishEyeL, fishPupilR, fishPupilL, fishTail, fishRightSideFin, fishLeftSideFin, fishUpperFin;
 var plane;
 var oldSelectedID = 11;
 
@@ -29,10 +28,10 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMapSoft = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.shadowMap.enabled = true;
-document.body.appendChild(createButton( renderer ) );
+//document.body.appendChild(createButton( renderer ) );
 document.body.appendChild( renderer.domElement );
 
-console.log(renderer.domElement);
+//console.log(renderer.domElement);
 
 // --------- RAYCASTER ----------------------------------------------
 var raycaster = new THREE.Raycaster();
@@ -85,8 +84,6 @@ function createFrog(scale){
     frogBody.scale.multiplyScalar(scale);
     scene.add( frogBody );
     frogBody.add(frogArea);
-
-    console.log(frogArea);
 
     //Belly
     const frogBellyGeometry = new THREE.SphereGeometry( 0.25, 32, 100 );
@@ -316,7 +313,7 @@ function createFrog(scale){
     frogLowerLeftLeg.scale.multiplyScalar(scale);
     frogUpperLeftLeg.add( frogLowerLeftLeg );
 
-
+    /*
     const container = new ThreeMeshUI.Block({
         width: 2,
         height: 0.5,
@@ -338,8 +335,10 @@ function createFrog(scale){
         })
       );
     ThreeMeshUI.update();
+    */
 
 }
+
 
 function createSheep(scale){
 
@@ -429,8 +428,8 @@ function createSheep(scale){
     sheepForehead.add(sheepRightEar);  
 
     sheepLeftEar = sheepRightEar.clone();
-    sheepLeftEar.position.x = -this.sheepRightEar.position.x;
-    sheepLeftEar.rotation.z = -this.sheepRightEar.rotation.z;
+    sheepLeftEar.position.x = -sheepRightEar.position.x;
+    sheepLeftEar.rotation.z = -sheepRightEar.rotation.z;
     //sheepLeftEar.scale.multiplyScalar(0.4*scale);
 
     sheepForehead.add(sheepLeftEar); 
@@ -670,11 +669,13 @@ createSheep(2);
 createFish(1);
 createPlane();
 createLights();
+createButton(10, frogBody); 
 animate();
 render();
 
 window.addEventListener('onclick', onclick);
 var onclick = function(event){
+    console.log()
 
     mouse = new THREE.Vector2(
         ( event.clientX / window.innerWidth ) * 2 - 1,
@@ -740,3 +741,8 @@ function onWindowResize() {
 
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
+
+function createButton(idObject, body){ 
+    //const button = new THREE.TextGeometry(1,30); 
+    //scene.add(button); 
+} 
