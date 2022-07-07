@@ -18,15 +18,22 @@ var objectID;
 const frogID = 10;
 const sheepID = 26;
 const fishID = 39;
+const buttonID = 55;
+var buttonFlag = true;
 
 
 // ---------------------------------------------------------------------
 const scene = new THREE.Scene();
 
 //setting the background color
+
+//giallino: 0xfafad2
+//azzurrino: 0xbfe3dd
 scene.background = new THREE.Color(0xbfe3dd);
-const camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.z = 20; //settare a 10 per la visione full screen
+var camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 0.1, 1000 );
+camera.position.z = 80; //settare a 10 per la visione full screen
+
+
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio( window.devicePixelRatio );
@@ -78,7 +85,7 @@ function createFrog(scale){
 
     //Body
     const frogBodyGeometry = new THREE.BoxGeometry( 0.66, 1, 0.75 );
-    const frogBodyMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    const frogBodyMaterial = new THREE.MeshStandardMaterial( { color: 0x96f2af} );
     frogBody = new THREE.Mesh( frogBodyGeometry, frogBodyMaterial );
     frogBodyGeometry.attributes.position.array[5]=0.25;
     frogBodyGeometry.attributes.position.array[14]=0.25;
@@ -94,8 +101,10 @@ function createFrog(scale){
 
     //Belly
     const frogBellyGeometry = new THREE.SphereGeometry( 0.25, 32, 100 );
-    const frogBellyMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff} );
+    const frogBellyMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness:1, metalness:0} );
     frogBelly = new THREE.Mesh( frogBellyGeometry, frogBellyMaterial );
+    frogBelly.receiveShadow = true;
+    frogBelly.castShadow = false;
     frogBelly.translateZ(0.3);
     frogBelly.translateY(-0.1);
     frogBelly.scale.y = 1.4;
@@ -103,7 +112,7 @@ function createFrog(scale){
 
     //Head
     const frogHeadGeometry = new THREE.BoxGeometry( 0.9, 0.66, 0.6 );
-    const frogHeadMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    const frogHeadMaterial = new THREE.MeshStandardMaterial( { color: 0x96f2af} );
     frogHead = new THREE.Mesh( frogHeadGeometry, frogHeadMaterial );
     frogHead.receiveShadow = true;
     frogHead.castShadow = true;
@@ -125,12 +134,12 @@ function createFrog(scale){
     const loader = new THREE.TextureLoader();
 
     const materials = [
-        new THREE.MeshStandardMaterial( { color: 0x4bcb4b}),
-        new THREE.MeshStandardMaterial( { color: 0x4bcb4b}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
         new THREE.MeshBasicMaterial({map: loader.load('textures/mouth.jpg')}),
-        new THREE.MeshStandardMaterial( { color: 0x4bcb4b}),
-        new THREE.MeshStandardMaterial( { color: 0x4bcb4b}),
-        new THREE.MeshStandardMaterial( { color: 0x4bcb4b})
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af})
     ];
 
     frogMouth = new THREE.Mesh( frogMouthGeometry, materials );
@@ -150,7 +159,7 @@ function createFrog(scale){
     const colorEyeR = new THREE.Color();
     for (let i = 0; i <= positionAttributeEyeR.count; i += 6) {
         if (i>=20 && i<=24) colorEyeR.setHex(0xffd129);
-        else colorEyeR.setHex(0x4bcb4b);
+        else colorEyeR.setHex(0x96f2af);
 
         colorsEyeR.push(colorEyeR.r, colorEyeR.g, colorEyeR.b);
         colorsEyeR.push(colorEyeR.r, colorEyeR.g, colorEyeR.b);
@@ -179,7 +188,7 @@ function createFrog(scale){
     const colorEyeL = new THREE.Color();
     for (let i = 0; i <= positionAttributeEyeL.count; i += 6) {
         if (i>=20 && i<=24) colorEyeL.setHex(0xffd129);
-        else colorEyeL.setHex(0x4bcb4b);
+        else colorEyeL.setHex(0x96f2af);
 
         colorsEyeL.push(colorEyeL.r, colorEyeL.g, colorEyeL.b);
         colorsEyeL.push(colorEyeL.r, colorEyeL.g, colorEyeL.b);
@@ -248,7 +257,7 @@ function createFrog(scale){
 
     //Upper Right Leg
     const frogUpperRightLegGeometry = new THREE.BoxGeometry( 0.4, 0.6, 0.2 );
-    const frogUpperRightLegMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    const frogUpperRightLegMaterial = new THREE.MeshStandardMaterial( { color: 0x96f2af} );
     frogUpperRightLeg = new THREE.Mesh( frogUpperRightLegGeometry, frogUpperRightLegMaterial );
     frogUpperRightLeg.receiveShadow = true;
     frogUpperRightLeg.castShadow = true;
@@ -261,7 +270,7 @@ function createFrog(scale){
 
     //Upper Left Leg
     const frogUpperLeftLegGeometry = new THREE.BoxGeometry( 0.4, 0.6, 0.2 );
-    const frogUpperLeftLegMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    const frogUpperLeftLegMaterial = new THREE.MeshStandardMaterial( { color: 0x96f2af} );
     frogUpperLeftLeg = new THREE.Mesh( frogUpperLeftLegGeometry, frogUpperLeftLegMaterial );
     frogUpperLeftLeg.receiveShadow = true;
     frogUpperLeftLeg.castShadow = true;
@@ -274,7 +283,7 @@ function createFrog(scale){
 
     //Lower Right Leg
     const frogLowerRightLegGeometry = new THREE.BoxGeometry( 0.4, 0.18, 0.2 );
-    const frogLowerRightLegMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    const frogLowerRightLegMaterial = new THREE.MeshStandardMaterial( { color: 0x96f2af} );
     frogLowerRightLeg = new THREE.Mesh( frogLowerRightLegGeometry, frogLowerRightLegMaterial );
     frogLowerRightLeg.receiveShadow = true;
     frogLowerRightLeg.castShadow = true;
@@ -298,7 +307,7 @@ function createFrog(scale){
 
     //Lower Left Leg
     const frogLowerLeftLegGeometry = new THREE.BoxGeometry( 0.4, 0.18, 0.2 );
-    const frogLowerLeftLegMaterial = new THREE.MeshStandardMaterial( { color: 0x4bcb4b} );
+    const frogLowerLeftLegMaterial = new THREE.MeshStandardMaterial( { color: 0x96f2af} );
     frogLowerLeftLeg = new THREE.Mesh( frogLowerLeftLegGeometry, frogLowerLeftLegMaterial );
     frogLowerLeftLeg.receiveShadow = true;
     frogLowerLeftLeg.castShadow = true;
@@ -356,14 +365,14 @@ function createSheep(scale){
     sheepAreaMaterial.opacity = 0;
     sheepArea = new THREE.Mesh( sheepAreaGeometry, sheepAreaMaterial );
 
-
+    //Sheep body
     const sheepBodyGeometry = new THREE.IcosahedronGeometry(0.6, 0);
     const sheepBodyMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff} );
     sheepBody = new THREE.Mesh( sheepBodyGeometry, sheepBodyMaterial );
-    //console.log("Sheep= "+sheepGeometry.attributes.position.array);
     sheepBody.receiveShadow = true;
     sheepBody.castShadow = true;
     sheepBody.scale.multiplyScalar(scale);
+    sheepBody.translateY(0.44);
     
     scene.add( sheepBody );
     scene.add(sheepArea);
@@ -643,7 +652,7 @@ function createPlane(){
     //Create a plane that receives shadows (but does not cast them)
     const planeGeometry = new THREE.PlaneGeometry( 30, 30);
     const planeMaterial = new THREE.ShadowMaterial();
-    planeMaterial.opacity = 0.2;
+    planeMaterial.opacity = 0.1;
     plane = new THREE.Mesh( planeGeometry, planeMaterial );
     plane.rotateX(-1); //to rotate the plane
     plane.translateZ(-1);
@@ -654,14 +663,14 @@ function createPlane(){
 function animate() {
     requestAnimationFrame( animate );
 
-    frogBody.rotation.x += 0.01;
-    frogBody.rotation.y += 0.01;
+    //frogBody.rotation.x += 0.01;
+    //frogBody.rotation.y += 0.01;
 
-    sheepBody.rotation.x += 0.01;
-    sheepBody.rotation.y += 0.01;
+    //sheepBody.rotation.x += 0.01;
+    //sheepBody.rotation.y += 0.01;
 
-    fishBody.rotation.x += 0.01;
-    fishBody.rotation.y += 0.01;
+    //fishBody.rotation.x += 0.01;
+    //fishBody.rotation.y += 0.01;
 
     renderer.render(scene, camera);
 
@@ -676,8 +685,6 @@ createSheep(2);
 createFish(1);
 createPlane();
 createLights();
-createButton();
-createButton();
 createButton();
 animate();
 render();
@@ -695,14 +702,16 @@ let onclick = function (event) {
     console.log(objectID);
     switch (objectID) {
         case frogID:
+            resetButton(oldSelectedID);
             console.log(frogID);
             resetScale(oldSelectedID);
-            oldSelectedID = objectID;
             frogBody.scale.multiplyScalar(2);
+            button.translateX(0.2);
             frogArea.add(button);
-            render();
+            oldSelectedID = objectID;
             break;
         case sheepID:
+            resetButton(oldSelectedID);
             console.log(sheepID);
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
@@ -710,20 +719,36 @@ let onclick = function (event) {
             sheepArea.add(button);
             break;
         case fishID:
+            resetButton(oldSelectedID);
             console.log(fishID);
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
             fishBody.scale.multiplyScalar(2);
+            button.translateX(-0.2);
             fishArea.add(button);
             break;
         default:
             //do nothing
             break;
     }
-
-
 };
 window.addEventListener('click', onclick);
+
+
+function resetButton(oldSelectedID){
+    switch (oldSelectedID){
+        case frogID:
+            button.translateX(-0.2);
+            break;
+        case sheepID:
+            break;
+        case fishID:
+            button.translateX(0.2);
+            break;
+        default:
+            break;
+    }
+}
 
 
 function resetScale(oldSelectedID){
@@ -753,16 +778,56 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+
+let onMouseOver = function (event) {
+    mouse = new THREE.Vector2(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1);
+
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children);
+    objectID = intersects.length > 0 ? intersects[0].object.id : "objectID";
+    //console.log(objectID);
+    console.log(intersects[0]);
+
+    switch (objectID) {
+        case buttonID:
+            //console.log(buttonID);
+            if (buttonFlag) {
+                button.scale.multiplyScalar(1.5);
+                render();
+            }
+            buttonFlag=false;
+            break;
+        default:
+            //do nothing
+            if (!buttonFlag) {
+                button.scale.multiplyScalar(0.66);
+                render()
+            }
+            buttonFlag=true;
+            break;
+    }
+
+
+    console.log(objectID);
+
+
+};
+window.addEventListener('mousemove', onMouseOver);
+
+
 function createButton(){
     console.log()
-    const buttonGeometry = new THREE.CircleGeometry(0.5,32,0, 6.283185307179586);
+    const buttonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
    // const buttonMaterial = new THREE.MeshStandardMaterial({color: 0x00060});
     const loader = new THREE.TextureLoader();
     const buttonMaterial =
         new THREE.MeshBasicMaterial({
-            map:  loader.load('textures/mouth.jpg'),
+            map:  loader.load('textures/goImage.png'),
             side: THREE.DoubleSide
         });
     button = new THREE.Mesh( buttonGeometry, new THREE.MeshBasicMaterial(buttonMaterial) );
     button.translateY(-2.5);
+    button.translateZ(5.0);
 } 
