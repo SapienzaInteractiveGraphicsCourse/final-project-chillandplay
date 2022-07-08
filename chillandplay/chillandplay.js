@@ -1,14 +1,11 @@
 import * as THREE from '../node_modules/three/build/three.module.js';
-//import {TextGeometry} from "three";
-//import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry";
-//import {TextGeometry} from '../node_modules/three/examples/jsm/geometries/TextGeometry.js';
-////import { TextGeometry } from 'https://unpkg.com/three@0.138.3/examples/jsm/geometries/TextGeometry.js';
-//  import 'TextGeometry';
-//import {TextGeometry} from "three";
+
 // -------------- VARIABLES DECLARATION ----------------------------------
+var selected;
+var mouseMesh, windowPlane;
 var frogArea, frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
-var sheepArea, sheepBody, sheepForehead, sheepFace, sheepWool, sheepRightEye, sheepLeftEye, sheepRightEar, sheepLeftEar, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg;
-var button;
+var sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls;
+var button, buttonGeometry, buttonMaterial, buttonLoader;
 var fishArea, fishBody, fishHead, fishEyeR, fishEyeL, fishPupilR, fishPupilL, fishTail, fishRightSideFin, fishLeftSideFin, fishUpperFin;
 var plane;
 var oldSelectedID = 11;
@@ -16,8 +13,6 @@ var oldSelectedID = 11;
 //materials
 var grey_color = new THREE.MeshLambertMaterial({ color: 0xf3f2f7 });
 var dark_color = new THREE.MeshLambertMaterial({ color: 0x5a6e6c });
-
-var eyeballs;
 
 const pi = Math.PI;
 var objectID;
@@ -38,7 +33,6 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xbfe3dd);
 var camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 80; //settare a 10 per la visione full screen
-
 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -388,14 +382,14 @@ function createSheep(scale){
     eyes[0].rotation.z = -pi / 15;
     eyes[1].rotation.z = -eyes[0].rotation.z;
 
-    //eyeballs
+    //sheepEyeBalls
     var geo_eyeball = new THREE.SphereGeometry(0.11, 8, 8);
-    eyeballs = [];
+    sheepEyeBalls = [];
     for (var i = 0; i < 2; i++) {
-        eyeballs[i] = new THREE.Mesh(geo_eyeball, dark_color);
-        eyes[i].add(eyeballs[i]);
-        eyeballs[i].castShadow = true;
-        eyeballs[i].position.set(0, 0.2, 0); //ATTENZIONE!!! Il terzo parametro le muove in verticale, il secondo in profondità
+        sheepEyeBalls[i] = new THREE.Mesh(geo_eyeball, dark_color);
+        eyes[i].add(sheepEyeBalls[i]);
+        sheepEyeBalls[i].castShadow = true;
+        sheepEyeBalls[i].position.set(0, 0.2, 0); //ATTENZIONE!!! Il terzo parametro le muove in verticale, il secondo in profondità
     }
 
     //Sheep tail
@@ -640,8 +634,8 @@ function createPlane(){
 function animate() {
     requestAnimationFrame( animate );
 
-    frogBody.rotation.x += 0.01;
-    frogBody.rotation.y += 0.01;
+   // frogBody.rotation.x += 0.01;
+   // frogBody.rotation.y += 0.01;
 
     sheepBody.rotation.x += 0.01;
     sheepBody.rotation.y += 0.01;
@@ -685,8 +679,10 @@ let onclick = function (event) {
             resetScale(oldSelectedID);
             frogBody.scale.multiplyScalar(2);
             button.translateX(0.2);
+            setButtonTexture('textures/go_orange.jpg');
             frogArea.add(button);
             oldSelectedID = objectID;
+            selected = "FROG";
             break;
         case sheepID:
             scene.background = new THREE.Color(0xc9f0cf);
@@ -695,7 +691,9 @@ let onclick = function (event) {
             resetScale(oldSelectedID);
             oldSelectedID = objectID;
             sheepBody.scale.multiplyScalar(2);
+            setButtonTexture('textures/go_green.jpg');
             sheepArea.add(button);
+            selected = "SHEEP";
             break;
         case fishID:
             scene.background = new THREE.Color(0xafdcfa);
@@ -705,7 +703,9 @@ let onclick = function (event) {
             oldSelectedID = objectID;
             fishBody.scale.multiplyScalar(2);
             button.translateX(-0.2);
+            setButtonTexture('textures/go_blue.jpg');
             fishArea.add(button);
+            selected = "FISH";
             break;
         default:
             //do nothing
@@ -713,7 +713,6 @@ let onclick = function (event) {
     }
 };
 window.addEventListener('click', onclick);
-
 
 function resetButton(oldSelectedID){
     switch (oldSelectedID){
@@ -729,7 +728,6 @@ function resetButton(oldSelectedID){
             break;
     }
 }
-
 
 function resetScale(oldSelectedID){
     switch (oldSelectedID){
@@ -747,7 +745,6 @@ function resetScale(oldSelectedID){
     }
 }
 
-window.addEventListener('resize', onWindowResize);
 function onWindowResize() {
 
     console.log(window.innerWidth);
@@ -758,8 +755,9 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+window.addEventListener('resize', onWindowResize);
 
-let onMouseOver = function (event) {
+let onMouseOverButton = function (event) {
     mouse = new THREE.Vector2(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1);
@@ -767,47 +765,118 @@ let onMouseOver = function (event) {
     raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(scene.children);
     objectID = intersects.length > 0 ? intersects[0].object.id : "objectID";
-    //console.log(objectID);
-    console.log(intersects[0]);
 
     switch (objectID) {
         case buttonID:
-            //console.log(buttonID);
             if (buttonFlag) {
                 button.scale.multiplyScalar(1.5);
-                render();
             }
             buttonFlag=false;
             break;
         default:
-            //do nothing
             if (!buttonFlag) {
                 button.scale.multiplyScalar(0.66);
-                render()
             }
             buttonFlag=true;
             break;
     }
-
-
     console.log(objectID);
-
-
 };
-window.addEventListener('mousemove', onMouseOver);
+window.addEventListener('mousemove', onMouseOverButton);
 
+
+let onClickButton = function (event) {
+    mouse = new THREE.Vector2(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1);
+
+    raycaster.setFromCamera(mouse, camera);
+
+    var intersects = raycaster.intersectObjects(scene.children);
+    objectID = intersects.length > 0 ? intersects[0].object.id : "objectID";
+
+    if (objectID === buttonID) {
+        switch (selected) {
+            case "FROG":
+                //console.log(window.history.state);
+               // document.getElementById("content").innerHTML = window.html;
+               // document.title = response.pageTitle;
+               // window.history.pushState("","", "/#frog");
+                createSceneFrog();
+               // window.location = "#frog";
+                break;
+            case "SHEEP":
+                if (buttonFlag) {
+                    button.scale.multiplyScalar(1.5);
+                }
+                buttonFlag = false;
+                break;
+            case "FISH":
+                if (buttonFlag) {
+                    button.scale.multiplyScalar(1.5);
+                }
+                buttonFlag = false;
+                break;
+            default:
+                break;
+        }
+    }
+}
+window.addEventListener( 'click', onClickButton, false);
+
+function setButtonTexture(texturePath){
+    buttonLoader = new THREE.TextureLoader();
+    button.material = new THREE.MeshBasicMaterial({
+        map:  buttonLoader.load(texturePath),
+        side: THREE.DoubleSide
+    });
+    button.material.needsUpdate = true;
+}
 
 function createButton(){
-    console.log()
-    const buttonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
-   // const buttonMaterial = new THREE.MeshStandardMaterial({color: 0x00060});
-    const loader = new THREE.TextureLoader();
-    const buttonMaterial =
-        new THREE.MeshBasicMaterial({
-            map:  loader.load('textures/goImage.png'),
-            side: THREE.DoubleSide
-        });
-    button = new THREE.Mesh( buttonGeometry, new THREE.MeshBasicMaterial(buttonMaterial) );
+    buttonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
+    buttonMaterial = new THREE.MeshBasicMaterial({color: 0x003060});
+    button = new THREE.Mesh( buttonGeometry, buttonMaterial );
     button.translateY(-2.5);
     button.translateZ(5.0);
-} 
+}
+
+function followMouse(event){
+    let intersects = new THREE.Vector3();
+    let mouse = new THREE.Vector2(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1);
+
+    raycaster.setFromCamera(mouse, camera);
+    raycaster.ray.intersectPlane(windowPlane, intersects);
+    mouseMesh.position.set(intersects.x + 4, intersects.y, intersects.z);
+
+}
+//window.addEventListener( 'mousemove', followMouse, false);
+
+function createFly(){
+    let mouseGeometry = new THREE.SphereGeometry( 0.05, 12, 8 );
+    let mouseMaterial = new THREE.MeshStandardMaterial( { color: 0x00ffff } );
+    mouseMesh = new THREE.Mesh( mouseGeometry, mouseMaterial );
+    frogArea.add( mouseMesh );
+    windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -60);
+}
+
+
+function createSceneFrog(){
+    scene.remove(fishArea);
+    scene.remove(fishBody);
+    scene.remove(sheepArea);
+    scene.remove(sheepBody);
+    scene.remove(frogArea);
+    frogBody.translateX(4);
+}
+
+function createSceneSheep(){
+
+}
+
+
+
+
+
