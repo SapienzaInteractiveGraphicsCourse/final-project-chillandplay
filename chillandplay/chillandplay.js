@@ -1,7 +1,8 @@
 import * as THREE from '../node_modules/three/build/three.module.js';
 // -------------- VARIABLES DECLARATION ----------------------------------
 var selected;
-var flyBody;
+var flyBody, flyEyes, flyBiggerWings, flySmallerWings;
+var group;
 var flyFlag = false;
 var windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -60);
 var frogArea, frogBody, frogBelly,  frogHead, frogMouth,  frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
@@ -20,12 +21,10 @@ var objectID, secondObjectID;
 const frogID = 10;
 const sheepID = 26;
 const buttonID = 48;
-const homeButtonID = 50;
+const homeButtonID = 49;
 var buttonFlag = true;
 var homeButtonFlag = true;
 const backGroundHome = new THREE.Color(0xbfe3dd);
-
-
 
 // ---------------------------------------------------------------------
 const scene = new THREE.Scene();
@@ -96,7 +95,7 @@ function createFrog(scale){
     createFrogLowerLeftLeg(scale);
 }
 
-// ------------- FROG PARTS ----------------------------------------
+// ------------- FROG PARTS -------------------------------------
 
 function createFrogArea(scale){
     //Clickable area
@@ -397,7 +396,7 @@ function createSheep(scale){
     sheepBody.scale.multiplyScalar(0.8);
 }
 
-// ------------- SHEEP PARTS ----------------------------------------
+// ------------- SHEEP PARTS ----------------------------------
 
 function createSheepArea(scale){
     //Clickable area
@@ -455,7 +454,6 @@ function createSheepEyes(scale){
 
     sheepEyes[0].rotation.z = -pi / 15;
     sheepEyes[1].rotation.z = -sheepEyes[0].rotation.z;
-
 }
 
 function createSheepEyeBalls(scale){
@@ -531,8 +529,9 @@ function createSheepLegs(scale){
     sheepBackLeftLeg.rotation.x = -sheepFrontLeftLeg.rotation.x;
     sheepBody.add(sheepBackLeftLeg);
 }
-// ------------------------------------------------------------
-// ------------- PLANE ----------------------------------------
+// ----------------------------------------------------------
+
+// ------------- PLANE --------------------------------------
 function createPlane(){
     //Create a plane that receives shadows (but does not cast them)
     const planeGeometry = new THREE.PlaneGeometry( 30, 30);
@@ -545,6 +544,89 @@ function createPlane(){
     scene.add( plane );
 }
 
+// ------------- FLY ----------------------------------------
+function createFly(){
+    createFlyBody();
+    createFlyEyes();
+    createBiggerWings();
+    createSmallerWings();
+    flyFlag = true;
+}
+
+// ------------- FLY PARTS ----------------------------------
+function createFlyBody(){
+    let flyGeometry = new THREE.SphereGeometry( 0.1, 40, 40 );
+    let flyMaterial = new THREE.MeshStandardMaterial( { color: 0x555555 } );
+    flyBody = new THREE.Mesh( flyGeometry, flyMaterial );
+
+    flyBody.scale.z = 1.2;
+}
+
+function createFlyEyes(){
+    //flyEyes
+    let flyEyeGeometry = new THREE.SphereGeometry( 0.05, 40, 40 );
+    flyEyes = [];
+    for (let i = 0; i < 2; i++) {
+        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, grey_color);
+        group.add(flyEyes[i]);
+        flyEyes[i].castShadow = true;
+    }
+    flyEyes[0].translateX(0.04);
+    flyEyes[0].translateZ(0.085);
+    flyEyes[0].translateY(0.03);
+    flyEyes[1].translateX(-0.04);
+    flyEyes[1].translateZ(0.085);
+    flyEyes[1].translateY(0.03);
+}
+
+function createBiggerWings(){
+    //flyBiggerWings
+    let flyBiggerWingsGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.02, 20);
+    flyBiggerWings = [];
+    for (let i = 0; i < 2; i++) {
+        flyBiggerWings[i] = new THREE.Mesh(flyBiggerWingsGeometry, grey_color);
+        group.add(flyBiggerWings[i]);
+        flyBiggerWings[i].castShadow = true;
+    }
+    flyBiggerWings[0].translateX(0.07);
+    flyBiggerWings[0].translateY(0.07);
+    flyBiggerWings[0].scale.z = 0.7;
+    flyBiggerWings[0].rotateZ(1.0);
+    flyBiggerWings[0].translateZ(-0.045);
+    flyBiggerWings[0].rotateY(0.4);
+
+    flyBiggerWings[1].translateX(-0.07);
+    flyBiggerWings[1].translateY(0.07);
+    flyBiggerWings[1].scale.z = 0.7;
+    flyBiggerWings[1].rotateZ(-1.0);
+    flyBiggerWings[1].translateZ(-0.045);
+    flyBiggerWings[1].rotateY(-0.4);
+}
+
+function createSmallerWings(){
+    //flySmallerWings
+    let flySmallerWingsGeometry = new THREE.CylinderGeometry(0.075, 0.075, 0.01, 20);
+    flySmallerWings = [];
+    for (let i = 0; i < 2; i++) {
+        flySmallerWings[i] = new THREE.Mesh(flySmallerWingsGeometry, grey_color);
+        group.add(flySmallerWings[i]);
+        flySmallerWings[i].castShadow = true;
+    }
+    flySmallerWings[0].translateX(0.07);
+    flySmallerWings[0].translateY(0.04);
+    flySmallerWings[0].scale.z = 0.7;
+    flySmallerWings[0].rotateZ(0.5);
+    flySmallerWings[0].translateZ(-0.045);
+    flySmallerWings[0].rotateY(0.4);
+
+    flySmallerWings[1].translateX(-0.07);
+    flySmallerWings[1].translateY(0.04);
+    flySmallerWings[1].scale.z = 0.7;
+    flySmallerWings[1].rotateZ(-0.5);
+    flySmallerWings[1].translateZ(-0.045);
+    flySmallerWings[1].rotateY(-0.4);
+}
+
 function animate() {
     requestAnimationFrame( animate );
 
@@ -553,6 +635,10 @@ function animate() {
 
   //  sheepBody.rotation.x += 0.01;
   //  sheepBody.rotation.y += 0.01;
+
+    group.rotation.x += 0.01;
+    group.rotation.y += 0.01;
+    group.rotation.z += 0.01;
 
     renderer.render(scene, camera);
 }
@@ -665,7 +751,7 @@ let onMouseOverButton = function (event) {
             buttonFlag = false;
             break;
         case homeButtonID:
-            scene.remove(flyBody);
+            scene.remove(group);
             if (homeButtonFlag)
                 homeButton.scale.multiplyScalar(1.6);
             homeButtonFlag = false;
@@ -677,7 +763,7 @@ let onMouseOverButton = function (event) {
             }
             if (!homeButtonFlag && selected === "FROG") {
                 homeButton.scale.multiplyScalar(0.625);
-                scene.add(flyBody);
+                scene.add(group);
                 homeButtonFlag = true;
             }
             if(!homeButtonFlag && selected === "SHEEP"){
@@ -770,19 +856,14 @@ function followMouse(event){
 
     raycaster.setFromCamera(mouse, camera);
     raycaster.ray.intersectPlane(windowPlane, intersects);
-    if (flyFlag)
-    flyBody.position.set(intersects.x, intersects.y, intersects.z);
+    if (flyFlag) {
+        group.position.set(intersects.x, intersects.y, intersects.z);
+      //  flyBody.position.set(intersects.x, intersects.y, intersects.z);
+    }
     else flyFlag = false;
 
 }
 window.addEventListener( 'mousemove', followMouse, false);
-
-function createFly(){
-    let mouseGeometry = new THREE.SphereGeometry( 0.05, 12, 8 );
-    let mouseMaterial = new THREE.MeshStandardMaterial( { color: 0x00ffff } );
-    flyBody = new THREE.Mesh( mouseGeometry, mouseMaterial );
-    flyFlag = true;
-}
 
 function setHomeButtonTexture(texturePath){
     homeButtonLoader = new THREE.TextureLoader();
@@ -806,10 +887,11 @@ function createSceneFrog(){
     scene.remove(sheepBody);
     scene.remove(frogArea);
     scene.add(flyBody);
+    group.add(flyBody);
+    scene.add(group);
     frogBody.translateX(2);
     setHomeButtonTexture('textures/homeFrog.jpg');
     scene.add(homeButton);
-
 }
 
 function createSceneSheep(){
@@ -822,6 +904,7 @@ function createSceneSheep(){
 }
 
 function resetSceneHome(){
+    scene.remove(group);
     scene.background = backGroundHome;
     scene.add(frogBody);
     scene.add(frogArea);
@@ -836,8 +919,9 @@ function createSceneHome(){
     createPlane();
     createLights();
     createButton();
-    createFly();
     createHomeButton();
+    group = new THREE.Group();
+    createFly();
     animate();
     render();
 }
