@@ -7,7 +7,7 @@ let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -60);
 let frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
     frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
-    sheepHead, sheepEyes;
+    sheepHead, sheepEyes, sheepCheeks;
 let button, buttonGeometry, buttonMaterial, buttonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let plane;
@@ -17,6 +17,7 @@ let intersects;
 const greyMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
 const darkMaterial = new THREE.MeshLambertMaterial({color: 0x5a6e6c});
 const pinkMaterial = new THREE.MeshLambertMaterial({color: 0xffc9c8});
+const brownMaterial = new THREE.MeshLambertMaterial({color: 0xedd5ab});
 
 // -------------- IDS OBJECT DECLARATION -------------------
 const pi = Math.PI;
@@ -24,8 +25,8 @@ let objectID;
 let oldSelectedID = 11;
 const frogID = 10;
 const sheepID = 26;
-const buttonID = 48;
-const homeButtonID = 49;
+const buttonID = 143;
+const homeButtonID = 144;
 
 // -------------- FLAGS DECLARATION -------------------
 let buttonFlag = true;
@@ -395,6 +396,7 @@ function createSheep(scale){
     createSheepHair();
     createSheepLegs(scale);
     createSheepWool();
+    createSheepCheeks();
     sheepBody.scale.multiplyScalar(0.8);
 }
 
@@ -453,6 +455,25 @@ function createSheepEyes(){
     sheepEyes[1].position.x = -sheepEyes[0].position.x;
     sheepEyes[0].rotation.z = -pi / 15;
     sheepEyes[1].rotation.z = -sheepEyes[0].rotation.z;
+}
+
+function createSheepCheeks(){
+    //sheepCheeks
+    let sheepCheekGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.3, 20);
+    sheepCheeks = [];
+    for (let i = 0; i < 2; i++) {
+        sheepCheeks[i] = new THREE.Mesh(sheepCheekGeometry, pinkMaterial);
+        sheepHead.add(sheepCheeks[i]);
+        sheepCheeks[i].castShadow = true;
+        sheepCheeks[i].position.set(0, sheepHead.position.y - 0.4, 0.5);
+        //sheepCheeks[i].rotation.x = pi / 2 - pi / 15;
+        sheepCheeks[i].rotation.x = 2;
+        sheepCheeks[i].scale.z = 1.1;
+    }
+    sheepCheeks[0].position.x = 0.5;
+    sheepCheeks[1].position.x = -sheepCheeks[0].position.x;
+    sheepCheeks[0].rotation.z = -0.35;
+    sheepCheeks[1].rotation.z = -sheepCheeks[0].rotation.z;
 }
 
 function createSheepEyeBalls(){
