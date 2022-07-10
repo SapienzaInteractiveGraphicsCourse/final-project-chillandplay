@@ -834,8 +834,8 @@ function animate() {
    // frogBody.rotation.x += 0.01;
    // frogBody.rotation.y += 0.01;
 
-    sheepBody.rotation.x += 0.01;
-    sheepBody.rotation.y += 0.01;
+    //sheepBody.rotation.x += 0.01;
+    //sheepBody.rotation.y += 0.01;
    // sheepBody.rotation.y = 1.5;
    // sheepBody.rotation.x = 1.5;
 
