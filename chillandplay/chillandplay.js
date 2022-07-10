@@ -3,7 +3,7 @@ import * as THREE from '../node_modules/three/build/three.module.js';
 // -------------- VARIABLES DECLARATION ---------------------
 let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
 let group;
-let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -60);
+let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
     frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
@@ -17,7 +17,8 @@ let intersects;
 const greyMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
 const darkMaterial = new THREE.MeshLambertMaterial({color: 0x5a6e6c});
 const pinkMaterial = new THREE.MeshLambertMaterial({color: 0xffc9c8});
-const brownMaterial = new THREE.MeshLambertMaterial({color: 0xedd5ab});
+const redMaterial = new THREE.MeshLambertMaterial({color: 0x9c4c6e});
+const newGreyMaterial = new THREE.MeshLambertMaterial({color: 0x857e77});
 
 // -------------- IDS OBJECT DECLARATION -------------------
 const pi = Math.PI;
@@ -44,6 +45,8 @@ const scene = new THREE.Scene();
 scene.background = backGroundHome;
 let camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 80; //settare a 10 per la visione full screen
+//camera.position.y = 25;
+//camera.lookAt(0, 0, 0);
 
 // --------- RENDERER -----------------------------------
 const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -459,7 +462,7 @@ function createSheepEyes(){
 
 function createSheepCheeks(){
     //sheepCheeks
-    let sheepCheekGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.3, 20);
+    let sheepCheekGeometry = new THREE.CylinderGeometry(0.13, 0.13, 0.3, 20);
     sheepCheeks = [];
     for (let i = 0; i < 2; i++) {
         sheepCheeks[i] = new THREE.Mesh(sheepCheekGeometry, pinkMaterial);
@@ -484,14 +487,14 @@ function createSheepEyeBalls(){
         sheepEyeBalls[i] = new THREE.Mesh(geo_eyeball, darkMaterial);
         sheepEyes[i].add(sheepEyeBalls[i]);
         sheepEyeBalls[i].castShadow = true;
-        sheepEyeBalls[i].position.set(0, 0.2, 0); //ATTENZIONE!!! Il terzo parametro le muove in verticale, il secondo in profondità
+        sheepEyeBalls[i].position.set(0, 0.2, 0.12); //ATTENZIONE!!! Il terzo parametro le muove in verticale, il secondo in profondità
     }
 }
 
 function createSheepTail(){
     //Sheep tail
     let geo_tail = new THREE.IcosahedronGeometry(0.5, 0);
-    let tail = new THREE.Mesh(geo_tail, greyMaterial);
+    let tail = new THREE.Mesh(geo_tail, newGreyMaterial);
     tail.position.set(0, 0.23, -0.5);
     tail.castShadow = true;
     tail.scale.multiplyScalar(0.35);
@@ -503,15 +506,21 @@ function createSheepHair(){
     let hair = [];
     let hairGeometry = new THREE.IcosahedronGeometry(0.4, 0);
     for (let i = 0; i < 5; i++) {
-        hair[i] = new THREE.Mesh(hairGeometry, greyMaterial);
+        hair[i] = new THREE.Mesh(hairGeometry, newGreyMaterial);
         hair[i].castShadow = true;
         sheepHead.add(hair[i]);
     }
-    hair[0].position.set(-0.4, sheepHead.position.y + 0.9, -0.1);
+    hair[0].position.set(-0.4, sheepHead.position.y + 0.7, 0.4);
+    hair[1].position.set(0, sheepHead.position.y + 0.8, 0.4);
+    hair[2].position.set(0.4, sheepHead.position.y + 0.7, 0.4);
+    hair[3].position.set(-0.1, sheepHead.position.y + 0.7, 0.1);
+    hair[4].position.set(0.12, sheepHead.position.y + 0.7, 0.1);
+
+    /*hair[0].position.set(-0.4, sheepHead.position.y + 0.9, -0.1);
     hair[1].position.set(0, sheepHead.position.y + 1, -0.1);
     hair[2].position.set(0.4, sheepHead.position.y + 0.9, -0.1);
     hair[3].position.set(-0.1, sheepHead.position.y + 0.9, -0.4);
-    hair[4].position.set(0.12, sheepHead.position.y + 0.9, -0.4);
+    hair[4].position.set(0.12, sheepHead.position.y + 0.9, -0.4);*/
 
     hair[0].scale.set(0.6, 0.6, 0.6);
     hair[2].scale.set(0.8, 0.8, 0.8);
@@ -753,6 +762,7 @@ function createFly(){
     createBiggerWings();
     createSmallerWings();
     flyFlag = true;
+    group.scale.multiplyScalar(2.5);
 }
 
 // ------------- FLY PARTS ----------------------------------
@@ -760,6 +770,7 @@ function createFlyBody(){
     let flyGeometry = new THREE.SphereGeometry( 0.1, 40, 40 );
     let flyMaterial = new THREE.MeshStandardMaterial( { color: 0x555555 } );
     flyBody = new THREE.Mesh( flyGeometry, flyMaterial );
+    flyBody.castShadow = true;
     flyBody.scale.z = 1.2;
 }
 
@@ -768,7 +779,7 @@ function createFlyEyes(){
     let flyEyeGeometry = new THREE.SphereGeometry( 0.05, 40, 40 );
     flyEyes = [];
     for (let i = 0; i < 2; i++) {
-        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, greyMaterial);
+        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, redMaterial);
         group.add(flyEyes[i]);
         flyEyes[i].castShadow = true;
     }
@@ -836,8 +847,8 @@ function animate() {
 
     //sheepBody.rotation.x += 0.01;
     //sheepBody.rotation.y += 0.01;
-   // sheepBody.rotation.y = 1.5;
-   // sheepBody.rotation.x = 1.5;
+   //sheepBody.rotation.y = 0.4;
+   //sheepBody.rotation.x = -0.2;
 
 
     group.rotation.x += 0.01;
