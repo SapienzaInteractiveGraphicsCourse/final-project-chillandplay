@@ -14,8 +14,9 @@ let plane;
 let intersects;
 
 // -------------- MATERIALS DECLARATION --------------------
-const grey_color = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
-const dark_color = new THREE.MeshLambertMaterial({color: 0x5a6e6c});
+const greyMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
+const darkMaterial = new THREE.MeshLambertMaterial({color: 0x5a6e6c});
+const pinkMaterial = new THREE.MeshLambertMaterial({color: 0xffc9c8});
 
 // -------------- IDS OBJECT DECLARATION -------------------
 const pi = Math.PI;
@@ -393,6 +394,7 @@ function createSheep(scale){
     createSheepTail();
     createSheepHair();
     createSheepLegs(scale);
+    createSheepWool();
     sheepBody.scale.multiplyScalar(0.8);
 }
 
@@ -412,8 +414,7 @@ function createSheepArea(){
 function createSheepBody(scale){
     //Sheep body
     const sheepBodyGeometry = new THREE.IcosahedronGeometry(0.5, 0);
-    const sheepBodyMaterial = new THREE.MeshStandardMaterial( { color: 0xffc9c8} );
-    sheepBody = new THREE.Mesh( sheepBodyGeometry, sheepBodyMaterial );
+    sheepBody = new THREE.Mesh( sheepBodyGeometry, greyMaterial );
     sheepBody.receiveShadow = true;
     sheepBody.castShadow = true;
     sheepBody.scale.multiplyScalar(scale);
@@ -426,7 +427,7 @@ function createSheepBody(scale){
 function createSheepHead(){
     //Sheep head
     let sheepHeadGeometry = new THREE.IcosahedronGeometry(1, 0);
-    sheepHead = new THREE.Mesh(sheepHeadGeometry, dark_color);
+    sheepHead = new THREE.Mesh(sheepHeadGeometry, darkMaterial);
     sheepHead.castShadow = true;
     sheepHead.scale.z = 0.6;
     sheepHead.scale.y = 1.1;
@@ -442,7 +443,7 @@ function createSheepEyes(){
     let geo_eye = new THREE.CylinderGeometry(0.3, 0.2, 0.3, 8);
     sheepEyes = [];
     for (let i = 0; i < 2; i++) {
-        sheepEyes[i] = new THREE.Mesh(geo_eye, grey_color);
+        sheepEyes[i] = new THREE.Mesh(geo_eye, greyMaterial);
         sheepHead.add(sheepEyes[i]);
         sheepEyes[i].castShadow = true;
         sheepEyes[i].position.set(0, sheepHead.position.y + 0.1, 0.7);
@@ -459,7 +460,7 @@ function createSheepEyeBalls(){
     let geo_eyeball = new THREE.SphereGeometry(0.11, 8, 8);
     sheepEyeBalls = [];
     for (let i = 0; i < 2; i++) {
-        sheepEyeBalls[i] = new THREE.Mesh(geo_eyeball, dark_color);
+        sheepEyeBalls[i] = new THREE.Mesh(geo_eyeball, darkMaterial);
         sheepEyes[i].add(sheepEyeBalls[i]);
         sheepEyeBalls[i].castShadow = true;
         sheepEyeBalls[i].position.set(0, 0.2, 0); //ATTENZIONE!!! Il terzo parametro le muove in verticale, il secondo in profondità
@@ -469,7 +470,7 @@ function createSheepEyeBalls(){
 function createSheepTail(){
     //Sheep tail
     let geo_tail = new THREE.IcosahedronGeometry(0.5, 0);
-    let tail = new THREE.Mesh(geo_tail, grey_color);
+    let tail = new THREE.Mesh(geo_tail, greyMaterial);
     tail.position.set(0, 0.23, -0.5);
     tail.castShadow = true;
     tail.scale.multiplyScalar(0.35);
@@ -479,9 +480,9 @@ function createSheepTail(){
 function createSheepHair(){
     //Sheep hair
     let hair = [];
-    let geo_hair = new THREE.IcosahedronGeometry(0.4, 0);
+    let hairGeometry = new THREE.IcosahedronGeometry(0.4, 0);
     for (let i = 0; i < 5; i++) {
-        hair[i] = new THREE.Mesh(geo_hair, grey_color);
+        hair[i] = new THREE.Mesh(hairGeometry, greyMaterial);
         hair[i].castShadow = true;
         sheepHead.add(hair[i]);
     }
@@ -501,7 +502,7 @@ function createSheepLegs(scale){
     //Sheep legs
     const legGeometry = new THREE.CylinderGeometry(0.2, 0.15, 1, 4);
     legGeometry.translate(0, -0.5, 0);
-    sheepFrontRightLeg = new THREE.Mesh(legGeometry, dark_color);
+    sheepFrontRightLeg = new THREE.Mesh(legGeometry, darkMaterial);
     sheepFrontRightLeg.castShadow = true;
     sheepFrontRightLeg.receiveShadow = true;
     sheepFrontRightLeg.position.set(0.20, -0.2, 0.18);
@@ -524,6 +525,190 @@ function createSheepLegs(scale){
     sheepBackLeftLeg.position.z = -sheepFrontLeftLeg.position.z;
     sheepBackLeftLeg.rotation.x = -sheepFrontLeftLeg.rotation.x;
     sheepBody.add(sheepBackLeftLeg);
+}
+
+function createSheepWool(){
+    //Sheep hair
+    let wool = [];
+    let radius = 0.2;
+    let angle = 0;
+    let z = 0.4;
+    let woolGeometry = new THREE.IcosahedronGeometry(0.4, 0);
+    // First circle of wool from the head
+    for (let i = 0; i < 8; i++) {
+        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        if (i === 2 || i === 5 || i === 0 || i ===4)
+            wool[i].scale.set(0.2, 0.2, 0.2);
+        else if (i === 7 || i === 1 || i === 3)
+            wool[i].scale.set(0.25, 0.25, 0.25);
+        else
+            wool[i].scale.set(0.3, 0.3, 0.3);
+        wool[i].castShadow = true;
+        sheepBody.add(wool[i]);
+        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle) + 0.1, z);
+        angle += 0.78;
+    }
+    angle = 0.72;
+    radius = 0.28;
+    z = 0.3;
+
+    // Second circle of wool from the head
+    for (let i = 0; i < 12; i++) {
+        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        if (i === 2 || i === 5 || i === 0 || i ===4 )
+            wool[i].scale.set(0.2, 0.2, 0.2);
+        else if (i === 1 || i === 3 || i === 7 || i === 9)
+            wool[i].scale.set(0.25, 0.25, 0.25);
+        else
+            wool[i].scale.set(0.3, 0.3, 0.3);
+        wool[i].castShadow = true;
+        sheepBody.add(wool[i]);
+        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle) + 0.05, z);
+        angle += 0.50;
+        if(i === 8)
+            wool[i].translateZ(0.04);
+    }
+
+    angle = 0.10;
+    radius = 0.38;
+    z = 0.2;
+
+    // Second circle of wool from the head
+    for (let i = 0; i < 13; i++) {
+        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        if (i === 9 || i === 5 || i === 7 || i === 12 || i === 4 || i === 3)
+            wool[i].scale.set(0.2, 0.2, 0.2);
+        else if (i === 1 || i === 0)
+            wool[i].scale.set(0.25, 0.25, 0.25);
+        else
+            wool[i].scale.set(0.3, 0.3, 0.3);
+        wool[i].castShadow = true;
+        sheepBody.add(wool[i]);
+        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
+        angle += 0.50;
+        if(i === 8)
+            wool[i].translateZ(0.04);
+    }
+    angle = 0.90;
+    radius = 0.42;
+    z = 0.05;
+
+    // Third circle of wool from the head
+    for (let i = 0; i < 16; i++) {
+        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
+            wool[i].scale.set(0.2, 0.2, 0.2);
+        else if (i === 1 || i === 0)
+            wool[i].scale.set(0.25, 0.25, 0.25);
+        else
+            wool[i].scale.set(0.3, 0.3, 0.3);
+        wool[i].castShadow = true;
+        sheepBody.add(wool[i]);
+        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
+        angle += 0.40;
+        if(i === 8)
+            wool[i].translateZ(0.04);
+    }
+
+    angle = 0.30;
+    radius = 0.38;
+    z = -0.1;
+
+    // Fourth circle of wool from the head
+    for (let i = 0; i < 16; i++) {
+        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
+            wool[i].scale.set(0.2, 0.2, 0.2);
+        else if (i === 1 || i === 0)
+            wool[i].scale.set(0.25, 0.25, 0.25);
+        else
+            wool[i].scale.set(0.3, 0.3, 0.3);
+        wool[i].castShadow = true;
+        sheepBody.add(wool[i]);
+        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
+        angle += 0.40;
+        if(i === 8)
+            wool[i].translateZ(0.04);
+    }
+
+    angle = 0.6;
+    radius = 0.3;
+    z = -0.24;
+
+    // Fifth circle of wool from the head
+    for (let i = 0; i < 15; i++) {
+        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        //if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
+         //   wool[i].scale.set(0.2, 0.2, 0.2);
+         if (i === 1 || i === 0)
+            wool[i].scale.set(0.25, 0.25, 0.25);
+        else
+            wool[i].scale.set(0.3, 0.3, 0.3);
+        wool[i].castShadow = true;
+        sheepBody.add(wool[i]);
+        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
+        angle += 0.41;
+        if(i === 8)
+            wool[i].translateZ(0.04);
+        if(i === 14) {
+            wool[i].translateY(0.04);
+            wool[i].translateZ(-0.01);
+            wool[i].translateX(0.03);
+        }
+    }
+
+    angle = 0.1;
+    radius = 0.17;
+    z = -0.35;
+
+    // Sixth circle of wool from the head
+    for (let i = 0; i < 9; i++) {
+        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+       // if (i === 9  || i === 12 || i === 3 || i === 5 )
+        //    wool[i].scale.set(0.2, 0.2, 0.2);
+        if (i === 1 || i === 0 || i === 7)
+            wool[i].scale.set(0.25, 0.25, 0.25);
+        else
+            wool[i].scale.set(0.3, 0.3, 0.3);
+        wool[i].castShadow = true;
+        sheepBody.add(wool[i]);
+        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
+        angle += 0.68;
+        if(i === 7){
+            wool[i].translateZ(-0.01);
+            wool[i].translateY(-0.05);
+        }
+    }
+
+    // Extra wool
+    radius = 0.36;
+    angle = 0;
+    z = -0.21;
+    wool[0] = new THREE.Mesh(woolGeometry, greyMaterial);
+    wool[0].scale.set(0.25, 0.25, 0.25);
+    wool[0].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    sheepBody.add(wool[0]);
+    angle = 2.12;
+    radius = 0.4;
+    z = -0.02;
+    wool[1] = new THREE.Mesh(woolGeometry, greyMaterial);
+    wool[1].scale.set(0.3, 0.3, 0.3);
+    wool[1].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    sheepBody.add(wool[1]);
+    angle = 3.15;
+    radius = 0.35;
+    z = -0.21;
+    wool[2] = new THREE.Mesh(woolGeometry, greyMaterial);
+    wool[2].scale.set(0.3, 0.3, 0.3);
+    wool[2].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    sheepBody.add(wool[2]);
+    z = -0.38;
+    wool[3] = new THREE.Mesh(woolGeometry, greyMaterial);
+    wool[3].scale.set(0.35, 0.35, 0.35);
+    wool[3].position.set(0, 0, z);
+    sheepBody.add(wool[3]);
+
+
 }
 // ----------------------------------------------------------
 
@@ -562,7 +747,7 @@ function createFlyEyes(){
     let flyEyeGeometry = new THREE.SphereGeometry( 0.05, 40, 40 );
     flyEyes = [];
     for (let i = 0; i < 2; i++) {
-        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, grey_color);
+        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, greyMaterial);
         group.add(flyEyes[i]);
         flyEyes[i].castShadow = true;
     }
@@ -579,7 +764,7 @@ function createBiggerWings(){
     let flyBiggerWingsGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.02, 20);
     flyBiggerWings = [];
     for (let i = 0; i < 2; i++) {
-        flyBiggerWings[i] = new THREE.Mesh(flyBiggerWingsGeometry, grey_color);
+        flyBiggerWings[i] = new THREE.Mesh(flyBiggerWingsGeometry, greyMaterial);
         group.add(flyBiggerWings[i]);
         flyBiggerWings[i].castShadow = true;
     }
@@ -603,7 +788,7 @@ function createSmallerWings(){
     let flySmallerWingsGeometry = new THREE.CylinderGeometry(0.075, 0.075, 0.01, 20);
     flySmallerWings = [];
     for (let i = 0; i < 2; i++) {
-        flySmallerWings[i] = new THREE.Mesh(flySmallerWingsGeometry, grey_color);
+        flySmallerWings[i] = new THREE.Mesh(flySmallerWingsGeometry, greyMaterial);
         group.add(flySmallerWings[i]);
         flySmallerWings[i].castShadow = true;
     }
@@ -628,8 +813,11 @@ function animate() {
    // frogBody.rotation.x += 0.01;
    // frogBody.rotation.y += 0.01;
 
-  //  sheepBody.rotation.x += 0.01;
-  //  sheepBody.rotation.y += 0.01;
+    sheepBody.rotation.x += 0.01;
+    sheepBody.rotation.y += 0.01;
+   // sheepBody.rotation.y = 1.5;
+   // sheepBody.rotation.x = 1.5;
+
 
     group.rotation.x += 0.01;
     group.rotation.y += 0.01;
@@ -663,11 +851,11 @@ let onclick = function (event) {
             resetButton(oldSelectedID);
             console.log(sheepID);
             resetScale(oldSelectedID);
-            oldSelectedID = objectID;
             sheepBody.scale.multiplyScalar(2);
             button.translateX(-0.15);
             setButtonTexture('textures/goSheep.jpg');
             sheepArea.add(button);
+            oldSelectedID = objectID;
             selected = "SHEEP";
             break;
         default:
