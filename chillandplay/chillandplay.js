@@ -2,7 +2,8 @@ import * as THREE from '../node_modules/three/build/three.module.js';
 
 // -------------- VARIABLES DECLARATION ---------------------
 let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
-let group;
+let scissorBody, scissorBlades, scissorHandles;
+let group, group2;
 let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
     frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
@@ -17,7 +18,9 @@ let intersects;
 const greyMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
 const darkMaterial = new THREE.MeshLambertMaterial({color: 0x5a6e6c});
 const pinkMaterial = new THREE.MeshLambertMaterial({color: 0xffc9c8});
-const redMaterial = new THREE.MeshLambertMaterial({color: 0x9c4c6e});
+const bordeauxMaterial = new THREE.MeshLambertMaterial({color: 0x9c4c6e});
+const redMaterial = new THREE.MeshLambertMaterial({color: 0xcf1111});
+
 const newGreyMaterial = new THREE.MeshLambertMaterial({color: 0x857e77});
 
 // -------------- IDS OBJECT DECLARATION -------------------
@@ -33,6 +36,7 @@ const homeButtonID = 144;
 let buttonFlag = true;
 let homeButtonFlag = true;
 let flyFlag = false;
+let scissorFlag = false;
 let selected;
 
 // ----------- BACKGROUND COLORS DECLARATION ----------
@@ -779,7 +783,7 @@ function createFlyEyes(){
     let flyEyeGeometry = new THREE.SphereGeometry( 0.05, 40, 40 );
     flyEyes = [];
     for (let i = 0; i < 2; i++) {
-        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, redMaterial);
+        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, bordeauxMaterial);
         group.add(flyEyes[i]);
         flyEyes[i].castShadow = true;
     }
@@ -839,22 +843,106 @@ function createSmallerWings(){
     flySmallerWings[1].rotateY(-0.4);
 }
 
+
+// ------------- SCISSOR ----------------------------------------
+function createScissor(){
+    //createScissorBody(); //può anche non servire?
+    createScissorBlades();
+    createScissorHandle();
+
+    scissorFlag = true;
+    group2.scale.multiplyScalar(1.0);
+}
+
+// ------------- SCISSOR PARTS ----------------------------------
+function createScissorBody(){
+    let scissorGeometry = new THREE.SphereGeometry( 0.1, 40, 40 );
+    let scissorMaterial = new THREE.MeshStandardMaterial( { color: 0x555555 } );
+    scissorBody = new THREE.Mesh( scissorGeometry, scissorMaterial );
+    scissorBody.castShadow = true;
+    scissorBody.scale.z = 1.2;
+}
+function createScissorBlades(){
+    let scissorBladeGeometry = new THREE.CylinderGeometry( 0.04, 0.06, 1.9, 100 );
+    scissorBlades = [];
+    for (let i = 0; i < 2; i++) {
+        scissorBlades[i] = new THREE.Mesh(scissorBladeGeometry, newGreyMaterial);
+        group2.add(scissorBlades[i]);
+        scissorBlades[i].castShadow = true;
+    }
+    //first blade
+    
+    scissorBlades[0].translateX(0.1);
+    scissorBlades[0].translateY(0.2);
+    scissorBlades[0].translateZ(-0.08);
+
+    //scissorBlades[0].scale.z = 0.7;
+    scissorBlades[0].rotateZ(-0.48);
+    //scissorBlades[0].rotateX(0.9);
+   // scissorBlades[0].rotateY(0.4);
+    
+    //second blade
+    scissorBlades[1].translateX(-0.1);
+    scissorBlades[1].translateY(0.2);
+    scissorBlades[1].translateZ(-0.08);
+    //scissorBlades[1].scale.z = 0.7;
+    scissorBlades[1].rotateZ(0.48);
+    //scissorBlades[1].translateZ(-0.08);
+   // scissorBlades[1].rotateY(-0.4);
+}
+
+function createScissorHandle(){
+    let scissorHandleGeometry = new THREE.TorusGeometry( 0.37, 0.1, 32, 100 );
+    scissorHandles = [];
+    for (let i = 0; i < 2; i++) {
+        scissorHandles[i] = new THREE.Mesh(scissorHandleGeometry, redMaterial);
+        group2.add(scissorHandles[i]);
+        scissorHandles[i].castShadow = true;
+    }
+    //first handle
+    
+    scissorHandles[0].translateX(0.49);
+    scissorHandles[0].translateY(-0.38);
+    scissorHandles[0].rotateZ(0.5);
+    scissorHandles[0].scale.z = 0.7;
+    scissorHandles[0].scale.x = -0.7;
+    scissorHandles[0].scale.y = 1.2;
+    //scissorHandles[0].translateZ(0.4);
+   // scissorHandles[0].translateY(-0.065);
+
+    scissorHandles[0].translateZ(-0.08);
+    //scissorHandles[0].rotateY(0.4);
+    
+    //second handle
+    scissorHandles[1].translateX(-0.49);
+    scissorHandles[1].translateY(-0.38);
+    scissorHandles[1].rotateZ(-0.5);
+    scissorHandles[1].scale.z = 0.7;
+    scissorHandles[1].scale.x = -0.7;
+    scissorHandles[1].scale.y = 1.2;
+    //scissorHandles[1].rotateZ(-0.5);
+    scissorHandles[1].translateZ(-0.08);
+    //scissorHandles[1].rotateY(-0.4);
+}
+
 function animate() {
     requestAnimationFrame( animate );
 
    // frogBody.rotation.x += 0.01;
    // frogBody.rotation.y += 0.01;
 
-    //sheepBody.rotation.x += 0.01;
-    //sheepBody.rotation.y += 0.01;
+   // sheepBody.rotation.x += 0.01;
+   // sheepBody.rotation.y += 0.01;
    //sheepBody.rotation.y = 0.4;
    //sheepBody.rotation.x = -0.2;
-
 
     group.rotation.x += 0.01;
     group.rotation.y += 0.01;
     group.rotation.z += 0.01;
 
+    group2.rotation.x += 0.01;
+    group2.rotation.y += 0.01;
+    group2.rotation.z += 0.01;
     renderer.render(scene, camera);
 }
 
@@ -958,6 +1046,7 @@ let onMouseOverButton = function (event) {
             break;
         case homeButtonID:
             scene.remove(group);
+            scene.remove(group2);
             if (homeButtonFlag)
                 homeButton.scale.multiplyScalar(1.6);
             homeButtonFlag = false;
@@ -974,6 +1063,7 @@ let onMouseOverButton = function (event) {
             }
             if(!homeButtonFlag && selected === "SHEEP"){
                 homeButton.scale.multiplyScalar(0.625);
+                scene.add(group2);
                 homeButtonFlag = true;
             }
             break;
@@ -1017,6 +1107,7 @@ let onClickButton = function (event) {
                 homeButtonFlag = true;
                 sheepBody.scale.multiplyScalar(0.5);
                 scene.remove(sheepBody);
+                scene.remove(scissorBody);
                 sheepBody.translateX(2);
                 resetSceneHome();
                 break;
@@ -1054,7 +1145,18 @@ function followMouse(event){
     raycaster.ray.intersectPlane(windowPlane, intersects);
     if (flyFlag)
         group.position.set(intersects.x, intersects.y, intersects.z);
-    else flyFlag = false;
+    else {
+        flyFlag = false;
+    }
+    //NB: gli if else devono essere staccati altrimenti non segue il mouse la forbice
+    if (scissorFlag){
+        group2.position.set(intersects.x, intersects.y, intersects.z);
+    }
+    else{ 
+        scissorFlag = false;
+        
+    }
+
 
 }
 window.addEventListener( 'mousemove', followMouse, false);
@@ -1092,6 +1194,9 @@ function createSceneSheep(){
     scene.remove(frogArea);
     scene.remove(frogBody);
     scene.remove(sheepArea);
+    scene.add(scissorBody);
+    group2.add(scissorBody);
+    scene.add(group2);
     sheepBody.translateX(-2);
     setHomeButtonTexture('textures/homeSheep.jpg');
     scene.add(homeButton);
@@ -1099,6 +1204,7 @@ function createSceneSheep(){
 
 function resetSceneHome(){
     scene.remove(group);
+    scene.remove(group2);
     scene.background = backGroundHome;
     scene.add(frogBody);
     scene.add(frogArea);
@@ -1116,6 +1222,8 @@ function createSceneHome(){
     createHomeButton();
     group = new THREE.Group();
     createFly();
+    group2 = new THREE.Group();
+    createScissor();
     animate();
     render();
 }
