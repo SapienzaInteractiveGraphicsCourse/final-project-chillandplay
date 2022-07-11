@@ -8,7 +8,7 @@ Authors:
 * Francesca Restante
 
 ## How to play
-Click here and enjoy :sparkles: :
+Click here and enjoy :sunglasses: :
  [Chill&Play](https://sapienzainteractivegraphicscourse.github.io/final-project-chillandplay/) 
 
 Documentation: 
