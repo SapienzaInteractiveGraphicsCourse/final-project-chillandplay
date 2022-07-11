@@ -18,7 +18,9 @@ let intersects;
 const greyMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
 const darkMaterial = new THREE.MeshLambertMaterial({color: 0x5a6e6c});
 const pinkMaterial = new THREE.MeshLambertMaterial({color: 0xffc9c8});
-const redMaterial = new THREE.MeshLambertMaterial({color: 0x9c4c6e});
+const bordeauxMaterial = new THREE.MeshLambertMaterial({color: 0x9c4c6e});
+const redMaterial = new THREE.MeshLambertMaterial({color: 0xcf1111});
+
 const newGreyMaterial = new THREE.MeshLambertMaterial({color: 0x857e77});
 
 // -------------- IDS OBJECT DECLARATION -------------------
@@ -781,7 +783,7 @@ function createFlyEyes(){
     let flyEyeGeometry = new THREE.SphereGeometry( 0.05, 40, 40 );
     flyEyes = [];
     for (let i = 0; i < 2; i++) {
-        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, redMaterial);
+        flyEyes[i] = new THREE.Mesh(flyEyeGeometry, bordeauxMaterial);
         group.add(flyEyes[i]);
         flyEyes[i].castShadow = true;
     }
@@ -849,7 +851,7 @@ function createScissor(){
     createScissorHandle();
 
     scissorFlag = true;
-    group2.scale.multiplyScalar(2.5);
+    group2.scale.multiplyScalar(1.0);
 }
 
 // ------------- SCISSOR PARTS ----------------------------------
@@ -861,7 +863,7 @@ function createScissorBody(){
     scissorBody.scale.z = 1.2;
 }
 function createScissorBlades(){
-    let scissorBladeGeometry = new THREE.CylinderGeometry( 0.1, 0.1, 2, 32 );
+    let scissorBladeGeometry = new THREE.CylinderGeometry( 0.04, 0.06, 1.9, 100 );
     scissorBlades = [];
     for (let i = 0; i < 2; i++) {
         scissorBlades[i] = new THREE.Mesh(scissorBladeGeometry, newGreyMaterial);
@@ -870,19 +872,22 @@ function createScissorBlades(){
     }
     //first blade
     
-    scissorBlades[0].translateX(-0.3);
-    scissorBlades[0].translateY(0.04);
+    scissorBlades[0].translateX(0.1);
+    scissorBlades[0].translateY(0.2);
+    scissorBlades[0].translateZ(-0.08);
+
     //scissorBlades[0].scale.z = 0.7;
-    scissorBlades[0].rotateZ(0.5);
-   scissorBlades[0].translateZ(-0.08);
+    scissorBlades[0].rotateZ(-0.48);
+    //scissorBlades[0].rotateX(0.9);
    // scissorBlades[0].rotateY(0.4);
     
     //second blade
-    scissorBlades[1].translateX(0.3);
-    scissorBlades[1].translateY(0.04);
-    //scissorBlades[1].scale.z = 0.7;
-    scissorBlades[1].rotateZ(-0.5);
+    scissorBlades[1].translateX(-0.1);
+    scissorBlades[1].translateY(0.2);
     scissorBlades[1].translateZ(-0.08);
+    //scissorBlades[1].scale.z = 0.7;
+    scissorBlades[1].rotateZ(0.48);
+    //scissorBlades[1].translateZ(-0.08);
    // scissorBlades[1].rotateY(-0.4);
 }
 
@@ -890,25 +895,33 @@ function createScissorHandle(){
     let scissorHandleGeometry = new THREE.TorusGeometry( 0.37, 0.1, 32, 100 );
     scissorHandles = [];
     for (let i = 0; i < 2; i++) {
-        scissorHandles[i] = new THREE.Mesh(scissorHandleGeometry, newGreyMaterial);
+        scissorHandles[i] = new THREE.Mesh(scissorHandleGeometry, redMaterial);
         group2.add(scissorHandles[i]);
         scissorHandles[i].castShadow = true;
     }
     //first handle
     
-    scissorHandles[0].translateX(0.5);
-    scissorHandles[0].translateY(-0.5);
-    scissorHandles[0].scale.z = 0.7;
+    scissorHandles[0].translateX(0.49);
+    scissorHandles[0].translateY(-0.38);
     scissorHandles[0].rotateZ(0.5);
-    scissorHandles[0].translateZ(-0.045);
+    scissorHandles[0].scale.z = 0.7;
+    scissorHandles[0].scale.x = -0.7;
+    scissorHandles[0].scale.y = 1.2;
+    //scissorHandles[0].translateZ(0.4);
+   // scissorHandles[0].translateY(-0.065);
+
+    scissorHandles[0].translateZ(-0.08);
     //scissorHandles[0].rotateY(0.4);
     
     //second handle
-    scissorHandles[1].translateX(-0.5);
-    scissorHandles[1].translateY(-0.5);
-    scissorHandles[1].scale.z = 0.7;
+    scissorHandles[1].translateX(-0.49);
+    scissorHandles[1].translateY(-0.38);
     scissorHandles[1].rotateZ(-0.5);
-    scissorHandles[1].translateZ(-0.045);
+    scissorHandles[1].scale.z = 0.7;
+    scissorHandles[1].scale.x = -0.7;
+    scissorHandles[1].scale.y = 1.2;
+    //scissorHandles[1].rotateZ(-0.5);
+    scissorHandles[1].translateZ(-0.08);
     //scissorHandles[1].rotateY(-0.4);
 }
 
@@ -918,8 +931,8 @@ function animate() {
    // frogBody.rotation.x += 0.01;
    // frogBody.rotation.y += 0.01;
 
-    //sheepBody.rotation.x += 0.01;
-    //sheepBody.rotation.y += 0.01;
+   // sheepBody.rotation.x += 0.01;
+   // sheepBody.rotation.y += 0.01;
    //sheepBody.rotation.y = 0.4;
    //sheepBody.rotation.x = -0.2;
 
@@ -927,6 +940,9 @@ function animate() {
     group.rotation.y += 0.01;
     group.rotation.z += 0.01;
 
+    group2.rotation.x += 0.01;
+    group2.rotation.y += 0.01;
+    group2.rotation.z += 0.01;
     renderer.render(scene, camera);
 }
 
