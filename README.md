@@ -1,1 +1,1 @@
-# [Chill&Play](https://github.com/SapienzaInteractiveGraphicsCourse/final-project-chillandplay/)
+# [Chill&Play](https://sapienzainteractivegraphicscourse.github.io/final-project-chillandplay/)
