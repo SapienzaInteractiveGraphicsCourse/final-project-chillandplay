@@ -423,13 +423,26 @@ function createSheepArea(){
 function createSheepBody(scale){
     //Sheep body
     const sheepBodyGeometry = new THREE.IcosahedronGeometry(0.5, 0);
-    sheepBody = new THREE.Mesh( sheepBodyGeometry, greyMaterial );
+    const textureLoader = new THREE.TextureLoader();
+    //const furMap = textureLoader.load("./grey_fur_texture.jpeg");
+    const furNormalMap = textureLoader.load('./normalMap.jpg');
+    furNormalMap.wrapS = THREE.RepeatWrapping;
+    furNormalMap.wrapT = THREE.RepeatWrapping;
+    //const furDisplacementMap = textureLoader.load("./Seamless_Fur_Coat_Texture_displacement.jpg");
+    const sheepBodyMaterial = new THREE.MeshStandardMaterial({
+        color: 0xf3f2f7,
+        //map: furMap,
+        normalMap: furNormalMap, 
+        
+    });
+    sheepBody = new THREE.Mesh( sheepBodyGeometry, sheepBodyMaterial );
     sheepBody.receiveShadow = true;
     sheepBody.castShadow = true;
     sheepBody.scale.multiplyScalar(scale);
     sheepBody.scale.multiplyScalar(1.1);
     sheepBody.translateY(0.5);
     sheepBody.translateX(2);
+    //sheepBody.rotateZ(-1.57);
     scene.add( sheepBody );
 }
 
@@ -568,9 +581,22 @@ function createSheepWool(){
     let angle = 0;
     let z = 0.4;
     let woolGeometry = new THREE.IcosahedronGeometry(0.4, 0);
+    const textureLoader2 = new THREE.TextureLoader();
+    //const furMap = textureLoader.load("./grey_fur_texture.jpeg");
+    const furNormalMap2 = textureLoader2.load('./normalMap.jpg');
+    furNormalMap2.wrapS = THREE.RepeatWrapping;
+    furNormalMap2.wrapT = THREE.RepeatWrapping;
+    //const furDisplacementMap = textureLoader.load("./Seamless_Fur_Coat_Texture_displacement.jpg");
+    const sheepWoolMaterial = new THREE.MeshStandardMaterial({
+        color: 0xf3f2f7,
+        //map: furMap,
+        normalMap: furNormalMap2, 
+        
+    });
+
     // First circle of wool from the head
     for (let i = 0; i < 8; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 2 || i === 5 || i === 0 || i ===4)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 7 || i === 1 || i === 3)
@@ -588,7 +614,7 @@ function createSheepWool(){
 
     // Second circle of wool from the head
     for (let i = 0; i < 12; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 2 || i === 5 || i === 0 || i ===4 )
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 3 || i === 7 || i === 9)
@@ -609,7 +635,7 @@ function createSheepWool(){
 
     // Second circle of wool from the head
     for (let i = 0; i < 13; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9 || i === 5 || i === 7 || i === 12 || i === 4 || i === 3)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 0)
@@ -629,7 +655,7 @@ function createSheepWool(){
 
     // Third circle of wool from the head
     for (let i = 0; i < 16; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 0)
@@ -650,7 +676,7 @@ function createSheepWool(){
 
     // Fourth circle of wool from the head
     for (let i = 0; i < 16; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 0)
