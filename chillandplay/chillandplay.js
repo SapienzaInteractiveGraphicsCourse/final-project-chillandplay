@@ -103,6 +103,7 @@ function createFrog(scale){
     createFrogUpperLeftLeg(scale);
     createFrogLowerRightLeg(scale);
     createFrogLowerLeftLeg(scale);
+    //createFrogTongue(scale);
 }
 
 // ------------- FROG PARTS ----------------------------------
@@ -389,6 +390,32 @@ function createFrogLowerLeftLeg(scale){
     frogLowerLeftLeg.scale.multiplyScalar(scale);
     frogUpperLeftLeg.add( frogLowerLeftLeg );
 }
+
+
+function createFrogTongue(scale){
+    class CustomSinCurve extends THREE.Curve {
+        constructor( scale = 1 ) {
+            super();
+            this.scale = scale;
+        }
+    
+        getPoint( t, optionalTarget = new THREE.Vector3() ) {
+            const tx = t * 3 - 0.5;
+            const ty = Math.sin( 0.5 * Math.PI * t );
+            const tz = 0;
+            return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale );
+        }
+    
+    }
+    const tonguePath = new CustomSinCurve( 10 );
+    const tongueGeometry = new THREE.TubeGeometry( tonguePath, 50, 0.2, 5, false);
+    //const tongueMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
+    const frogTongue = new THREE.Mesh( tongueGeometry, redMaterial );
+    //scene.add( frogTongue );
+    frogTongue.scale.multiplyScalar(0.3*scale);
+    frogMouth.add(frogTongue);
+}
+
 // ------------------------------------------------------------
 
 // ------------- SHEEP ----------------------------------------
@@ -433,6 +460,8 @@ function createSheepBody(scale){
         color: 0xf3f2f7,
         //map: furMap,
         normalMap: furNormalMap, 
+        //displacementMap: furDisplacementMap,
+        //displacementScale: 0.1,
         
     });
     sheepBody = new THREE.Mesh( sheepBodyGeometry, sheepBodyMaterial );
