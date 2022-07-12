@@ -1,5 +1,7 @@
 import * as THREE from './libs/three/build/three.module.js'
+import { TWEEN }  from './libs/three/examples/jsm/libs/tween.module.min.js'
 
+//import * as Tween from 'https://code.createjs.com/1.0.0/tweenjs.min.js'
 // -------------- VARIABLES DECLARATION ---------------------
 let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
 let scissorBody, scissorBlades, scissorHandles;
@@ -991,9 +993,10 @@ function createScissorHandle(){
 
 function animate() {
     requestAnimationFrame( animate );
-
-   frogBody.rotation.x += 0.01;
-   frogBody.rotation.y += 0.01;
+    animateFrogEyeBalls();
+    TWEEN.update();
+  // frogBody.rotation.x += 0.01;
+  // frogBody.rotation.y += 0.01;
 
    // frogBody.rotation.y = 1.57;
 
@@ -1317,6 +1320,7 @@ function createSceneFrog(){
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetFrog.jpg');
     scene.add(resetAnimationButton);
+    animateSceneFrog();
 }
 
 function createSceneSheep(){
@@ -1358,7 +1362,52 @@ function createSceneHome(){
     render();
 }
 
+function animateSceneFrog(){
+    animateFrogEyeBalls();
+    animateFrogHead();
+}
 
+function animateFrogEyeBalls(){
+
+    var targetPos = new THREE.Vector3();
+    flyBody.getWorldPosition(targetPos);
+    console.log("targetPos = " + targetPos.x + "   " + targetPos.y);
+
+    var originalPos = new THREE.Vector3();
+    frogEyeL.getWorldPosition(originalPos);
+    console.log("Occhio rana = " + originalPos.x + "   " + originalPos.y);
+
+
+    // if (targetPos.x > originalPos.x + 0.15)
+    //    targetPos.x = originalPos.x + 0.15
+
+        var coords = { x: frogPupilL.position.x,
+                   y: frogPupilL.position.y,
+                   z: frogPupilL.position.z};
+    console.log("coords rana = " + coords.x + "  " + coords.y);
+
+    var tween = new TWEEN.Tween(coords)                       // Create a new tween that modifies 'coords'.
+        .to({ x: targetPos.x, y: targetPos.y }, 100)    // Move to (300, 200) in 1 second.
+        .easing(TWEEN.Easing.Quadratic.Out)                   // Use an easing function to make the animation smooth.
+        .onUpdate(function() {
+            var updatedPosition  = { x: frogPupilL.position.x,
+                y: frogPupilL.position.y,
+                z: frogPupilL.position.z};
+            // Called after tween.js updates 'coords'.
+             //if (updatedPosition.x < originalPos.x + 0.15)
+                //coords.x > originalPos.x - 0.15 &&
+                //coords.y < originalPos.y + 0.15 &&
+                //coords.y > originalPos.y - 0.15)
+                frogPupilL.position.set(coords.x, coords.y, coords.z);
+
+
+
+
+        })
+        .start(); // Start the tween immediately.
+}
+
+function animateFrogHead(){}
 
 
 
