@@ -1369,44 +1369,125 @@ function animateSceneFrog(){
     animateFrogHead();
 }
 
+var upperlimitX = frogPupilL.position.x + 0.13;
+var lowerlimitX = frogPupilL.position.x - 0.13;
+var upperlimitY = frogPupilL.position.y + 0.13;
+var lowerlimitY = frogPupilL.position.y - 0.13;
+
+
 function animateFrogEyeBalls(){
 
     var targetPos = new THREE.Vector3();
     flyBody.getWorldPosition(targetPos);
     console.log("targetPos = " + targetPos.x + "   " + targetPos.y);
 
-    var originalPos = new THREE.Vector3();
-    frogEyeL.getWorldPosition(originalPos);
+    var originalPos = {x: 0,
+                       y: 0,
+                       z: frogPupilL.position.z};
+    //new THREE.Vector3();
+    //frogEyeL.getWorldPosition(originalPos);
     console.log("Occhio rana = " + originalPos.x + "   " + originalPos.y);
 
-
-    // if (targetPos.x > originalPos.x + 0.15)
-    //    targetPos.x = originalPos.x + 0.15
-
-        var coords = { x: frogPupilL.position.x,
+    var coordsLeftEye = { x: frogPupilL.position.x,
                    y: frogPupilL.position.y,
                    z: frogPupilL.position.z};
-    console.log("coords rana = " + coords.x + "  " + coords.y);
+    
+    console.log("coords rana = " + coordsLeftEye.x + "  " + coordsLeftEye.y);
 
-    var tween = new TWEEN.Tween(coords)                       // Create a new tween that modifies 'coords'.
-        .to({ x: targetPos.x, y: targetPos.y }, 100)    // Move to (300, 200) in 1 second.
+    var tweenLeft = new TWEEN.Tween(coordsLeftEye)                       // Create a new tween that modifies 'coords'.
+        .to({ x: targetPos.x, y: targetPos.y }, 80)          // Move to (300, 200) in 1 second.
         .easing(TWEEN.Easing.Quadratic.Out)                   // Use an easing function to make the animation smooth.
         .onUpdate(function() {
-            var updatedPosition  = { x: frogPupilL.position.x,
-                y: frogPupilL.position.y,
-                z: frogPupilL.position.z};
+           // var updatedPosition  = { 
+           //     x: frogPupilL.position.x,
+           //     y: frogPupilL.position.y,
+           //     z: frogPupilL.position.z};
+
+                console.log("coordsLeftEye rana = " + coordsLeftEye.x + "  " + coordsLeftEye.y);
+
+
+                if (coordsLeftEye.x >= originalPos.x + 0.10){
+                    coordsLeftEye.x = originalPos.x + 0.10;
+                    //frogPupilL.position.set(coordsLeftEye.x, coordsLeftEye.y, coordsLeftEye.z);
+                 }
+                else if (coordsLeftEye.x < originalPos.x - 0.10){
+                    coordsLeftEye.x = originalPos.x - 0.10;
+                    //frogPupilL.position.set(coordsLeftEye.x, coordsLeftEye.y, coordsLeftEye.z);
+                 }
+                else if (coordsLeftEye.y >= originalPos.y + 0.10){
+                    coordsLeftEye.y = originalPos.y + 0.10;
+                    //frogPupilL.position.set(coordsLeftEye.x, coordsLeftEye.y, coordsLeftEye.z);
+                 }
+                else if (coordsLeftEye.y < originalPos.y - 0.10){
+                    coordsLeftEye.y = originalPos.y - 0.10;
+                   // frogPupilL.position.set(coordsLeftEye.x, coordsLeftEye.y, coordsLeftEye.z);
+                 }
+                else{
+                     frogPupilL.position.set(coordsLeftEye.x, coordsLeftEye.y, coordsLeftEye.z);
+                }
+                        
+            //if(updatedPosition.x < originalPos.x - 0.15){
             // Called after tween.js updates 'coords'.
-             //if (updatedPosition.x < originalPos.x + 0.15)
+            //if (updatedPosition.x < originalPos.x + 0.15){
                 //coords.x > originalPos.x - 0.15 &&
                 //coords.y < originalPos.y + 0.15 &&
                 //coords.y > originalPos.y - 0.15)
-                frogPupilL.position.set(coords.x, coords.y, coords.z);
-
-
-
-
+                
+           //}
+                
         })
         .start(); // Start the tween immediately.
+
+        var coordsRightEye = { x: frogPupilR.position.x,
+                               y: frogPupilR.position.y,
+                               z: frogPupilR.position.z};
+
+        console.log("coordsRightEye rana = " + coordsRightEye.x + "  " + coordsRightEye.y);
+
+        //second tween for the right eye
+        var tweenRight = new TWEEN.Tween(coordsRightEye)                       // Create a new tween that modifies 'coords'.
+                .to({ x: targetPos.x, y: targetPos.y }, 80)          // Move to (300, 200) in 1 second.
+                .easing(TWEEN.Easing.Quadratic.Out)                   // Use an easing function to make the animation smooth.
+            .onUpdate(function() {
+           // var updatedPosition  = { 
+           //     x: frogPupilL.position.x,
+           //     y: frogPupilL.position.y,
+           //     z: frogPupilL.position.z};
+
+                console.log("coordsRightEye rana = " + coordsRightEye.x + "  " + coordsRightEye.y);
+
+
+                if (coordsRightEye.x >= originalPos.x + 0.10){
+                    coordsRightEye.x = originalPos.x + 0.10;
+                    //frogPupilL.position.set(coordsRightEye.x, coordsRightEye.y, coordsRightEye.z);
+                 }
+                else if (coordsRightEye.x < originalPos.x - 0.10){
+                    coordsRightEye.x = originalPos.x - 0.10;
+                    //frogPupilL.position.set(coordsRightEye.x, coordsRightEye.y, coordsRightEye.z);
+                 }
+                else if (coordsRightEye.y >= originalPos.y + 0.10){
+                    coordsRightEye.y = originalPos.y + 0.10;
+                    //frogPupilL.position.set(coordsRightEye.x, coordsRightEye.y, coordsRightEye.z);
+                 }
+                else if (coordsRightEye.y < originalPos.y - 0.10){
+                    coordsRightEye.y = originalPos.y - 0.10;
+                   // frogPupilL.position.set(coordsRightEye.x, coordsRightEye.y, coordsRightEye.z);
+                 }
+                else{
+                     frogPupilR.position.set(coordsRightEye.x, coordsRightEye.y, coordsRightEye.z);
+                }
+                        
+            //if(updatedPosition.x < originalPos.x - 0.15){
+            // Called after tween.js updates 'coords'.
+            //if (updatedPosition.x < originalPos.x + 0.15){
+                //coords.x > originalPos.x - 0.15 &&
+                //coords.y < originalPos.y + 0.15 &&
+                //coords.y > originalPos.y - 0.15)
+                
+           //}
+                
+        })
+        .start();
 }
 
 function animateFrogHead(){}
