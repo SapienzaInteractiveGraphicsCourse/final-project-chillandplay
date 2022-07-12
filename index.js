@@ -6,11 +6,12 @@ let scissorBody, scissorBlades, scissorHandles;
 let group, group2;
 let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
-    frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
+    frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
     sheepHead, sheepEyes, sheepCheeks;
-let button, buttonGeometry, buttonMaterial, buttonLoader;
+let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
+let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
 let plane;
 let intersects;
 
@@ -28,13 +29,15 @@ const pi = Math.PI;
 let objectID;
 let oldSelectedID = 11;
 const frogID = 10;
-const sheepID = 26;
-const buttonID = 143;
-const homeButtonID = 144;
+const sheepID = 28;
+const goButtonID = 145;
+const homeButtonID = 146;
+const resetAnimationButtonID = 160;
 
 // -------------- FLAGS DECLARATION -------------------
 let buttonFlag = true;
 let homeButtonFlag = true;
+let resetAnimationButtonFlag = true;
 let flyFlag = false;
 let scissorFlag = false;
 let selected;
@@ -103,6 +106,7 @@ function createFrog(scale){
     createFrogUpperLeftLeg(scale);
     createFrogLowerRightLeg(scale);
     createFrogLowerLeftLeg(scale);
+    createFrogTongue(scale);
 }
 
 // ------------- FROG PARTS ----------------------------------
@@ -389,6 +393,51 @@ function createFrogLowerLeftLeg(scale){
     frogLowerLeftLeg.scale.multiplyScalar(scale);
     frogUpperLeftLeg.add( frogLowerLeftLeg );
 }
+
+
+function createFrogTongue(scale){
+    class CustomSinCurve extends THREE.Curve {
+        constructor( scale = 1 ) {
+            super();
+            this.scale = scale;
+        }
+    
+        getPoint( t, optionalTarget = new THREE.Vector3() ) {
+            
+            const tx = t * 1 - 1.5; // per l'animazione cambiare 1 aumentandolo fino a 3
+            const ty = 0.5 * Math.sin(Math.PI * t );
+            const tz = 0;
+            return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale );
+        }
+    
+    }
+    const tonguePath = new CustomSinCurve( 10 );
+    const tongueGeometry = new THREE.TubeGeometry( tonguePath, 500, 1.1, 8, false);
+    //const tongueMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
+    frogTongue = new THREE.Mesh( tongueGeometry, redMaterial );
+    //scene.add( frogTongue );
+    frogTongue.scale.multiplyScalar(0.05*scale);
+    frogTongue.material.side = THREE.DoubleSide;
+    frogMouth.add(frogTongue);
+    frogTongue.translateZ(-0.5); // mentre si anima va traslata in valori sempre più positivi fino a 1
+    frogTongue.rotateY(1.57);
+    frogTongue.scale.z = 0.25;
+
+
+    // punta della lingua
+    const frogTongueTipGeometry = new THREE.SphereGeometry( 0.25, 32, 100 );
+    frogTongueTip = new THREE.Mesh( frogTongueTipGeometry, redMaterial );
+    frogTongueTip.receiveShadow = true;
+    frogTongueTip.castShadow = false;
+    
+    frogTongueTip.scale.multiplyScalar(5*scale);
+    frogTongueTip.scale.z = 4.4;
+    frogTongueTip.scale.x = 1; // aumentzre fino a 16.4 quando la lingua viene animata all'esterno
+    frogTongueTip.translateX(-15);
+    frogTongue.add( frogTongueTip );
+    
+}
+
 // ------------------------------------------------------------
 
 // ------------- SHEEP ----------------------------------------
@@ -423,13 +472,24 @@ function createSheepArea(){
 function createSheepBody(scale){
     //Sheep body
     const sheepBodyGeometry = new THREE.IcosahedronGeometry(0.5, 0);
-    sheepBody = new THREE.Mesh( sheepBodyGeometry, greyMaterial );
+    const textureLoader = new THREE.TextureLoader();
+    const furNormalMap = textureLoader.load('./textures/normalMap.jpg');
+    furNormalMap.wrapS = THREE.RepeatWrapping;
+    furNormalMap.wrapT = THREE.RepeatWrapping;
+    const sheepBodyMaterial = new THREE.MeshStandardMaterial({
+        color: 0xf3f2f7,
+        //map: furMap,
+        normalMap: furNormalMap, 
+        
+    });
+    sheepBody = new THREE.Mesh( sheepBodyGeometry, sheepBodyMaterial );
     sheepBody.receiveShadow = true;
     sheepBody.castShadow = true;
     sheepBody.scale.multiplyScalar(scale);
     sheepBody.scale.multiplyScalar(1.1);
     sheepBody.translateY(0.5);
     sheepBody.translateX(2);
+    //sheepBody.rotateZ(-1.57);
     scene.add( sheepBody );
 }
 
@@ -568,9 +628,20 @@ function createSheepWool(){
     let angle = 0;
     let z = 0.4;
     let woolGeometry = new THREE.IcosahedronGeometry(0.4, 0);
+    const textureLoader2 = new THREE.TextureLoader();
+    const furNormalMap2 = textureLoader2.load('./textures/normalMap.jpg');
+    furNormalMap2.wrapS = THREE.RepeatWrapping;
+    furNormalMap2.wrapT = THREE.RepeatWrapping;
+    const sheepWoolMaterial = new THREE.MeshStandardMaterial({
+        color: 0xf3f2f7,
+        //map: furMap,
+        normalMap: furNormalMap2, 
+        
+    });
+
     // First circle of wool from the head
     for (let i = 0; i < 8; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 2 || i === 5 || i === 0 || i ===4)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 7 || i === 1 || i === 3)
@@ -588,7 +659,7 @@ function createSheepWool(){
 
     // Second circle of wool from the head
     for (let i = 0; i < 12; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 2 || i === 5 || i === 0 || i ===4 )
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 3 || i === 7 || i === 9)
@@ -609,7 +680,7 @@ function createSheepWool(){
 
     // Second circle of wool from the head
     for (let i = 0; i < 13; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9 || i === 5 || i === 7 || i === 12 || i === 4 || i === 3)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 0)
@@ -629,7 +700,7 @@ function createSheepWool(){
 
     // Third circle of wool from the head
     for (let i = 0; i < 16; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 0)
@@ -650,7 +721,7 @@ function createSheepWool(){
 
     // Fourth circle of wool from the head
     for (let i = 0; i < 16; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 0)
@@ -846,7 +917,6 @@ function createSmallerWings(){
 
 // ------------- SCISSOR ----------------------------------------
 function createScissor(){
-    //createScissorBody(); //può anche non servire?
     createScissorBlades();
     createScissorHandle();
 
@@ -855,15 +925,9 @@ function createScissor(){
 }
 
 // ------------- SCISSOR PARTS ----------------------------------
-function createScissorBody(){
-    let scissorGeometry = new THREE.SphereGeometry( 0.1, 40, 40 );
-    let scissorMaterial = new THREE.MeshStandardMaterial( { color: 0x555555 } );
-    scissorBody = new THREE.Mesh( scissorGeometry, scissorMaterial );
-    scissorBody.castShadow = true;
-    scissorBody.scale.z = 1.2;
-}
+
 function createScissorBlades(){
-    let scissorBladeGeometry = new THREE.CylinderGeometry( 0.04, 0.06, 1.9, 100 );
+    let scissorBladeGeometry = new THREE.BoxGeometry( 0.1, 1.9, 0.08, 100 );
     scissorBlades = [];
     for (let i = 0; i < 2; i++) {
         scissorBlades[i] = new THREE.Mesh(scissorBladeGeometry, newGreyMaterial);
@@ -928,8 +992,10 @@ function createScissorHandle(){
 function animate() {
     requestAnimationFrame( animate );
 
-   // frogBody.rotation.x += 0.01;
-   // frogBody.rotation.y += 0.01;
+   frogBody.rotation.x += 0.01;
+   frogBody.rotation.y += 0.01;
+
+   // frogBody.rotation.y = 1.57;
 
    // sheepBody.rotation.x += 0.01;
    // sheepBody.rotation.y += 0.01;
@@ -960,9 +1026,9 @@ let onclick = function (event) {
             console.log(frogID);
             resetScale(oldSelectedID);
             frogBody.scale.multiplyScalar(2);
-            button.translateX(0.15);
+            goButton.translateX(0.15);
             setButtonTexture('textures/goFrog.jpg');
-            frogArea.add(button);
+            frogArea.add(goButton);
             oldSelectedID = objectID;
             selected = "FROG";
             break;
@@ -972,9 +1038,9 @@ let onclick = function (event) {
             console.log(sheepID);
             resetScale(oldSelectedID);
             sheepBody.scale.multiplyScalar(2);
-            button.translateX(-0.15);
+            goButton.translateX(-0.15);
             setButtonTexture('textures/goSheep.jpg');
-            sheepArea.add(button);
+            sheepArea.add(goButton);
             oldSelectedID = objectID;
             selected = "SHEEP";
             break;
@@ -988,10 +1054,10 @@ window.addEventListener('click', onclick);
 function resetButton(oldSelectedID){
     switch (oldSelectedID){
         case frogID:
-            button.translateX(-0.15);
+            goButton.translateX(-0.15);
             break;
         case sheepID:
-            button.translateX(0.15);
+            goButton.translateX(0.15);
             break;
         default:
             break;
@@ -1036,12 +1102,14 @@ let onMouseOverButton = function (event) {
         for (let i = 0; i < intersects.length; i += 1) {
             if (intersects[i].object.id === homeButtonID)
                 objectID = intersects[i].object.id;
+            else if (intersects[i].object.id === resetAnimationButtonID)
+                objectID = intersects[i].object.id;
         }
     }
     switch (objectID) {
-        case buttonID:
+        case goButtonID:
             if (buttonFlag)
-                button.scale.multiplyScalar(1.6);
+                goButton.scale.multiplyScalar(1.6);
             buttonFlag = false;
             break;
         case homeButtonID:
@@ -1050,10 +1118,29 @@ let onMouseOverButton = function (event) {
             if (homeButtonFlag)
                 homeButton.scale.multiplyScalar(1.6);
             homeButtonFlag = false;
+            // il seguente controllo serve a gestire il caso in cui
+            // con il mouse si passa velocemente da un bottone all'altro
+            // senza questo controllo succederebbe che rimarrebbero ingranditi entrambi i bottoni
+            if (!resetAnimationButtonFlag){
+                resetAnimationButton.scale.multiplyScalar(0.625);
+                resetAnimationButtonFlag = true;
+            }
+            break;
+        case resetAnimationButtonID:
+            scene.remove(group);
+            scene.remove(group2);
+            if (resetAnimationButtonFlag) 
+                resetAnimationButton.scale.multiplyScalar(1.6);
+            resetAnimationButtonFlag = false;
+            // per questo controllo vale quanto detto nel commento del caso sopra
+            if (!homeButtonFlag){
+                homeButton.scale.multiplyScalar(0.625);
+                homeButtonFlag = true;
+            }
             break;
         default:
             if (!buttonFlag) {
-                button.scale.multiplyScalar(0.625);
+                goButton.scale.multiplyScalar(0.625);
                 buttonFlag = true;
             }
             if (!homeButtonFlag && selected === "FROG") {
@@ -1066,6 +1153,16 @@ let onMouseOverButton = function (event) {
                 scene.add(group2);
                 homeButtonFlag = true;
             }
+            if (!resetAnimationButtonFlag && selected === "FROG") {
+                resetAnimationButton.scale.multiplyScalar(0.625);
+                scene.add(group);
+                resetAnimationButtonFlag = true;
+            }
+            if(!resetAnimationButtonFlag && selected === "SHEEP"){
+                resetAnimationButton.scale.multiplyScalar(0.625);
+                scene.add(group2);
+                resetAnimationButtonFlag = true;
+            }
             break;
     }
     console.log(objectID);
@@ -1074,7 +1171,7 @@ window.addEventListener('mousemove', onMouseOverButton);
 
 let onClickButton = function (event) {
     mouseSetting(event);
-    if (objectID === buttonID) {
+    if (objectID === goButtonID) {
         switch (selected) {
             case "FROG":
                 createSceneFrog();
@@ -1090,7 +1187,8 @@ let onClickButton = function (event) {
             case "FROG":
                 homeButton.scale.multiplyScalar(0.625);
                 scene.remove(homeButton);
-                frogArea.remove(button);
+                scene.remove(resetAnimationButton);
+                frogArea.remove(goButton);
                 resetButton(frogID);
                 homeButtonFlag = true;
                 frogBody.scale.multiplyScalar(0.5);
@@ -1102,7 +1200,8 @@ let onClickButton = function (event) {
             case "SHEEP":
                 homeButton.scale.multiplyScalar(0.625);
                 scene.remove(homeButton);
-                sheepArea.remove(button);
+                scene.remove(resetAnimationButton);
+                sheepArea.remove(goButton);
                 resetButton(sheepID);
                 homeButtonFlag = true;
                 sheepBody.scale.multiplyScalar(0.5);
@@ -1114,25 +1213,34 @@ let onClickButton = function (event) {
             default:
                 break;
         }
+    } else if (objectID === resetAnimationButtonID){
+        switch (selected) {
+            case "FROG":
+                break;
+            case "SHEEP":
+                break;
+            default:
+                break;
+        }
     }
 }
 window.addEventListener( 'click', onClickButton, false);
 
 function setButtonTexture(texturePath){
-    buttonLoader = new THREE.TextureLoader();
-    button.material = new THREE.MeshBasicMaterial({
-        map:  buttonLoader.load(texturePath),
+    goButtonLoader = new THREE.TextureLoader();
+    goButton.material = new THREE.MeshBasicMaterial({
+        map:  goButtonLoader.load(texturePath),
         side: THREE.DoubleSide
     });
-    button.material.needsUpdate = true;
+    goButton.material.needsUpdate = true;
 }
 
 function createButton(){
-    buttonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
-    buttonMaterial = new THREE.MeshBasicMaterial({color: 0x003060});
-    button = new THREE.Mesh( buttonGeometry, buttonMaterial );
-    button.translateY(-2.5);
-    button.translateZ(5.0);
+    goButtonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
+    goButtonMaterial = new THREE.MeshBasicMaterial({color: 0x003060});
+    goButton = new THREE.Mesh( goButtonGeometry, goButtonMaterial );
+    goButton.translateY(-2.5);
+    goButton.translateZ(5.0);
 }
 
 function followMouse(event){
@@ -1167,15 +1275,34 @@ function setHomeButtonTexture(texturePath){
         map:  homeButtonLoader.load(texturePath),
         side: THREE.DoubleSide
     });
-    button.material.needsUpdate = true;
+    goButton.material.needsUpdate = true;
+}
+
+function setResetAnimationButtonTexture(texturePath){
+    resetAnimationButtonLoader = new THREE.TextureLoader();
+    resetAnimationButton.material = new THREE.MeshBasicMaterial({
+        map:  resetAnimationButtonLoader.load(texturePath),
+        side: THREE.DoubleSide
+    });
+    resetAnimationButton.material.needsUpdate = true;
 }
 
 function createHomeButton(){
     homeButtonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
     homeButtonMaterial = new THREE.MeshBasicMaterial({color: 0x003060});
     homeButton = new THREE.Mesh( homeButtonGeometry, homeButtonMaterial );
+    homeButton.translateX(0.6);
     homeButton.translateY(-5.0);
     homeButton.translateZ(8.0);
+}
+
+function createResetAnimationButton(){
+    resetAnimationButtonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
+    resetAnimationButtonMaterial = new THREE.MeshBasicMaterial({color: 0x003060});
+    resetAnimationButton = new THREE.Mesh( resetAnimationButtonGeometry, resetAnimationButtonMaterial );
+    resetAnimationButton.translateX(-0.6);
+    resetAnimationButton.translateY(-5.0);
+    resetAnimationButton.translateZ(8.0);
 }
 
 function createSceneFrog(){
@@ -1188,18 +1315,20 @@ function createSceneFrog(){
     frogBody.translateX(2);
     setHomeButtonTexture('textures/homeFrog.jpg');
     scene.add(homeButton);
+    setResetAnimationButtonTexture('textures/resetFrog.jpg');
+    scene.add(resetAnimationButton);
 }
 
 function createSceneSheep(){
     scene.remove(frogArea);
     scene.remove(frogBody);
     scene.remove(sheepArea);
-    scene.add(scissorBody);
-    group2.add(scissorBody);
     scene.add(group2);
     sheepBody.translateX(-2);
     setHomeButtonTexture('textures/homeSheep.jpg');
     scene.add(homeButton);
+    setResetAnimationButtonTexture('textures/resetSheep.jpg');
+    scene.add(resetAnimationButton);
 }
 
 function resetSceneHome(){
@@ -1224,6 +1353,7 @@ function createSceneHome(){
     createFly();
     group2 = new THREE.Group();
     createScissor();
+    createResetAnimationButton();
     animate();
     render();
 }
