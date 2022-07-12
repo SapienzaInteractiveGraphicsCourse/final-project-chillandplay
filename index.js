@@ -6,11 +6,12 @@ import { TWEEN }  from './libs/three/examples/jsm/libs/tween.module.min.js'
 let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
 let scissorBody, scissorBlades, scissorHandles;
 let group, group2;
+let titleHomeArea;
 let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
-    frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip;
+    frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip, titleFrogArea;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
-    sheepHead, sheepEyes, sheepCheeks;
+    sheepHead, sheepEyes, sheepCheeks, titleSheepArea;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
@@ -1034,6 +1035,9 @@ let onclick = function (event) {
             frogArea.add(goButton);
             oldSelectedID = objectID;
             selected = "FROG";
+            scene.remove(titleHomeArea);
+            scene.remove(titleSheepArea);
+            createFrogAreaTitle();
             break;
         case sheepID:
             scene.background = new THREE.Color(0xc9f0cf);
@@ -1046,6 +1050,9 @@ let onclick = function (event) {
             sheepArea.add(goButton);
             oldSelectedID = objectID;
             selected = "SHEEP";
+            scene.remove(titleHomeArea);
+            scene.remove(titleFrogArea);
+            createSheepAreaTitle();
             break;
         default:
             break;
@@ -1321,6 +1328,9 @@ function createSceneFrog(){
     setResetAnimationButtonTexture('textures/resetFrog.jpg');
     scene.add(resetAnimationButton);
     animateSceneFrog();
+    scene.remove(titleHomeArea);
+    scene.remove(titleSheepArea);
+    scene.remove(titleFrogArea);
 }
 
 function createSceneSheep(){
@@ -1333,27 +1343,57 @@ function createSceneSheep(){
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetSheep.jpg');
     scene.add(resetAnimationButton);
+    scene.remove(titleHomeArea);
+    scene.remove(titleSheepArea);
+    scene.remove(titleFrogArea);
 }
 
 function createAreaTitle() {
     const titleAreaGeometry = new THREE.BoxGeometry(15, 5, 0);
     const loader = new THREE.TextureLoader();
     const materials = [
-        
         new THREE.MeshStandardMaterial( { color: 0x96f2af}),
         new THREE.MeshStandardMaterial( { color: 0x96f2af}),
         new THREE.MeshStandardMaterial( { color: 0x96f2af}),
         new THREE.MeshStandardMaterial( { color: 0x96f2af}),
-        new THREE.MeshBasicMaterial({map: loader.load('textures/title3.jpg')}),
+        new THREE.MeshBasicMaterial({map: loader.load('textures/title.jpg')}),
         new THREE.MeshStandardMaterial( { color: 0x96f2af})
     ];
-    materials.transparent = true;
-    materials.opacity = 0;
-    var titleArea = new THREE.Mesh( titleAreaGeometry, materials);
-    titleArea.translateY(4.7);
-    scene.add(titleArea);
+    titleHomeArea = new THREE.Mesh( titleAreaGeometry, materials);
+    titleHomeArea.translateY(3.3);
+    scene.add(titleHomeArea);
+}
 
+function createFrogAreaTitle() {
+    const titleAreaGeometry = new THREE.BoxGeometry(15, 5, 0);
+    const loader = new THREE.TextureLoader();
+    const materials = [
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshBasicMaterial({map: loader.load('textures/frogTitle.jpg')}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af})
+    ];
+    titleFrogArea = new THREE.Mesh( titleAreaGeometry, materials);
+    titleFrogArea.translateY(3.3);
+    scene.add(titleFrogArea);
+}
 
+function createSheepAreaTitle() {
+    const titleAreaGeometry = new THREE.BoxGeometry(15, 5, 0);
+    const loader = new THREE.TextureLoader();
+    const materials = [
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshBasicMaterial({map: loader.load('textures/sheepTitle.jpg')}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af})
+    ];
+    titleSheepArea = new THREE.Mesh( titleAreaGeometry, materials);
+    titleSheepArea.translateY(3.3);
+    scene.add(titleSheepArea);
 }
 
 function resetSceneHome(){
@@ -1365,6 +1405,9 @@ function resetSceneHome(){
     scene.add(sheepBody);
     scene.add(sheepArea);
     oldSelectedID = 0;
+    scene.remove(titleFrogArea);
+    scene.remove(titleSheepArea);
+    scene.add(titleHomeArea);
 }
 
 function createSceneHome(){
