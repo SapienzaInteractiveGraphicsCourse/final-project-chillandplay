@@ -6,7 +6,7 @@ let scissorBody, scissorBlades, scissorHandles;
 let group, group2;
 let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
-    frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg;
+    frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
     sheepHead, sheepEyes, sheepCheeks;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
@@ -29,10 +29,10 @@ const pi = Math.PI;
 let objectID;
 let oldSelectedID = 11;
 const frogID = 10;
-const sheepID = 26;
-const goButtonID = 143;
-const homeButtonID = 144;
-const resetAnimationButtonID = 158;
+const sheepID = 28;
+const goButtonID = 145;
+const homeButtonID = 146;
+const resetAnimationButtonID = 160;
 
 // -------------- FLAGS DECLARATION -------------------
 let buttonFlag = true;
@@ -403,20 +403,39 @@ function createFrogTongue(scale){
         }
     
         getPoint( t, optionalTarget = new THREE.Vector3() ) {
-            const tx = t * 3 - 0.5;
-            const ty = Math.sin( 0.5 * Math.PI * t );
+            
+            const tx = t * 1 - 1.5; // per l'animazione cambiare 1 aumentandolo fino a 3
+            const ty = 0.5 * Math.sin(Math.PI * t );
             const tz = 0;
             return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale );
         }
     
     }
     const tonguePath = new CustomSinCurve( 10 );
-    const tongueGeometry = new THREE.TubeGeometry( tonguePath, 50, 0.2, 5, false);
+    const tongueGeometry = new THREE.TubeGeometry( tonguePath, 500, 1.1, 8, false);
     //const tongueMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
-    const frogTongue = new THREE.Mesh( tongueGeometry, redMaterial );
+    frogTongue = new THREE.Mesh( tongueGeometry, redMaterial );
     //scene.add( frogTongue );
-    frogTongue.scale.multiplyScalar(0.3*scale);
+    frogTongue.scale.multiplyScalar(0.05*scale);
+    frogTongue.material.side = THREE.DoubleSide;
     frogMouth.add(frogTongue);
+    frogTongue.translateZ(-0.5); // mentre si anima va traslata in valori sempre più positivi fino a 1
+    frogTongue.rotateY(1.57);
+    frogTongue.scale.z = 0.25;
+
+
+    // punta della lingua
+    const frogTongueTipGeometry = new THREE.SphereGeometry( 0.25, 32, 100 );
+    frogTongueTip = new THREE.Mesh( frogTongueTipGeometry, redMaterial );
+    frogTongueTip.receiveShadow = true;
+    frogTongueTip.castShadow = false;
+    
+    frogTongueTip.scale.multiplyScalar(5*scale);
+    frogTongueTip.scale.z = 4.4;
+    frogTongueTip.scale.x = 1; // aumentzre fino a 16.4 quando la lingua viene animata all'esterno
+    frogTongueTip.translateX(-15);
+    frogTongue.add( frogTongueTip );
+    
 }
 
 // ------------------------------------------------------------
@@ -912,7 +931,7 @@ function createScissor(){
 // ------------- SCISSOR PARTS ----------------------------------
 
 function createScissorBlades(){
-    let scissorBladeGeometry = new THREE.CylinderGeometry( 0.04, 0.06, 1.9, 100 );
+    let scissorBladeGeometry = new THREE.BoxGeometry( 0.1, 1.9, 0.08, 100 );
     scissorBlades = [];
     for (let i = 0; i < 2; i++) {
         scissorBlades[i] = new THREE.Mesh(scissorBladeGeometry, newGreyMaterial);
@@ -977,8 +996,10 @@ function createScissorHandle(){
 function animate() {
     requestAnimationFrame( animate );
 
-   // frogBody.rotation.x += 0.01;
-   // frogBody.rotation.y += 0.01;
+   frogBody.rotation.x += 0.01;
+   frogBody.rotation.y += 0.01;
+
+   // frogBody.rotation.y = 1.57;
 
    // sheepBody.rotation.x += 0.01;
    // sheepBody.rotation.y += 0.01;
