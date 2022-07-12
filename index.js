@@ -1335,6 +1335,27 @@ function createSceneSheep(){
     scene.add(resetAnimationButton);
 }
 
+function createAreaTitle() {
+    const titleAreaGeometry = new THREE.BoxGeometry(15, 5, 0);
+    const loader = new THREE.TextureLoader();
+    const materials = [
+        
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af}),
+        new THREE.MeshBasicMaterial({map: loader.load('textures/title3.jpg')}),
+        new THREE.MeshStandardMaterial( { color: 0x96f2af})
+    ];
+    materials.transparent = true;
+    materials.opacity = 0;
+    var titleArea = new THREE.Mesh( titleAreaGeometry, materials);
+    titleArea.translateY(4.7);
+    scene.add(titleArea);
+
+
+}
+
 function resetSceneHome(){
     scene.remove(group);
     scene.remove(group2);
@@ -1358,6 +1379,7 @@ function createSceneHome(){
     group2 = new THREE.Group();
     createScissor();
     createResetAnimationButton();
+    createAreaTitle();
     animate();
     render();
 }
