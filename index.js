@@ -997,8 +997,6 @@ function createScissorHandle(){
 
 function animate() {
     requestAnimationFrame( animate );
-   
-    animateFrogEyeBalls();
     //TWEEN.update();
   // frogBody.rotation.x += 0.01;
   // frogBody.rotation.y += 0.01;
@@ -1325,7 +1323,7 @@ function createSceneFrog(){
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetFrog.jpg');
     scene.add(resetAnimationButton);
-   // animateSceneFrog();
+    animateSceneFrog();
 }
 
 function createSceneSheep(){
@@ -1369,112 +1367,37 @@ function createSceneHome(){
 
 
 function animateSceneFrog(){
+    requestAnimationFrame( animateSceneFrog );
     animateFrogEyeBalls();
-   // animateFrogHead();
+    animateFrogHead();
 }
 
 function animateFrogEyeBalls(){
 
     var targetPos = new THREE.Vector3();
     flyBody.getWorldPosition(targetPos);
- 
-    //ROTAZIONE FUNZIONA
-    //createjs.Tween.get(frogHead.rotation).to({ y: 30 * Math.PI/180 }, 300, createjs.Ease.linear).to({ x: 180 * Math.PI/180 }, 300, createjs.Ease.linear);
-    
+
+    var targetPosScaled = {x: ((8*targetPos.x)/(window.innerWidth/2)), y:((4*targetPos.y)/(window.innerHeight/2))+2};
+
     createjs.Tween.get(frogPupilL.position)
-            .to({x: targetPos.x, y: targetPos.y-2}, 800, createjs.Ease.linear);
+            .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);
             
-   
-
-  /*  var targetPos = new THREE.Vector3();
-    flyBody.getWorldPosition(targetPos);
-
-    var originalPosL = {x: 0,
-                       y: 0,
-                       z: frogPupilL.position.z};
-    var coordsLeftEye = { x: frogPupilL.position.x,
-                   y: frogPupilL.position.y,
-                   z: frogPupilL.position.z};
+    createjs.Tween.get(frogPupilR.position)
+            .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);
 
 
-    var originalPosR = {x: 0,
-                        y: 0,
-                        z: frogPupilR.position.z};
-    var coordsRightEye = { x: frogPupilR.position.x,
-                         y: frogPupilR.position.y,
-                         z: frogPupilR.position.z};                  
-
-
-    var tweenEyes= new TWEEN.Tween(coordsLeftEye)           
-        .to({ x: targetPos.x, y: targetPos.y-2 }, 80)
-        .easing(TWEEN.Easing.Quadratic.Out)// Use an easing function to make the animation smooth.
-        .onStart(function(){
-            new TWEEN.Tween(coordsRightEye)
-            .to({ x: targetPos.x, y: targetPos.y-2 }, 80)
-            .easing(TWEEN.Easing.Quadratic.Out)// Use an easing function to make the animation smooth.
-            .onUpdate(function() {
-
-                if (coordsLeftEye.x >= originalPosL.x + 0.10){
-                    coordsLeftEye.x = originalPosL.x + 0.10;
-                    }
-                if (coordsLeftEye.x < originalPosL.x - 0.10){
-                    coordsLeftEye.x = originalPosL.x - 0.10;
-                    }
-                if (coordsLeftEye.y >= originalPosL.y + 0.05){
-                    coordsLeftEye.y = originalPosL.y + 0.05;
-                    }
-                if (coordsLeftEye.y < originalPosL.y - 0.05){
-                    coordsLeftEye.y = originalPosL.y - 0.05;
-                }
-                frogPupilL.position.set(coordsLeftEye.x, coordsLeftEye.y, coordsLeftEye.z);
-
-                if (coordsRightEye.x >= originalPosR.x + 0.10){
-                    coordsRightEye.x = originalPosR.x + 0.10;
-                    }
-                if (coordsRightEye.x < originalPosR.x - 0.10){
-                    coordsRightEye.x = originalPosR.x - 0.10;
-                    }
-                if (coordsRightEye.y >= originalPosR.y + 0.05){
-                    coordsRightEye.y = originalPosR.y + 0.05;
-                    }
-                if (coordsRightEye.y < originalPosR.y - 0.05){
-                    coordsRightEye.y = originalPosR.y - 0.05;
-                }
-                frogPupilR.position.set(coordsRightEye.x, coordsRightEye.y, coordsRightEye.z);
-            }).start();
-        }).start();*/
 
 }
-/*
+
 function animateFrogHead(){
     //variable for the mouse
     var targetPos = new THREE.Vector3();
     flyBody.getWorldPosition(targetPos);
 
-    var mouseDistance = targetPos.z - frogHead.z; //nel dubbio metti 2
+    createjs.Tween.get(frogHead.rotation)
+    .to({y: 90 * Math.PI/180}, 3000, createjs.Ease.linear);
 
-    var targetAngle = Math.asin(targetPos.x / mouseDistance);
-
-    //coordinates of the head
-    var coordsRotationHead = { x: frogHead.rotation.x,
-                               y: frogHead.rotation.y,
-                               z: frogHead.rotation.z}; 
-    
-    var tweenHead = new TWEEN.Tween(coordsRotationHead)           
-        .to({y: targetAngle }, 8000)
-        .easing(TWEEN.Easing.Quadratic.Out) // Use an easing function to make the animation smooth.
-        .onUpdate(function(){
-            //frogHead.rotation.set(coordsRotationHead.x, coordsRotationHead.y, coordsRotationHead.z)
-            frogHead.rotateX(coordsRotationHead.x);
-            frogHead.rotateY(coordsRotationHead.y);
-            frogHead.rotateZ(coordsRotationHead.z);
-        }).start();
-        
-    
-    
-    
-
-}*/
+}
 
 
 
