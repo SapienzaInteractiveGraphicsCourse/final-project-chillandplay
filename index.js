@@ -993,6 +993,9 @@ function createScissorHandle(){
     //scissorHandles[1].rotateZ(-0.5);
     scissorHandles[1].translateZ(-0.08);
     //scissorHandles[1].rotateY(-0.4);
+    
+    group2.rotateZ(1.57); //added to incline the scissor of 90 degrees
+
 }
 
 function animate() {
@@ -1012,9 +1015,11 @@ function animate() {
     group.rotation.y += 0.01;
     group.rotation.z += 0.01;
 
-    group2.rotation.x += 0.01;
-    group2.rotation.y += 0.01;
-    group2.rotation.z += 0.01;
+  //  group2.rotation.x += 0.01;
+  //animate with create js?
+    group2.rotation.y -= 0.01; //find the way to reach a certain angle 
+ 
+  //  group2.rotation.z += 0.01;
     renderer.render(scene, camera);
 }
 
@@ -1366,10 +1371,11 @@ function createSceneHome(){
 }
 
 
-function animateSceneFrog(){
+function animateSceneFrog(){ //attenzione: l'animazione della rana continua anche quando si ritorna nella schermata home
     requestAnimationFrame( animateSceneFrog );
     animateFrogEyeBalls();
     animateFrogHead();
+    animateFrogTongue(); //??
 }
 
 function animateFrogEyeBalls(){
@@ -1394,11 +1400,53 @@ function animateFrogHead(){
     var targetPos = new THREE.Vector3();
     flyBody.getWorldPosition(targetPos);
 
+    var headDistance = targetPos.z - frogHead.position.z;
+    //console.log("distanza raggio headDistance: " + headDistance);
+    var targetDivision = targetPos.x/headDistance;
+
+    //check if I have a value that is acceptable by Math.asin
+    if(targetDivision >= 1){
+        targetDivision = 1;
+    }
+    if(targetDivision <= -1){
+        targetDivision = -1;
+    }
+
+    //angle
+    var targetAngle = Math.asin(targetDivision);
+
+    //setting the limit value to the right and left
+    var maxTargetAngle = 0.7;
+
+    //check if the angle surpass a certain limit
+    if(targetAngle>= maxTargetAngle){
+        targetAngle = maxTargetAngle;
+    }
+    if(targetAngle <= -maxTargetAngle){
+        targetAngle = -maxTargetAngle;
+    } 
+
+    //console.log("targetPosX: " + targetPos.x);
+    //console.log("headDistance: " + headDistance);
+    //console.log("value (targetPosX / headDistance): " + targetDivision);
+
+    //console.log("targetAngle: " + targetAngle);
+
     createjs.Tween.get(frogHead.rotation)
-    .to({y: 90 * Math.PI/180}, 3000, createjs.Ease.linear);
+    .to({y: targetAngle }, 80, createjs.Ease.linear);
+
+    //ATTENZIONE: modificare il valore massimo degli occhi perchè 
+    //con il limite dell'angolo escono fuori dalla figura
 
 }
 
+function animateFrogTongue(){
+    //problema: come cambiare la tx dentro la customSinCurve?
+    //per ora si può cambiare solamente la tongue.z
 
+    7/createjs.Tween.get(frogTongue.position)
+    //    .to({z: 0.5 }, 8000, createjs.Ease.linear);
 
+    //spostare anche la y per centrare meglio?
 
+}
