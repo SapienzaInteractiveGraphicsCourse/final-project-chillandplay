@@ -1,5 +1,5 @@
 import * as THREE from './libs/three/build/three.module.js'
-//import { TWEEN }  from './libs/three/examples/jsm/libs/tween.module.min.js'
+//import { TWEEN2 }  from './libs/three/examples/jsm/libs/tween.module.min.js'
 //import * as TWEEN  from './libs/tweenjs/lib/tweenjs.js'
 //import TWEEN from './libs/three/tweenjs.min.js'
 
@@ -997,7 +997,8 @@ function createScissorHandle(){
 
 function animate() {
     requestAnimationFrame( animate );
-    //animateFrogEyeBalls();
+   
+    animateFrogEyeBalls();
     //TWEEN.update();
   // frogBody.rotation.x += 0.01;
   // frogBody.rotation.y += 0.01;
@@ -1366,15 +1367,26 @@ function createSceneHome(){
     render();
 }
 
-/*
+
 function animateSceneFrog(){
     animateFrogEyeBalls();
-    animateFrogHead();
+   // animateFrogHead();
 }
 
 function animateFrogEyeBalls(){
 
     var targetPos = new THREE.Vector3();
+    flyBody.getWorldPosition(targetPos);
+ 
+    //ROTAZIONE FUNZIONA
+    //createjs.Tween.get(frogHead.rotation).to({ y: 30 * Math.PI/180 }, 300, createjs.Ease.linear).to({ x: 180 * Math.PI/180 }, 300, createjs.Ease.linear);
+    
+    createjs.Tween.get(frogPupilL.position)
+            .to({x: targetPos.x, y: targetPos.y-2}, 800, createjs.Ease.linear);
+            
+   
+
+  /*  var targetPos = new THREE.Vector3();
     flyBody.getWorldPosition(targetPos);
 
     var originalPosL = {x: 0,
@@ -1430,10 +1442,10 @@ function animateFrogEyeBalls(){
                 }
                 frogPupilR.position.set(coordsRightEye.x, coordsRightEye.y, coordsRightEye.z);
             }).start();
-        }).start();
+        }).start();*/
 
 }
-
+/*
 function animateFrogHead(){
     //variable for the mouse
     var targetPos = new THREE.Vector3();
