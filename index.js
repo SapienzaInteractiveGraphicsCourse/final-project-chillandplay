@@ -1,5 +1,7 @@
 import * as THREE from './libs/three/build/three.module.js'
-import { TWEEN }  from './libs/three/examples/jsm/libs/tween.module.min.js'
+//import { TWEEN }  from './libs/three/examples/jsm/libs/tween.module.min.js'
+//import * as TWEEN  from './libs/tweenjs/lib/tweenjs.js'
+//import TWEEN from './libs/three/tweenjs.min.js'
 
 //import * as Tween from 'https://code.createjs.com/1.0.0/tweenjs.min.js'
 // -------------- VARIABLES DECLARATION ---------------------
@@ -995,8 +997,8 @@ function createScissorHandle(){
 
 function animate() {
     requestAnimationFrame( animate );
-    animateFrogEyeBalls();
-    TWEEN.update();
+    //animateFrogEyeBalls();
+    //TWEEN.update();
   // frogBody.rotation.x += 0.01;
   // frogBody.rotation.y += 0.01;
 
@@ -1322,7 +1324,7 @@ function createSceneFrog(){
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetFrog.jpg');
     scene.add(resetAnimationButton);
-    animateSceneFrog();
+   // animateSceneFrog();
 }
 
 function createSceneSheep(){
@@ -1364,6 +1366,7 @@ function createSceneHome(){
     render();
 }
 
+/*
 function animateSceneFrog(){
     animateFrogEyeBalls();
     animateFrogHead();
@@ -1390,7 +1393,7 @@ function animateFrogEyeBalls(){
                          z: frogPupilR.position.z};                  
 
 
-    var tweenLeft = new TWEEN.Tween(coordsLeftEye)           
+    var tweenEyes= new TWEEN.Tween(coordsLeftEye)           
         .to({ x: targetPos.x, y: targetPos.y-2 }, 80)
         .easing(TWEEN.Easing.Quadratic.Out)// Use an easing function to make the animation smooth.
         .onStart(function(){
@@ -1431,7 +1434,35 @@ function animateFrogEyeBalls(){
 
 }
 
-function animateFrogHead(){}
+function animateFrogHead(){
+    //variable for the mouse
+    var targetPos = new THREE.Vector3();
+    flyBody.getWorldPosition(targetPos);
+
+    var mouseDistance = targetPos.z - frogHead.z; //nel dubbio metti 2
+
+    var targetAngle = Math.asin(targetPos.x / mouseDistance);
+
+    //coordinates of the head
+    var coordsRotationHead = { x: frogHead.rotation.x,
+                               y: frogHead.rotation.y,
+                               z: frogHead.rotation.z}; 
+    
+    var tweenHead = new TWEEN.Tween(coordsRotationHead)           
+        .to({y: targetAngle }, 8000)
+        .easing(TWEEN.Easing.Quadratic.Out) // Use an easing function to make the animation smooth.
+        .onUpdate(function(){
+            //frogHead.rotation.set(coordsRotationHead.x, coordsRotationHead.y, coordsRotationHead.z)
+            frogHead.rotateX(coordsRotationHead.x);
+            frogHead.rotateY(coordsRotationHead.y);
+            frogHead.rotateZ(coordsRotationHead.z);
+        }).start();
+        
+    
+    
+    
+
+}*/
 
 
 
