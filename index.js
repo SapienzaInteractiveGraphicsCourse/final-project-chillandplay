@@ -932,7 +932,6 @@ function createScissor(){
     createScissorHandle();
 
     scissorFlag = true;
-    group2.scale.multiplyScalar(1.0);
 }
 
 // ------------- SCISSOR PARTS ----------------------------------
@@ -945,25 +944,8 @@ function createScissorBlades(){
         group2.add(scissorBlades[i]);
         scissorBlades[i].castShadow = true;
     }
-    //first blade
-    
-    scissorBlades[0].translateX(0.1);
-    scissorBlades[0].translateY(0.2);
-    scissorBlades[0].translateZ(-0.08);
-
-    //scissorBlades[0].scale.z = 0.7;
-    scissorBlades[0].rotateZ(-0.48);
-    //scissorBlades[0].rotateX(0.9);
-   // scissorBlades[0].rotateY(0.4);
-    
-    //second blade
-    scissorBlades[1].translateX(-0.1);
-    scissorBlades[1].translateY(0.2);
-    scissorBlades[1].translateZ(-0.08);
-    //scissorBlades[1].scale.z = 0.7;
-    scissorBlades[1].rotateZ(0.48);
-    //scissorBlades[1].translateZ(-0.08);
-   // scissorBlades[1].rotateY(-0.4);
+    scissorBlades[0].rotateZ(-0.4);
+    scissorBlades[1].rotateZ(0.4);
 }
 
 function createScissorHandle(){
@@ -971,35 +953,22 @@ function createScissorHandle(){
     scissorHandles = [];
     for (let i = 0; i < 2; i++) {
         scissorHandles[i] = new THREE.Mesh(scissorHandleGeometry, redMaterial);
-        //group2.add(scissorHandles[i]);
         scissorBlades[i].add(scissorHandles[i]);
         scissorHandles[i].castShadow = true;
     }
     //first handle
-    
-    
-   scissorHandles[0].translateX(0.7);
-    scissorHandles[0].translateY(-0.38);
-    scissorHandles[0].rotateZ(1.1);
+    scissorHandles[0].translateX(-0.24);
+    scissorHandles[0].translateY(-0.7);
     scissorHandles[0].scale.z = 0.7;
     scissorHandles[0].scale.x = -0.7;
     scissorHandles[0].scale.y = 1.2;
-    //scissorHandles[0].translateZ(0.4);
-   // scissorHandles[0].translateY(-0.065);
-
-    //scissorHandles[0].translateZ(-0.08);
-    //scissorHandles[0].rotateY(0.4);
     
     //second handle
-    scissorHandles[1].translateX(-0.7);
-    scissorHandles[1].translateY(-0.38);
-    scissorHandles[1].rotateZ(-1.1);
+    scissorHandles[1].translateX(0.24);
+    scissorHandles[1].translateY(-0.7);
     scissorHandles[1].scale.z = 0.7;
     scissorHandles[1].scale.x = -0.7;
     scissorHandles[1].scale.y = 1.2;
-    //scissorHandles[1].rotateZ(-0.5);
-    //scissorHandles[1].translateZ(-0.08);
-    //scissorHandles[1].rotateY(-0.4);
     
    group2.rotateZ(1.57); //added to incline the scissor of 90 degrees
 
@@ -1022,10 +991,10 @@ function animate() {
     group.rotation.y += 0.01;
     group.rotation.z += 0.01;
 
-  //  group2.rotation.x += 0.01;
+    //group2.rotation.x += 0.01;
   //animate with create js?
-  //  group2.rotation.y -= 0.01; //find the way to reach a certain angle 
-   animateScissors();
+    //group2.rotation.y -= 0.01; //find the way to reach a certain angle 
+ 
   //  group2.rotation.z += 0.01;
     renderer.render(scene, camera);
 }
@@ -1036,12 +1005,10 @@ function render(){
 
 let onclick = function (event) {
     mouseSetting(event);
-    console.log(objectID);
     switch (objectID) {
         case frogID:
             scene.background = new THREE.Color(0xfafad2);
             resetButton(oldSelectedID);
-            console.log(frogID);
             resetScale(oldSelectedID);
             frogBody.scale.multiplyScalar(2);
             goButton.translateX(0.15);
@@ -1053,7 +1020,6 @@ let onclick = function (event) {
         case sheepID:
             scene.background = new THREE.Color(0xc9f0cf);
             resetButton(oldSelectedID);
-            console.log(sheepID);
             resetScale(oldSelectedID);
             sheepBody.scale.multiplyScalar(2);
             goButton.translateX(-0.15);
@@ -1183,7 +1149,6 @@ let onMouseOverButton = function (event) {
             }
             break;
     }
-    console.log(objectID);
 };
 window.addEventListener('mousemove', onMouseOverButton);
 
@@ -1350,6 +1315,7 @@ function createSceneSheep(){
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetSheep.jpg');
     scene.add(resetAnimationButton);
+    animateSceneSheep();
 }
 
 function resetSceneHome(){
@@ -1388,6 +1354,11 @@ function animateSceneFrog(){ //attenzione: l'animazione della rana continua anch
     requestAnimationFrame( animateSceneFrog );
     animateFrogEyeBalls();
     animateFrogHead();
+}
+
+function animateSceneSheep(){
+    requestAnimationFrame( animateSceneSheep );
+    animateScissors();
 }
 
 function animateFrogEyeBalls(){
@@ -1543,12 +1514,31 @@ let onMousePause = function (event) {
 
 window.addEventListener('mousemove', onMousePause);
 
-//ANIMAZIONI PECORA
 function animateScissors(){
+    //metodo che chiude piano e scatta quando si apre
+    /*
+    var rotationDirection = -0.1;
+    var valueRotation = scissorBlades[0].rotation.z;
+    var roundedValueRotation = Math.round(valueRotation * 100) / 100
+    if (roundedValueRotation == -0.1){
+        rotationDirection = -4;
+    }
+    if (roundedValueRotation == -4){
+        rotationDirection = -0.1;
+    }
+    console.log(roundedValueRotation);
+        createjs.Tween.get(scissorBlades[0].rotation)
+        .to({z: rotationDirection}, 500);
 
-    //createjs.Tween.get(scissorBlades[0].position)
-      //  .to({y:0}, 800, createjs.Ease.linear);
-    //createjs.Tween.get(scissorBlades[1].rotation)
-      //  .to({z:0}, 800, createjs.Ease.linear);
+    console.log(roundedValueRotation);
+        createjs.Tween.get(scissorBlades[1].rotation)
+        .to({z: -rotationDirection}, 500);
+    */
 
+    console.log("angolo forbici: " + scissorBlades[0].rotation.z);
+
+    createjs.Tween.get(scissorBlades[0].rotation)
+        .to({z: Math.round(-0.1 * 10) / 10}, 300, createjs.Ease.linear)
+        .to({z: Math.round(-0.4 * 10) / 10}, 300, createjs.Ease.linear);
+ 
 }
