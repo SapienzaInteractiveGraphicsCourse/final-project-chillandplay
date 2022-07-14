@@ -72,6 +72,7 @@ document.body.appendChild(renderer.domElement);
 // --------- RAYCASTER AND MOUSE------------------------------
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
+let timer; //timer per gestire la lingua che parte verso la mosca
 
 createSceneHome();
 
@@ -140,6 +141,7 @@ function createFrogBody(scale){
     frogBody.receiveShadow = true;
     frogBody.castShadow = true;
     frogBody.translateX(-2);
+    frogBody.translateY(-0.5);
     frogBody.scale.multiplyScalar(scale);
     scene.add( frogBody );
 }
@@ -425,7 +427,10 @@ function createFrogTongue(scale){
     frogMouth.add(frogTongue);
     frogTongue.translateZ(-0.5); // mentre si anima va traslata in valori sempre più positivi fino a 1
     frogTongue.rotateY(1.57);
-    frogTongue.scale.z = 0.25;
+    frogTongue.scale.z = 0.25; //allarga la lingua lateralmente
+    /*frogTongue.scale.x = 0.5;
+    frogTongue.translateX(2);
+    frogTongue.translateY(0.1);*/
 
 
     // punta della lingua
@@ -1344,6 +1349,7 @@ function createSceneSheep(){
 }
 
 function resetSceneHome(){
+    selected = "HOME";
     scene.remove(group);
     scene.remove(group2);
     scene.background = backGroundHome;
@@ -1352,6 +1358,7 @@ function resetSceneHome(){
     scene.add(sheepBody);
     scene.add(sheepArea);
     oldSelectedID = 0;
+    
 }
 
 function createSceneHome(){
@@ -1375,27 +1382,26 @@ function animateSceneFrog(){ //attenzione: l'animazione della rana continua anch
     requestAnimationFrame( animateSceneFrog );
     animateFrogEyeBalls();
     animateFrogHead();
-    animateFrogTongue(); //??
 }
 
 function animateFrogEyeBalls(){
-
-    var targetPos = new THREE.Vector3();
-    flyBody.getWorldPosition(targetPos);
-
-    var targetPosScaled = {x: ((8*targetPos.x)/(window.innerWidth/2)), y:((4*targetPos.y)/(window.innerHeight/2))+2};
-
-    createjs.Tween.get(frogPupilL.position)
-            .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);
-            
-    createjs.Tween.get(frogPupilR.position)
-            .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);
-
-
-
+    if (selected == "FROG"){
+        var targetPos = new THREE.Vector3();
+        flyBody.getWorldPosition(targetPos);
+    
+        //questa formula non funziona, dobbiamo trovare il modo di farla dipendere sia dalla larghezza che dall'altezza dello schermo
+        var targetPosScaled = {x: ((8*targetPos.x)/(Math.min(window.innerWidth, window.innerHeight)/2)), y:((4*targetPos.y)/(window.innerHeight/2))+2};
+    
+        createjs.Tween.get(frogPupilL.position)
+                .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);
+                
+        createjs.Tween.get(frogPupilR.position)
+                .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);    
+    }
 }
 
 function animateFrogHead(){
+    if (selected == "FROG"){
     //variable for the mouse
     var targetPos = new THREE.Vector3();
     flyBody.getWorldPosition(targetPos);
@@ -1426,27 +1432,55 @@ function animateFrogHead(){
         targetAngle = -maxTargetAngle;
     } 
 
-    //console.log("targetPosX: " + targetPos.x);
-    //console.log("headDistance: " + headDistance);
-    //console.log("value (targetPosX / headDistance): " + targetDivision);
-
-    //console.log("targetAngle: " + targetAngle);
-
     createjs.Tween.get(frogHead.rotation)
     .to({y: targetAngle }, 80, createjs.Ease.linear);
 
     //ATTENZIONE: modificare il valore massimo degli occhi perchè 
     //con il limite dell'angolo escono fuori dalla figura
 
-}
-
-function animateFrogTongue(){
-    //problema: come cambiare la tx dentro la customSinCurve?
-    //per ora si può cambiare solamente la tongue.z
-
-    7/createjs.Tween.get(frogTongue.position)
-    //    .to({z: 0.5 }, 8000, createjs.Ease.linear);
-
-    //spostare anche la y per centrare meglio?
+    }
 
 }
+
+function stretchFrogTongue(){
+    //animazione per allungare la lingua verso la mosca
+    createjs.Tween.get(frogTongue.scale)
+        .to({x: 0.5 }, 800, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongue.position)
+        .to({y: 0.1, z: -2.2}, 800, createjs.Ease.linear);
+    
+    createjs.Tween.get(frogTongueTip.position)
+        .to({y: -0.1}, 800, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongueTip.scale)
+        .to({x: 4.5, y: 5, z:4.3}, 800, createjs.Ease.linear);
+}
+
+function foldFrogTongue(){
+    //animazione per allungare la lingua verso la mosca
+    createjs.Tween.get(frogTongue.scale)
+        .to({x: 0.05 }, 800, createjs.Ease.linear); // il valore 0.05 lo mettiamo perchè è il valore di quando abbiamo creato la tongue
+
+    createjs.Tween.get(frogTongue.position)
+        .to({y: 0, z: -0.5}, 800, createjs.Ease.linear);    
+
+    createjs.Tween.get(frogTongueTip.position)
+        .to({y: 0}, 800, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongueTip.scale)
+        .to({x: 1, y: 5, z:4.4}, 800, createjs.Ease.linear);
+
+}
+
+
+let onMousePause = function (event) {
+    clearTimeout(timer);
+
+    timer = setTimeout(function() {
+        if (selected == "FROG")
+            stretchFrogTongue();
+    }, 3000);
+}
+
+window.addEventListener('mousemove', onMousePause);
