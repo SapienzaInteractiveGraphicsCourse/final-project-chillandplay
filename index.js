@@ -946,9 +946,6 @@ function createScissorBlades(){
     }
     scissorBlades[0].rotateZ(-0.4);
     scissorBlades[1].rotateZ(0.4);
-
-    //scissorBlades[0].rotateZ(0.35);
-    //scissorBlades[1].rotateZ(-0.35);
 }
 
 function createScissorHandle(){
@@ -996,7 +993,7 @@ function animate() {
 
     //group2.rotation.x += 0.01;
   //animate with create js?
-    group2.rotation.y -= 0.01; //find the way to reach a certain angle 
+    //group2.rotation.y -= 0.01; //find the way to reach a certain angle 
  
   //  group2.rotation.z += 0.01;
     renderer.render(scene, camera);
@@ -1008,12 +1005,10 @@ function render(){
 
 let onclick = function (event) {
     mouseSetting(event);
-    console.log(objectID);
     switch (objectID) {
         case frogID:
             scene.background = new THREE.Color(0xfafad2);
             resetButton(oldSelectedID);
-            console.log(frogID);
             resetScale(oldSelectedID);
             frogBody.scale.multiplyScalar(2);
             goButton.translateX(0.15);
@@ -1025,7 +1020,6 @@ let onclick = function (event) {
         case sheepID:
             scene.background = new THREE.Color(0xc9f0cf);
             resetButton(oldSelectedID);
-            console.log(sheepID);
             resetScale(oldSelectedID);
             sheepBody.scale.multiplyScalar(2);
             goButton.translateX(-0.15);
@@ -1155,7 +1149,6 @@ let onMouseOverButton = function (event) {
             }
             break;
     }
-    console.log(objectID);
 };
 window.addEventListener('mousemove', onMouseOverButton);
 
@@ -1515,14 +1508,30 @@ let onMousePause = function (event) {
 window.addEventListener('mousemove', onMousePause);
 
 function animateScissors(){
-    createjs.Tween.get(scissorBlades[0].rotation)
-        .to({z: -0.1}, 500, createjs.Ease.linear);
-        //.wait(500)
-        //.to({z: -0.4}, 500, createjs.Ease.linear);
+    //metodo che chiude piano e scatta quando si apre
+    /*
+    var rotationDirection = -0.1;
+    var valueRotation = scissorBlades[0].rotation.z;
+    var roundedValueRotation = Math.round(valueRotation * 100) / 100
+    if (roundedValueRotation == -0.1){
+        rotationDirection = -4;
+    }
+    if (roundedValueRotation == -4){
+        rotationDirection = -0.1;
+    }
+    console.log(roundedValueRotation);
+        createjs.Tween.get(scissorBlades[0].rotation)
+        .to({z: rotationDirection}, 500);
 
-    createjs.Tween.get(scissorBlades[1].rotation)
-        .to({z: 0.1}, 500, createjs.Ease.linear);
-        //.wait(500)
-        //.to({z: 0.4}, 500, createjs.Ease.linear);
+    console.log(roundedValueRotation);
+        createjs.Tween.get(scissorBlades[1].rotation)
+        .to({z: -rotationDirection}, 500);
+    */
+
+    console.log("angolo forbici: " + scissorBlades[0].rotation.z);
+
+    createjs.Tween.get(scissorBlades[0].rotation)
+        .to({z: Math.round(-0.1 * 10) / 10}, 300, createjs.Ease.linear)
+        .to({z: Math.round(-0.4 * 10) / 10}, 300, createjs.Ease.linear);
  
 }
