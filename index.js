@@ -971,35 +971,37 @@ function createScissorHandle(){
     scissorHandles = [];
     for (let i = 0; i < 2; i++) {
         scissorHandles[i] = new THREE.Mesh(scissorHandleGeometry, redMaterial);
-        group2.add(scissorHandles[i]);
+        //group2.add(scissorHandles[i]);
+        scissorBlades[i].add(scissorHandles[i]);
         scissorHandles[i].castShadow = true;
     }
     //first handle
     
-    scissorHandles[0].translateX(0.49);
+    
+   scissorHandles[0].translateX(0.7);
     scissorHandles[0].translateY(-0.38);
-    scissorHandles[0].rotateZ(0.5);
+    scissorHandles[0].rotateZ(1.1);
     scissorHandles[0].scale.z = 0.7;
     scissorHandles[0].scale.x = -0.7;
     scissorHandles[0].scale.y = 1.2;
     //scissorHandles[0].translateZ(0.4);
    // scissorHandles[0].translateY(-0.065);
 
-    scissorHandles[0].translateZ(-0.08);
+    //scissorHandles[0].translateZ(-0.08);
     //scissorHandles[0].rotateY(0.4);
     
     //second handle
-    scissorHandles[1].translateX(-0.49);
+    scissorHandles[1].translateX(-0.7);
     scissorHandles[1].translateY(-0.38);
-    scissorHandles[1].rotateZ(-0.5);
+    scissorHandles[1].rotateZ(-1.1);
     scissorHandles[1].scale.z = 0.7;
     scissorHandles[1].scale.x = -0.7;
     scissorHandles[1].scale.y = 1.2;
     //scissorHandles[1].rotateZ(-0.5);
-    scissorHandles[1].translateZ(-0.08);
+    //scissorHandles[1].translateZ(-0.08);
     //scissorHandles[1].rotateY(-0.4);
     
-    group2.rotateZ(1.57); //added to incline the scissor of 90 degrees
+   group2.rotateZ(1.57); //added to incline the scissor of 90 degrees
 
 }
 
@@ -1022,8 +1024,8 @@ function animate() {
 
   //  group2.rotation.x += 0.01;
   //animate with create js?
-    group2.rotation.y -= 0.01; //find the way to reach a certain angle 
- 
+  //  group2.rotation.y -= 0.01; //find the way to reach a certain angle 
+   animateScissors();
   //  group2.rotation.z += 0.01;
     renderer.render(scene, camera);
 }
@@ -1404,7 +1406,8 @@ function animateFrogEyeBalls(){
     }
 }
 
-function animateFrogHead(){
+
+ function animateFrogHead(){
     if (selected == "FROG"){
         //MOVIMENTO ORIZZONTALE DELLA TESTA
         //variable for the mouse
@@ -1436,7 +1439,7 @@ function animateFrogHead(){
         if(targetAngle <= -maxTargetAngle){
             targetAngle = -maxTargetAngle;
         } 
-
+        
         createjs.Tween.get(frogHead.rotation)
         .to({y: targetAngle }, 80, createjs.Ease.linear);
 
@@ -1461,20 +1464,23 @@ function animateFrogHead(){
         targetAngleVertical = Math.asin(targetDivisionVertical);
 
         //setting the limit value to the right and left
-        var maxTargetAngleVertical = 0.7;
+        var maxTargetAngleVertical = 0.7; 
+        var catchVariable = 0.4;
 
         //check if the angle surpass a certain limit
         if(targetAngleVertical>= maxTargetAngleVertical){
             targetAngleVertical = maxTargetAngleVertical;
+            catchVariable = 0.4;
         }
         if(targetAngleVertical <= 0){
             targetAngleVertical = 0;
+            catchVariable = 0;
         } 
 
         //console.log("ANGOLO TARGET " + targetAngleVertical);
-
-        createjs.Tween.get(frogHead.rotation)
-            .to({x: -targetAngleVertical }, 80, createjs.Ease.linear);
+       
+       createjs.Tween.get(frogHead.rotation)
+            .to({x: -targetAngleVertical -catchVariable }, 80, createjs.Ease.linear);
 
     }
 
@@ -1498,10 +1504,10 @@ function stretchFrogTongue(){
     createjs.Tween.get(frogTongueTip.scale)
         .to({x: 4.5, y: 5, z:4.3}, 800, createjs.Ease.linear);
 
-    //la testa va un po' indietro per ismulare apertura bocca
+    //la testa va un po' indietro per simulare apertura bocca
     //console.log("angolo attuale "+targetAngleVertical);
-    //createjs.Tween.get(frogMouth.rotation)
-        //.to({x: -targetAngleVertical}, 800, createjs.Ease.linear);
+    createjs.Tween.get(frogHead.rotation)
+        .to({y: -targetAngleVertical-0.4}, 800, createjs.Ease.linear);
 
 
 }
@@ -1523,13 +1529,26 @@ function foldFrogTongue(){
 }
 
 
+
 let onMousePause = function (event) {
     clearTimeout(timer);
 
     timer = setTimeout(function() {
         if (currentScrren == "FROG")
+        //stoppare qui la frog head animation?
+            //animationVerticalHead.setPaused(true); //funziona?
             stretchFrogTongue();
     }, 3000);
 }
 
 window.addEventListener('mousemove', onMousePause);
+
+//ANIMAZIONI PECORA
+function animateScissors(){
+
+    //createjs.Tween.get(scissorBlades[0].position)
+      //  .to({y:0}, 800, createjs.Ease.linear);
+    //createjs.Tween.get(scissorBlades[1].rotation)
+      //  .to({z:0}, 800, createjs.Ease.linear);
+
+}
