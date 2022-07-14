@@ -45,6 +45,10 @@ let resetAnimationButtonFlag = true;
 let flyFlag = false;
 let scissorFlag = false;
 let selected;
+let currentScrren;
+
+let targetAngleVertical;
+let inclination;
 
 // ----------- BACKGROUND COLORS DECLARATION ----------
 const backGroundHome = new THREE.Color(0xbfe3dd);
@@ -141,7 +145,7 @@ function createFrogBody(scale){
     frogBody.receiveShadow = true;
     frogBody.castShadow = true;
     frogBody.translateX(-2);
-    frogBody.translateY(-0.5);
+    frogBody.translateY(-1);
     frogBody.scale.multiplyScalar(scale);
     scene.add( frogBody );
 }
@@ -487,10 +491,7 @@ function createSheepBody(scale){
     furNormalMap.wrapT = THREE.RepeatWrapping;
     const sheepBodyMaterial = new THREE.MeshStandardMaterial({
         color: 0xf3f2f7,
-        //map: furMap,
         normalMap: furNormalMap, 
-        //displacementMap: furDisplacementMap,
-        //displacementScale: 0.1,
         
     });
     sheepBody = new THREE.Mesh( sheepBodyGeometry, sheepBodyMaterial );
@@ -498,9 +499,8 @@ function createSheepBody(scale){
     sheepBody.castShadow = true;
     sheepBody.scale.multiplyScalar(scale);
     sheepBody.scale.multiplyScalar(1.1);
-    sheepBody.translateY(0.5);
+    sheepBody.translateY(-0.4);
     sheepBody.translateX(2);
-    //sheepBody.rotateZ(-1.57);
     scene.add( sheepBody );
 }
 
@@ -1322,6 +1322,7 @@ function createResetAnimationButton(){
 }
 
 function createSceneFrog(){
+    currentScrren = "FROG";
     scene.remove(sheepArea);
     scene.remove(sheepBody);
     scene.remove(frogArea);
@@ -1337,6 +1338,7 @@ function createSceneFrog(){
 }
 
 function createSceneSheep(){
+    currentScrren = "SHEEP";
     scene.remove(frogArea);
     scene.remove(frogBody);
     scene.remove(sheepArea);
@@ -1350,6 +1352,7 @@ function createSceneSheep(){
 
 function resetSceneHome(){
     selected = "HOME";
+    currentScrren = "HOME";
     scene.remove(group);
     scene.remove(group2);
     scene.background = backGroundHome;
@@ -1362,6 +1365,7 @@ function resetSceneHome(){
 }
 
 function createSceneHome(){
+    currentScrren = "HOME";
     createFrog(1);
     createSheep(2);
     createPlane();
@@ -1402,47 +1406,85 @@ function animateFrogEyeBalls(){
 
 function animateFrogHead(){
     if (selected == "FROG"){
-    //variable for the mouse
-    var targetPos = new THREE.Vector3();
-    flyBody.getWorldPosition(targetPos);
+        //MOVIMENTO ORIZZONTALE DELLA TESTA
+        //variable for the mouse
+        var targetPos = new THREE.Vector3();
+        flyBody.getWorldPosition(targetPos);
 
-    var headDistance = targetPos.z - frogHead.position.z;
-    //console.log("distanza raggio headDistance: " + headDistance);
-    var targetDivision = targetPos.x/headDistance;
+        var headDistance = targetPos.z - frogHead.position.z;
+        //console.log("distanza raggio headDistance: " + headDistance);
+        var targetDivision = targetPos.x/headDistance;
 
-    //check if I have a value that is acceptable by Math.asin
-    if(targetDivision >= 1){
-        targetDivision = 1;
-    }
-    if(targetDivision <= -1){
-        targetDivision = -1;
-    }
+        //check if I have a value that is acceptable by Math.asin
+        if(targetDivision >= 1){
+            targetDivision = 1;
+        }
+        if(targetDivision <= -1){
+            targetDivision = -1;
+        }
 
-    //angle
-    var targetAngle = Math.asin(targetDivision);
+        //angle
+        var targetAngle = Math.asin(targetDivision);
 
-    //setting the limit value to the right and left
-    var maxTargetAngle = 0.7;
+        //setting the limit value to the right and left
+        var maxTargetAngle = 0.7;
 
-    //check if the angle surpass a certain limit
-    if(targetAngle>= maxTargetAngle){
-        targetAngle = maxTargetAngle;
-    }
-    if(targetAngle <= -maxTargetAngle){
-        targetAngle = -maxTargetAngle;
-    } 
+        //check if the angle surpass a certain limit
+        if(targetAngle>= maxTargetAngle){
+            targetAngle = maxTargetAngle;
+        }
+        if(targetAngle <= -maxTargetAngle){
+            targetAngle = -maxTargetAngle;
+        } 
 
-    createjs.Tween.get(frogHead.rotation)
-    .to({y: targetAngle }, 80, createjs.Ease.linear);
+        createjs.Tween.get(frogHead.rotation)
+        .to({y: targetAngle }, 80, createjs.Ease.linear);
 
-    //ATTENZIONE: modificare il valore massimo degli occhi perchè 
-    //con il limite dell'angolo escono fuori dalla figura
+        //ATTENZIONE: modificare il valore massimo degli occhi perchè 
+        //con il limite dell'angolo escono fuori dalla figura
+
+
+
+        //MOVIMENTO VERTICALE DELLA TESTA
+        //console.log("distanza raggio headDistance: " + headDistance);
+        var targetDivisionVertical = targetPos.y/headDistance;
+
+        //check if I have a value that is acceptable by Math.asin
+        if(targetDivisionVertical >= 1){
+            targetDivisionVertical = 1;
+        }
+        if(targetDivisionVertical <= -1){
+            targetDivisionVertical = -1;
+        }
+
+        //angle
+        targetAngleVertical = Math.asin(targetDivisionVertical);
+
+        //setting the limit value to the right and left
+        var maxTargetAngleVertical = 0.7;
+
+        //check if the angle surpass a certain limit
+        if(targetAngleVertical>= maxTargetAngleVertical){
+            targetAngleVertical = maxTargetAngleVertical;
+        }
+        if(targetAngleVertical <= 0){
+            targetAngleVertical = 0;
+        } 
+
+        //console.log("ANGOLO TARGET " + targetAngleVertical);
+
+        createjs.Tween.get(frogHead.rotation)
+            .to({x: -targetAngleVertical }, 80, createjs.Ease.linear);
 
     }
 
 }
 
 function stretchFrogTongue(){
+
+    createjs.Tween.get(frogHead.rotation)
+        .to({x: 1.57 }, 800, createjs.Ease.linear);
+
     //animazione per allungare la lingua verso la mosca
     createjs.Tween.get(frogTongue.scale)
         .to({x: 0.5 }, 800, createjs.Ease.linear);
@@ -1455,6 +1497,13 @@ function stretchFrogTongue(){
 
     createjs.Tween.get(frogTongueTip.scale)
         .to({x: 4.5, y: 5, z:4.3}, 800, createjs.Ease.linear);
+
+    //la testa va un po' indietro per ismulare apertura bocca
+    //console.log("angolo attuale "+targetAngleVertical);
+    //createjs.Tween.get(frogMouth.rotation)
+        //.to({x: -targetAngleVertical}, 800, createjs.Ease.linear);
+
+
 }
 
 function foldFrogTongue(){
@@ -1478,7 +1527,7 @@ let onMousePause = function (event) {
     clearTimeout(timer);
 
     timer = setTimeout(function() {
-        if (selected == "FROG")
+        if (currentScrren == "FROG")
             stretchFrogTongue();
     }, 3000);
 }
