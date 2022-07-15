@@ -1,9 +1,19 @@
-import * as THREE from './libs/three/build/three.module.js'
+// --import * as THREE from './libs/three/build/three.module.js'
 //import { TWEEN2 }  from './libs/three/examples/jsm/libs/tween.module.min.js'
 //import * as TWEEN  from './libs/tweenjs/lib/tweenjs.js'
 //import TWEEN from './libs/three/tweenjs.min.js'
-
 //import * as Tween from 'https://code.createjs.com/1.0.0/tweenjs.min.js'
+import { TWEEN } from 'https://cdn.skypack.dev/three@0.134.0/examples/jsm/libs/tween.module.min'
+//import {Linear, Power0, TweenMax} from "./libs/gsap-public/gsap-public/esm"
+import { ObjectControls } from './libs/ObjectControls.js';
+
+import { gsap } from "gsap";
+
+import * as THREE from 'three';
+import { OrbitControls } from 'OrbitControls';
+
+
+
 // -------------- VARIABLES DECLARATION ---------------------
 let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
 let scissorBody, scissorBlades, scissorHandles;
@@ -56,6 +66,7 @@ const backGroundHome = new THREE.Color(0xbfe3dd);
 //azzurrino: 0xbfe3dd
 
 // ----------- SCENE AND CAMERA DECLARATION ------------
+let controls;
 const scene = new THREE.Scene();
 scene.background = backGroundHome;
 let camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -136,18 +147,21 @@ function createFrogBody(scale){
     const frogBodyGeometry = new THREE.BoxGeometry( 0.66, 1, 0.75 );
     const frogBodyMaterial = new THREE.MeshStandardMaterial( { color: 0x96f2af} );
     frogBody = new THREE.Mesh( frogBodyGeometry, frogBodyMaterial );
-    frogBodyGeometry.attributes.position.array[5]=0.25;
-    frogBodyGeometry.attributes.position.array[14]=0.25;
-    frogBodyGeometry.attributes.position.array[26]=0.25;
-    frogBodyGeometry.attributes.position.array[29]=0.25;
-    frogBodyGeometry.attributes.position.array[62]=0.25;
-    frogBodyGeometry.attributes.position.array[65]=0.25;
-    frogBody.receiveShadow = true;
-    frogBody.castShadow = true;
-    frogBody.translateX(-2);
-    frogBody.translateY(-1);
-    frogBody.scale.multiplyScalar(scale);
-    scene.add( frogBody );
+
+    if(frogBodyGeometry) {
+        frogBodyGeometry.attributes.position.array[5] = 0.25;
+        frogBodyGeometry.attributes.position.array[14] = 0.25;
+        frogBodyGeometry.attributes.position.array[26] = 0.25;
+        frogBodyGeometry.attributes.position.array[29] = 0.25;
+        frogBodyGeometry.attributes.position.array[62] = 0.25;
+        frogBodyGeometry.attributes.position.array[65] = 0.25;
+        frogBody.receiveShadow = true;
+        frogBody.castShadow = true;
+        frogBody.translateX(-2);
+        frogBody.translateY(-1);
+        frogBody.scale.multiplyScalar(scale);
+        scene.add(frogBody);
+    }
 }
 
 function createFrogBelly(){
@@ -976,7 +990,7 @@ function createScissorHandle(){
 
 function animate() {
     requestAnimationFrame( animate );
-    //TWEEN.update();
+    TWEEN.update();
   // frogBody.rotation.x += 0.01;
   // frogBody.rotation.y += 0.01;
 
@@ -1358,11 +1372,14 @@ function animateSceneFrog(){ //attenzione: l'animazione della rana continua anch
 
 function animateSceneSheep(){
     requestAnimationFrame( animateSceneSheep );
+    rotateCameraSheepScene();
     animateScissors();
+    TWEEN.update();
+
 }
 
 function animateFrogEyeBalls(){
-    if (selected == "FROG"){
+    if (selected === "FROG"){
         var targetPos = new THREE.Vector3();
         flyBody.getWorldPosition(targetPos);
     
@@ -1378,7 +1395,7 @@ function animateFrogEyeBalls(){
 }
 
 function animateFrogHead(){
-    if (selected == "FROG"){
+    if (selected === "FROG"){
         //MOVIMENTO ORIZZONTALE DELLA TESTA
         //variable for the mouse
         var targetPos = new THREE.Vector3();
@@ -1500,7 +1517,7 @@ let onMousePause = function (event) {
     clearTimeout(timer);
 
     timer = setTimeout(function() {
-        if (currentScrren == "FROG")
+        if (currentScrren === "FROG")
             stretchFrogTongue();
     }, 3000);
 }
@@ -1530,8 +1547,59 @@ function animateScissors(){
 
     console.log("angolo forbici: " + scissorBlades[0].rotation.z);
 
+/*
     createjs.Tween.get(scissorBlades[0].rotation)
-        .to({z: Math.round(-0.1 * 10) / 10}, 300, createjs.Ease.linear)
-        .to({z: Math.round(-0.4 * 10) / 10}, 300, createjs.Ease.linear);
- 
+        .to({z: checkValue(scissorBlades[0])}, 1000, createjs.Ease.linear)
+        //.to({z: -0.4}, 300, createjs.Ease.linear);
+
+    createjs.Tween.get(scissorBlades[1].rotation)
+        .to({z: checkValue(scissorBlades[1])}, 300, createjs.Ease.linear)
+        //.to({z: 0.4}, 300, createjs.Ease.linear);
+*/
+/*
+    var close = new TWEEN.Tween(scissorBlades[0])
+        .to({z: -0.1}, 2000)
+        .easing(TWEEN.Easing.Quadratic.Out)                   // Use an easing function to make the animation smooth.
+        .onUpdate(function() {
+            scissorBlades[0].rotation.set( scissorBlades[0].rotation.x, scissorBlades[0].rotation.y, scissorBlades[0].rotation.z - 0.01);
+        })
+
+    var open = new TWEEN.Tween(scissorBlades[0])
+        .to({z: -0.4}, 2000);
+
+   // close.chain(open);
+    close.start();
+*/
+    gsap.timeline().to(scissorBlades[0].rotation, {duration: 0.07, z: 0.1})
+        .to(scissorBlades[0].rotation, {duration: 0.07, z: 0.4});
+
+   // .to(scissorBlades[0].rotation, {duration: 0.07, z: 0.4,  yoyo:true, ease: Linear.easeNone});
+
+}
+
+function checkValue (scissorBlade) {
+
+    if (scissorBlade.rotation.z <= 0.11 )
+        return 0.4
+    else if (scissorBlade.rotation.z >= 0.39)
+        return 0.1
+    /*
+        if (scissorBlade.rotation.z <= 0.11 )
+            return 0.1
+
+     */
+
+
+}
+
+function rotateCameraSheepScene(){
+
+    /** instantiate ObjectControls**/
+    controls = new ObjectControls( camera, renderer.domElement, sheepBody );
+    controls.setDistance(8, 200); // set min - max distance for zoom
+    controls.setZoomSpeed(0.5); // set zoom speed
+    controls.enableVerticalRotation();
+    controls.setMaxVerticalRotationAngle(Math.PI / 4, Math.PI / 4);
+    controls.setRotationSpeed(0.0002);
+
 }
