@@ -1675,7 +1675,7 @@ window.addEventListener('mousemove', onMousePause);
 
 function animateScissors(){
     //metodo che chiude piano e scatta quando si apre
-    /*
+   /*
     var rotationDirection = -0.1;
     var valueRotation = scissorBlades[0].rotation.z;
     var roundedValueRotation = Math.round(valueRotation * 100) / 100
@@ -1699,5 +1699,5 @@ function animateScissors(){
     createjs.Tween.get(scissorBlades[0].rotation)
         .to({z: Math.round(-0.1 * 10) / 10}, 300, createjs.Ease.linear)
         .to({z: Math.round(-0.4 * 10) / 10}, 300, createjs.Ease.linear);
- 
+    
 }
