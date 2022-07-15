@@ -1,5 +1,7 @@
 import * as THREE from './libs/three/build/three.module.js'
-import { TWEEN }  from './libs/three/examples/jsm/libs/tween.module.min.js'
+//import { TWEEN2 }  from './libs/three/examples/jsm/libs/tween.module.min.js'
+//import * as TWEEN  from './libs/tweenjs/lib/tweenjs.js'
+//import TWEEN from './libs/three/tweenjs.min.js'
 
 //import * as Tween from 'https://code.createjs.com/1.0.0/tweenjs.min.js'
 // -------------- VARIABLES DECLARATION ---------------------
@@ -44,6 +46,10 @@ let resetAnimationButtonFlag = true;
 let flyFlag = false;
 let scissorFlag = false;
 let selected;
+let currentScrren;
+
+let targetAngleVertical;
+let inclination;
 
 // ----------- BACKGROUND COLORS DECLARATION ----------
 const backGroundHome = new THREE.Color(0xbfe3dd);
@@ -71,6 +77,7 @@ document.body.appendChild(renderer.domElement);
 // --------- RAYCASTER AND MOUSE------------------------------
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
+let timer; //timer per gestire la lingua che parte verso la mosca
 
 createSceneHome();
 
@@ -139,6 +146,7 @@ function createFrogBody(scale){
     frogBody.receiveShadow = true;
     frogBody.castShadow = true;
     frogBody.translateX(-2);
+    frogBody.translateY(-1);
     frogBody.scale.multiplyScalar(scale);
     scene.add( frogBody );
 }
@@ -424,7 +432,10 @@ function createFrogTongue(scale){
     frogMouth.add(frogTongue);
     frogTongue.translateZ(-0.5); // mentre si anima va traslata in valori sempre più positivi fino a 1
     frogTongue.rotateY(1.57);
-    frogTongue.scale.z = 0.25;
+    frogTongue.scale.z = 0.25; //allarga la lingua lateralmente
+    /*frogTongue.scale.x = 0.5;
+    frogTongue.translateX(2);
+    frogTongue.translateY(0.1);*/
 
 
     // punta della lingua
@@ -481,7 +492,6 @@ function createSheepBody(scale){
     furNormalMap.wrapT = THREE.RepeatWrapping;
     const sheepBodyMaterial = new THREE.MeshStandardMaterial({
         color: 0xf3f2f7,
-        //map: furMap,
         normalMap: furNormalMap, 
         
     });
@@ -490,9 +500,8 @@ function createSheepBody(scale){
     sheepBody.castShadow = true;
     sheepBody.scale.multiplyScalar(scale);
     sheepBody.scale.multiplyScalar(1.1);
-    sheepBody.translateY(0.5);
+    sheepBody.translateY(-0.4);
     sheepBody.translateX(2);
-    //sheepBody.rotateZ(-1.57);
     scene.add( sheepBody );
 }
 
@@ -924,7 +933,6 @@ function createScissor(){
     createScissorHandle();
 
     scissorFlag = true;
-    group2.scale.multiplyScalar(1.0);
 }
 
 // ------------- SCISSOR PARTS ----------------------------------
@@ -937,25 +945,8 @@ function createScissorBlades(){
         group2.add(scissorBlades[i]);
         scissorBlades[i].castShadow = true;
     }
-    //first blade
-    
-    scissorBlades[0].translateX(0.1);
-    scissorBlades[0].translateY(0.2);
-    scissorBlades[0].translateZ(-0.08);
-
-    //scissorBlades[0].scale.z = 0.7;
-    scissorBlades[0].rotateZ(-0.48);
-    //scissorBlades[0].rotateX(0.9);
-   // scissorBlades[0].rotateY(0.4);
-    
-    //second blade
-    scissorBlades[1].translateX(-0.1);
-    scissorBlades[1].translateY(0.2);
-    scissorBlades[1].translateZ(-0.08);
-    //scissorBlades[1].scale.z = 0.7;
-    scissorBlades[1].rotateZ(0.48);
-    //scissorBlades[1].translateZ(-0.08);
-   // scissorBlades[1].rotateY(-0.4);
+    scissorBlades[0].rotateZ(-0.4);
+    scissorBlades[1].rotateZ(0.4);
 }
 
 function createScissorHandle(){
@@ -963,39 +954,30 @@ function createScissorHandle(){
     scissorHandles = [];
     for (let i = 0; i < 2; i++) {
         scissorHandles[i] = new THREE.Mesh(scissorHandleGeometry, redMaterial);
-        group2.add(scissorHandles[i]);
+        scissorBlades[i].add(scissorHandles[i]);
         scissorHandles[i].castShadow = true;
     }
     //first handle
-    
-    scissorHandles[0].translateX(0.49);
-    scissorHandles[0].translateY(-0.38);
-    scissorHandles[0].rotateZ(0.5);
+    scissorHandles[0].translateX(-0.24);
+    scissorHandles[0].translateY(-0.7);
     scissorHandles[0].scale.z = 0.7;
     scissorHandles[0].scale.x = -0.7;
     scissorHandles[0].scale.y = 1.2;
-    //scissorHandles[0].translateZ(0.4);
-   // scissorHandles[0].translateY(-0.065);
-
-    scissorHandles[0].translateZ(-0.08);
-    //scissorHandles[0].rotateY(0.4);
     
     //second handle
-    scissorHandles[1].translateX(-0.49);
-    scissorHandles[1].translateY(-0.38);
-    scissorHandles[1].rotateZ(-0.5);
+    scissorHandles[1].translateX(0.24);
+    scissorHandles[1].translateY(-0.7);
     scissorHandles[1].scale.z = 0.7;
     scissorHandles[1].scale.x = -0.7;
     scissorHandles[1].scale.y = 1.2;
-    //scissorHandles[1].rotateZ(-0.5);
-    scissorHandles[1].translateZ(-0.08);
-    //scissorHandles[1].rotateY(-0.4);
+    
+    group2.rotateZ(1.57); //added to incline the scissor of 90 degrees
+
 }
 
 function animate() {
     requestAnimationFrame( animate );
-    animateFrogEyeBalls();
-    TWEEN.update();
+    //TWEEN.update();
   // frogBody.rotation.x += 0.01;
   // frogBody.rotation.y += 0.01;
 
@@ -1010,9 +992,11 @@ function animate() {
     group.rotation.y += 0.01;
     group.rotation.z += 0.01;
 
-    group2.rotation.x += 0.01;
-    group2.rotation.y += 0.01;
-    group2.rotation.z += 0.01;
+    //group2.rotation.x += 0.01;
+  //animate with create js?
+    //group2.rotation.y -= 0.01; //find the way to reach a certain angle 
+ 
+  //  group2.rotation.z += 0.01;
     renderer.render(scene, camera);
 }
 
@@ -1022,17 +1006,16 @@ function render(){
 
 let onclick = function (event) {
     mouseSetting(event);
-    console.log(objectID);
     switch (objectID) {
         case frogID:
             scene.background = new THREE.Color(0xfafad2);
             resetButton(oldSelectedID);
-            console.log(frogID);
             resetScale(oldSelectedID);
             frogBody.scale.multiplyScalar(2);
             goButton.translateX(0.15);
             setButtonTexture('textures/goFrog.jpg');
             frogArea.add(goButton);
+            if (oldSelectedID == sheepID) sheepBody.translateY(-0.5);
             oldSelectedID = objectID;
             selected = "FROG";
             scene.remove(titleHomeArea);
@@ -1044,9 +1027,9 @@ let onclick = function (event) {
         case sheepID:
             scene.background = new THREE.Color(0xc9f0cf);
             resetButton(oldSelectedID);
-            console.log(sheepID);
             resetScale(oldSelectedID);
             sheepBody.scale.multiplyScalar(2);
+            sheepBody.translateY(0.5);
             goButton.translateX(-0.15);
             setButtonTexture('textures/goSheep.jpg');
             sheepArea.add(goButton);
@@ -1179,7 +1162,6 @@ let onMouseOverButton = function (event) {
             }
             break;
     }
-    console.log(objectID);
 };
 window.addEventListener('mousemove', onMouseOverButton);
 
@@ -1222,6 +1204,7 @@ let onClickButton = function (event) {
                 scene.remove(sheepBody);
                 scene.remove(scissorBody);
                 sheepBody.translateX(2);
+                sheepBody.translateY(-0.5);
                 resetSceneHome();
                 break;
             default:
@@ -1322,6 +1305,7 @@ function createResetAnimationButton(){
 }
 
 function createSceneFrog(){
+    currentScrren = "FROG";
     scene.remove(sheepArea);
     scene.remove(sheepBody);
     scene.remove(frogArea);
@@ -1342,6 +1326,7 @@ function createSceneFrog(){
 }
 
 function createSceneSheep(){
+    currentScrren = "SHEEP";
     scene.remove(frogArea);
     scene.remove(frogBody);
     scene.remove(sheepArea);
@@ -1428,7 +1413,7 @@ function frogAreaDescription() {
             new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
         ];
         descriptionFrogArea = new THREE.Mesh( descriptionAreaGeometry, materials);
-        descriptionFrogArea.translateY(-3.2);
+        descriptionFrogArea.translateY(-3.5);
         frogArea.add(descriptionFrogArea);
     })
 }
@@ -1445,7 +1430,7 @@ function sheepAreaDescription() {
             new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
         ];
         descriptionSheepArea = new THREE.Mesh( descriptionAreaGeometry, materials);
-        descriptionSheepArea.translateY(-3.2);
+        descriptionSheepArea.translateY(-3.7);
         sheepArea.add(descriptionSheepArea);
     })
 }
@@ -1485,6 +1470,8 @@ function createSheepAreaSubTitle() {
 }
 
 function resetSceneHome(){
+    selected = "HOME";
+    currentScrren = "HOME";
     scene.remove(group);
     scene.remove(group2);
     scene.background = backGroundHome;
@@ -1504,6 +1491,7 @@ function resetSceneHome(){
 }
 
 function createSceneHome(){
+    currentScrren = "HOME";
     createFrog(1);
     createSheep(2);
     createPlane();
@@ -1520,57 +1508,189 @@ function createSceneHome(){
     render();
 }
 
-function animateSceneFrog(){
+
+function animateSceneFrog(){ //attenzione: l'animazione della rana continua anche quando si ritorna nella schermata home
+    requestAnimationFrame( animateSceneFrog );
     animateFrogEyeBalls();
     animateFrogHead();
 }
 
-
-
-
-
-function animateFrogEyeBalls(){
-
-    var targetPos = new THREE.Vector3();
-    flyBody.getWorldPosition(targetPos);
-    console.log("targetPos = " + targetPos.x + "   " + targetPos.y);
-
-    var originalPos = new THREE.Vector3();
-    frogEyeL.getWorldPosition(originalPos);
-    console.log("Occhio rana = " + originalPos.x + "   " + originalPos.y);
-
-
-    // if (targetPos.x > originalPos.x + 0.15)
-    //    targetPos.x = originalPos.x + 0.15
-
-        var coords = { x: frogPupilL.position.x,
-                   y: frogPupilL.position.y,
-                   z: frogPupilL.position.z};
-    console.log("coords rana = " + coords.x + "  " + coords.y);
-
-    var tween = new TWEEN.Tween(coords)                       // Create a new tween that modifies 'coords'.
-        .to({ x: targetPos.x, y: targetPos.y }, 100)    // Move to (300, 200) in 1 second.
-        .easing(TWEEN.Easing.Quadratic.Out)                   // Use an easing function to make the animation smooth.
-        .onUpdate(function() {
-            var updatedPosition  = { x: frogPupilL.position.x,
-                y: frogPupilL.position.y,
-                z: frogPupilL.position.z};
-            // Called after tween.js updates 'coords'.
-             //if (updatedPosition.x < originalPos.x + 0.15)
-                //coords.x > originalPos.x - 0.15 &&
-                //coords.y < originalPos.y + 0.15 &&
-                //coords.y > originalPos.y - 0.15)
-                frogPupilL.position.set(coords.x, coords.y, coords.z);
-
-
-
-
-        })
-        .start(); // Start the tween immediately.
+function animateSceneSheep(){
+    requestAnimationFrame( animateSceneSheep );
+    animateScissors();
 }
 
-function animateFrogHead(){}
+function animateFrogEyeBalls(){
+    if (selected == "FROG"){
+        var targetPos = new THREE.Vector3();
+        flyBody.getWorldPosition(targetPos);
+    
+        //questa formula non funziona, dobbiamo trovare il modo di farla dipendere sia dalla larghezza che dall'altezza dello schermo
+        var targetPosScaled = {x: ((8*targetPos.x)/(Math.min(window.innerWidth, window.innerHeight)/2)), y:((4*targetPos.y)/(window.innerHeight/2))+2};
+    
+        createjs.Tween.get(frogPupilL.position)
+                .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);
+                
+        createjs.Tween.get(frogPupilR.position)
+                .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);    
+    }
+}
+
+function animateFrogHead(){
+    if (selected == "FROG"){
+        //MOVIMENTO ORIZZONTALE DELLA TESTA
+        //variable for the mouse
+        var targetPos = new THREE.Vector3();
+        flyBody.getWorldPosition(targetPos);
+
+        var headDistance = targetPos.z - frogHead.position.z;
+        //console.log("distanza raggio headDistance: " + headDistance);
+        var targetDivision = targetPos.x/headDistance;
+
+        //check if I have a value that is acceptable by Math.asin
+        if(targetDivision >= 1){
+            targetDivision = 1;
+        }
+        if(targetDivision <= -1){
+            targetDivision = -1;
+        }
+
+        //angle
+        var targetAngle = Math.asin(targetDivision);
+
+        //setting the limit value to the right and left
+        var maxTargetAngle = 0.7;
+
+        //check if the angle surpass a certain limit
+        if(targetAngle>= maxTargetAngle){
+            targetAngle = maxTargetAngle;
+        }
+        if(targetAngle <= -maxTargetAngle){
+            targetAngle = -maxTargetAngle;
+        } 
+
+        createjs.Tween.get(frogHead.rotation)
+        .to({y: targetAngle }, 80, createjs.Ease.linear);
+
+        //ATTENZIONE: modificare il valore massimo degli occhi perchè 
+        //con il limite dell'angolo escono fuori dalla figura
 
 
 
+        //MOVIMENTO VERTICALE DELLA TESTA
+        //console.log("distanza raggio headDistance: " + headDistance);
+        var targetDivisionVertical = targetPos.y/headDistance;
 
+        //check if I have a value that is acceptable by Math.asin
+        if(targetDivisionVertical >= 1){
+            targetDivisionVertical = 1;
+        }
+        if(targetDivisionVertical <= -1){
+            targetDivisionVertical = -1;
+        }
+
+        //angle
+        targetAngleVertical = Math.asin(targetDivisionVertical);
+
+        //setting the limit value to the right and left
+        var maxTargetAngleVertical = 0.7;
+
+        //check if the angle surpass a certain limit
+        if(targetAngleVertical>= maxTargetAngleVertical){
+            targetAngleVertical = maxTargetAngleVertical;
+        }
+        if(targetAngleVertical <= 0){
+            targetAngleVertical = 0;
+        } 
+
+        //console.log("ANGOLO TARGET " + targetAngleVertical);
+
+        createjs.Tween.get(frogHead.rotation)
+            .to({x: -targetAngleVertical }, 80, createjs.Ease.linear);
+
+    }
+
+}
+
+function stretchFrogTongue(){
+
+    createjs.Tween.get(frogHead.rotation)
+        .to({x: 1.57 }, 800, createjs.Ease.linear);
+
+    //animazione per allungare la lingua verso la mosca
+    createjs.Tween.get(frogTongue.scale)
+        .to({x: 0.5 }, 800, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongue.position)
+        .to({y: 0.1, z: -2.2}, 800, createjs.Ease.linear);
+    
+    createjs.Tween.get(frogTongueTip.position)
+        .to({y: -0.1}, 800, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongueTip.scale)
+        .to({x: 4.5, y: 5, z:4.3}, 800, createjs.Ease.linear);
+
+    //la testa va un po' indietro per ismulare apertura bocca
+    //console.log("angolo attuale "+targetAngleVertical);
+    //createjs.Tween.get(frogMouth.rotation)
+        //.to({x: -targetAngleVertical}, 800, createjs.Ease.linear);
+
+
+}
+
+function foldFrogTongue(){
+    //animazione per allungare la lingua verso la mosca
+    createjs.Tween.get(frogTongue.scale)
+        .to({x: 0.05 }, 800, createjs.Ease.linear); // il valore 0.05 lo mettiamo perchè è il valore di quando abbiamo creato la tongue
+
+    createjs.Tween.get(frogTongue.position)
+        .to({y: 0, z: -0.5}, 800, createjs.Ease.linear);    
+
+    createjs.Tween.get(frogTongueTip.position)
+        .to({y: 0}, 800, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongueTip.scale)
+        .to({x: 1, y: 5, z:4.4}, 800, createjs.Ease.linear);
+
+}
+
+
+let onMousePause = function (event) {
+    clearTimeout(timer);
+
+    timer = setTimeout(function() {
+        if (currentScrren == "FROG")
+            stretchFrogTongue();
+    }, 3000);
+}
+
+window.addEventListener('mousemove', onMousePause);
+
+function animateScissors(){
+    //metodo che chiude piano e scatta quando si apre
+    /*
+    var rotationDirection = -0.1;
+    var valueRotation = scissorBlades[0].rotation.z;
+    var roundedValueRotation = Math.round(valueRotation * 100) / 100
+    if (roundedValueRotation == -0.1){
+        rotationDirection = -4;
+    }
+    if (roundedValueRotation == -4){
+        rotationDirection = -0.1;
+    }
+    console.log(roundedValueRotation);
+        createjs.Tween.get(scissorBlades[0].rotation)
+        .to({z: rotationDirection}, 500);
+
+    console.log(roundedValueRotation);
+        createjs.Tween.get(scissorBlades[1].rotation)
+        .to({z: -rotationDirection}, 500);
+    */
+
+    console.log("angolo forbici: " + scissorBlades[0].rotation.z);
+
+    createjs.Tween.get(scissorBlades[0].rotation)
+        .to({z: Math.round(-0.1 * 10) / 10}, 300, createjs.Ease.linear)
+        .to({z: Math.round(-0.4 * 10) / 10}, 300, createjs.Ease.linear);
+ 
+}
