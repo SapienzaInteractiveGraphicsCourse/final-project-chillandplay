@@ -4,11 +4,11 @@ import { ObjectControls } from './libs/ObjectControls.js';
 // -------------- VARIABLES DECLARATION ---------------------
 let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
 let scissorBody, scissorBlades, scissorHandles;
-let group, group2;
+let group, group2, groupPivotLegR, groupPivotLegL;
 let titleHomeArea;
 let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
-    frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip, titleFrogArea, descriptionFrogArea, subTitleFrogArea;
+    frogMouthPivot, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip, titleFrogArea, descriptionFrogArea, subTitleFrogArea;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
     sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
@@ -29,12 +29,12 @@ const newGreyMaterial = new THREE.MeshLambertMaterial({color: 0x857e77});
 // -------------- IDS OBJECT DECLARATION -------------------
 const pi = Math.PI;
 let objectID;
-let oldSelectedID = 11;
-const frogID = 10;
-const sheepID = 28;
-const goButtonID = 145;
-const homeButtonID = 146;
-const resetAnimationButtonID = 160;
+let oldSelectedID = 13;
+const frogID = 12;
+const sheepID = 30;
+const goButtonID = 147;
+const homeButtonID = 148;
+const resetAnimationButtonID = 162;
 
 // -------------- FLAGS DECLARATION -------------------
 let buttonFlag = true;
@@ -148,6 +148,13 @@ function createFrogBody(scale){
         frogBody.translateX(-2);
         frogBody.translateY(-1);
         frogBody.scale.multiplyScalar(scale);
+        frogBody.add(groupPivotLegR);
+        groupPivotLegR.translateX(0.4);
+        groupPivotLegR.translateY(-0.3);
+        groupPivotLegL.translateY(-0.3);
+        groupPivotLegL.translateX(-0.4);
+
+        frogBody.add(groupPivotLegL);
         scene.add(frogBody);
     }
 }
@@ -180,8 +187,8 @@ function createFrogHead(scale) {
 }
 
 function createFrogPivotAndMouth(scale){
+   frogMouthPivot = new THREE.Object3D();
     //Pivot (mandibola)
-    let frogMouthPivot = new THREE.Object3D();
     frogMouthPivot.translateY(-0.3);
     frogMouthPivot.translateZ(-0.3);
     frogMouthPivot.rotateX(0.4);
@@ -331,12 +338,15 @@ function createFrogUpperRightLeg(scale){
     frogUpperRightLeg = new THREE.Mesh( frogUpperRightLegGeometry, frogUpperRightLegMaterial );
     frogUpperRightLeg.receiveShadow = true;
     frogUpperRightLeg.castShadow = true;
-    frogUpperRightLeg.rotateY(1.55)
-    frogUpperRightLeg.rotateX(0.6)
-    frogUpperRightLeg.translateOnAxis(frogUpperRightLeg.worldToLocal(new THREE.Vector3(0,1,0)), 0.3);
-    frogUpperRightLeg.translateOnAxis(frogUpperRightLeg.worldToLocal(new THREE.Vector3(0,0,1)), 0.5);
+    frogUpperRightLeg.translateY(0.25);
+    frogUpperRightLeg.translateX(0.15);
+    frogUpperRightLeg.rotateY(1.55);
+    frogUpperRightLeg.rotateX(0.6);
+
+    //frogUpperRightLeg.translateOnAxis(frogUpperRightLeg.worldToLocal(new THREE.Vector3(0,1,0)), 0.3);
+    //frogUpperRightLeg.translateOnAxis(frogUpperRightLeg.worldToLocal(new THREE.Vector3(0,0,1)), 0.5);
     frogUpperRightLeg.scale.multiplyScalar(scale);
-    frogBody.add( frogUpperRightLeg );
+    groupPivotLegR.add( frogUpperRightLeg );
 }
 
 function createFrogUpperLeftLeg(scale){
@@ -346,12 +356,16 @@ function createFrogUpperLeftLeg(scale){
     frogUpperLeftLeg = new THREE.Mesh( frogUpperLeftLegGeometry, frogUpperLeftLegMaterial );
     frogUpperLeftLeg.receiveShadow = true;
     frogUpperLeftLeg.castShadow = true;
-    frogUpperLeftLeg.rotateY(1.55)
-    frogUpperLeftLeg.rotateX(-0.6)
-    frogUpperLeftLeg.translateOnAxis(frogUpperLeftLeg.worldToLocal(new THREE.Vector3(0,1,0)), 0.3);
-    frogUpperLeftLeg.translateOnAxis(frogUpperLeftLeg.worldToLocal(new THREE.Vector3(0,0,1)), -0.5);
+    frogUpperLeftLeg.translateY(0.25);
+    frogUpperLeftLeg.translateX(-0.15);
+    frogUpperLeftLeg.rotateY(1.55);
+    frogUpperLeftLeg.rotateX(-0.6);
+
+
+    //frogUpperLeftLeg.translateOnAxis(frogUpperLeftLeg.worldToLocal(new THREE.Vector3(0,1,0)), 0.3);
+    //frogUpperLeftLeg.translateOnAxis(frogUpperLeftLeg.worldToLocal(new THREE.Vector3(0,0,1)), -0.5);
     frogUpperLeftLeg.scale.multiplyScalar(scale);
-    frogBody.add( frogUpperLeftLeg );
+    groupPivotLegL.add( frogUpperLeftLeg );
 }
 
 function createFrogLowerRightLeg(scale){
@@ -373,8 +387,8 @@ function createFrogLowerRightLeg(scale){
     frogLowerRightLegGeometry.attributes.position.array[56] = 0.25;
     frogLowerRightLegGeometry.attributes.position.array[65] = -0.25;
     frogLowerRightLegGeometry.attributes.position.array[71] = -0.25;
-    frogLowerRightLeg.rotateY(1.57)
-    frogLowerRightLeg.rotateZ(-0.65)
+    frogLowerRightLeg.rotateY(1.57);
+    frogLowerRightLeg.rotateZ(-0.65);
     frogLowerRightLeg.translateOnAxis(frogLowerRightLeg.worldToLocal(new THREE.Vector3(0,1,0)),-0.36);
     frogLowerRightLeg.scale.multiplyScalar(scale);
     frogUpperRightLeg.add( frogLowerRightLeg );
@@ -399,8 +413,8 @@ function createFrogLowerLeftLeg(scale){
     frogLowerLeftLegGeometry.attributes.position.array[56] = 0.25;
     frogLowerLeftLegGeometry.attributes.position.array[65] = -0.25;
     frogLowerLeftLegGeometry.attributes.position.array[71] = -0.25;
-    frogLowerLeftLeg.rotateY(-1.57)
-    frogLowerLeftLeg.rotateZ(-0.65)
+    frogLowerLeftLeg.rotateY(-1.57);
+    frogLowerLeftLeg.rotateZ(-0.65);
     frogLowerLeftLeg.translateOnAxis(frogLowerRightLeg.worldToLocal(new THREE.Vector3(0,1,0)),-0.36);
     frogLowerLeftLeg.scale.multiplyScalar(scale);
     frogUpperLeftLeg.add( frogLowerLeftLeg );
@@ -927,7 +941,23 @@ function createSmallerWings(){
     flySmallerWings[1].rotateY(-0.4);
 }
 
+function animateFly(){
+    let initialFlyBiggerWingsZ = flyBiggerWings[0].rotation.z;
+    createjs.Tween.get(flyBiggerWings[0].rotation, {loop: true})
+        .to({ z: 0.1 }, 450, createjs.Ease.linear)
+        .to({ z: initialFlyBiggerWingsZ }, 450, createjs.Ease.linear);
 
+    initialFlyBiggerWingsZ = flyBiggerWings[1].rotation.z;
+    createjs.Tween.get(flyBiggerWings[1].rotation, {loop: true})
+        .to({ z: 0 }, 550, createjs.Ease.linear)
+        .to({ z: initialFlyBiggerWingsZ }, 350, createjs.Ease.linear);
+
+    createjs.Tween.get(flySmallerWings[0].rotation, {loop: true})
+        .to({ z: 0 }, 100, createjs.Ease.linear);
+
+    createjs.Tween.get(flySmallerWings[1].rotation, {loop: true})
+        .to({ z: 0 }, 100, createjs.Ease.linear);
+}
 // ------------- SCISSOR ----------------------------------------
 function createScissor(){
     createScissorBlades();
@@ -1318,6 +1348,7 @@ function createSceneFrog(){
     setResetAnimationButtonTexture('textures/resetFrog.jpg');
     scene.add(resetAnimationButton);
     animateSceneFrog();
+    animateFly();
     scene.remove(titleHomeArea);
     scene.remove(titleSheepArea);
     scene.remove(titleFrogArea);
@@ -1490,9 +1521,71 @@ function resetSceneHome(){
     scene.remove(subTitleFrogArea);
     scene.remove(subTitleSheepArea);
 }
+function animateFrogHome(){
+    // BELLY ANIMATION
+    let initialZ = frogBelly.scale.x;
+    createjs.Tween.get(frogBelly.scale, {loop: true})
+        .to({ x: 0.9 }, 100, createjs.Ease.linear)
+        .to({ x: initialZ }, 100, createjs.Ease.linear)
+        .wait(5000);
 
+    // MOUTH ANIMATION
+    initialZ = frogMouthPivot.rotation.x;
+    createjs.Tween.get(frogMouthPivot.rotation, {loop: true})
+        .to({ x: 0.25 }, 200, createjs.Ease.linear)
+        .to({ x: initialZ }, 200, createjs.Ease.linear)
+        .wait(2500);
+
+    // EYES ANIMATION
+    initialZ = frogPupilL.scale.y;
+    createjs.Tween.get(frogPupilL.scale, {loop: true})
+        .to({ y: 0.1 }, 100, createjs.Ease.linear)
+        .to({ y: initialZ }, 100, createjs.Ease.linear)
+        .wait(2500);
+
+    initialZ = frogPupilR.scale.y;
+    createjs.Tween.get(frogPupilR.scale, {loop: true})
+        .to({ y: 0.1 }, 100, createjs.Ease.linear)
+        .to({ y: initialZ }, 100, createjs.Ease.linear)
+        .wait(2500);
+
+    // UPPER LEGS ANIMATION
+    initialZ = groupPivotLegL.rotation.z;
+    createjs.Tween.get(groupPivotLegL.rotation, {loop: true})
+        .to({ z: 0.2 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(1500)
+        .to({ z: 0.1 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(3000);
+
+    initialZ = groupPivotLegR.rotation.z;
+    createjs.Tween.get(groupPivotLegR.rotation, {loop: true})
+        .to({ z: -0.2 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(1500)
+        .to({ z: -0.1 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(3000);
+
+    // LOWER LEGS ANIMATION
+    initialZ = frogLowerLeftLeg.rotation.z;
+    createjs.Tween.get(frogLowerLeftLeg.rotation, {loop: true})
+        .to({ z: -0.8 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(5500);
+
+    initialZ = frogLowerRightLeg.rotation.z;
+    createjs.Tween.get(frogLowerRightLeg.rotation, {loop: true})
+        .to({ z: -0.8 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(5500);
+
+}
 function createSceneHome(){
     currentScrren = "HOME";
+    groupPivotLegR = new THREE.Group();
+    groupPivotLegL = new THREE.Group();
     createFrog(1);
     createSheep(2);
     createPlane();
@@ -1505,13 +1598,14 @@ function createSceneHome(){
     createScissor();
     createResetAnimationButton();
     createAreaTitle();
+    animateFrogHome();
     animate();
     render();
 }
 
 
 function animateSceneFrog(){ //attenzione: l'animazione della rana continua anche quando si ritorna nella schermata home
-    requestAnimationFrame( animateSceneFrog );
+    requestAnimationFrame( animateSceneFrog ); //serve solo per il movimento degli occhi
     animateFrogEyeBalls();
     animateFrogHead();
 }
@@ -1678,7 +1772,6 @@ function animateScissors(){
         .to({ z: 0.4 }, 900, createjs.Ease.linear); //this second animation never starts
 
 }
-
 
 function rotateCameraSheepScene(){
 
