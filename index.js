@@ -1,18 +1,5 @@
-// --import * as THREE from './libs/three/build/three.module.js'
-//import { TWEEN2 }  from './libs/three/examples/jsm/libs/tween.module.min.js'
-//import * as TWEEN  from './libs/tweenjs/lib/tweenjs.js'
-//import TWEEN from './libs/three/tweenjs.min.js'
-//import * as Tween from 'https://code.createjs.com/1.0.0/tweenjs.min.js'
-import { TWEEN } from 'https://cdn.skypack.dev/three@0.134.0/examples/jsm/libs/tween.module.min'
-//import {Linear, Power0, TweenMax} from "./libs/gsap-public/gsap-public/esm"
+import * as THREE from './libs/three/build/three.module.js'
 import { ObjectControls } from './libs/ObjectControls.js';
-
-import { gsap } from "gsap";
-
-import * as THREE from 'three';
-import { OrbitControls } from 'OrbitControls';
-
-
 
 // -------------- VARIABLES DECLARATION ---------------------
 let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
@@ -991,7 +978,6 @@ function createScissorHandle(){
 
 function animate() {
     requestAnimationFrame( animate );
-    TWEEN.update();
   // frogBody.rotation.x += 0.01;
   // frogBody.rotation.y += 0.01;
 
@@ -1355,6 +1341,7 @@ function createSceneSheep(){
     scene.remove(titleFrogArea);
     scene.remove(subTitleFrogArea);
     createSheepAreaSubTitle();
+    animateSceneSheep();
 }
 
 function loadTexture(url) {
@@ -1530,11 +1517,8 @@ function animateSceneFrog(){ //attenzione: l'animazione della rana continua anch
 }
 
 function animateSceneSheep(){
-    requestAnimationFrame( animateSceneSheep );
     rotateCameraSheepScene();
     animateScissors();
-    TWEEN.update();
-
 }
 
 function animateFrogEyeBalls(){
@@ -1684,81 +1668,28 @@ let onMousePause = function (event) {
 window.addEventListener('mousemove', onMousePause);
 
 function animateScissors(){
-    //metodo che chiude piano e scatta quando si apre
-    /*
-    var rotationDirection = -0.1;
-    var valueRotation = scissorBlades[0].rotation.z;
-    var roundedValueRotation = Math.round(valueRotation * 100) / 100
-    if (roundedValueRotation == -0.1){
-        rotationDirection = -4;
-    }
-    if (roundedValueRotation == -4){
-        rotationDirection = -0.1;
-    }
-    console.log(roundedValueRotation);
-        createjs.Tween.get(scissorBlades[0].rotation)
-        .to({z: rotationDirection}, 500);
 
-    console.log(roundedValueRotation);
-        createjs.Tween.get(scissorBlades[1].rotation)
-        .to({z: -rotationDirection}, 500);
-    */
+    createjs.Tween.get(scissorBlades[0].rotation, {loop: true})
+        .to({ z: -0.1 }, 700, createjs.Ease.linear) //this first animation never stops
+        .to({ z: -0.4 }, 900, createjs.Ease.linear); //this second animation never starts
 
-    console.log("angolo forbici: " + scissorBlades[0].rotation.z);
-
-/*
-    createjs.Tween.get(scissorBlades[0].rotation)
-        .to({z: checkValue(scissorBlades[0])}, 1000, createjs.Ease.linear)
-        //.to({z: -0.4}, 300, createjs.Ease.linear);
-
-    createjs.Tween.get(scissorBlades[1].rotation)
-        .to({z: checkValue(scissorBlades[1])}, 300, createjs.Ease.linear)
-        //.to({z: 0.4}, 300, createjs.Ease.linear);
-*/
-/*
-    var close = new TWEEN.Tween(scissorBlades[0])
-        .to({z: -0.1}, 2000)
-        .easing(TWEEN.Easing.Quadratic.Out)                   // Use an easing function to make the animation smooth.
-        .onUpdate(function() {
-            scissorBlades[0].rotation.set( scissorBlades[0].rotation.x, scissorBlades[0].rotation.y, scissorBlades[0].rotation.z - 0.01);
-        })
-
-    var open = new TWEEN.Tween(scissorBlades[0])
-        .to({z: -0.4}, 2000);
-
-   // close.chain(open);
-    close.start();
-*/
-    gsap.timeline().to(scissorBlades[0].rotation, {duration: 0.07, z: 0.1})
-        .to(scissorBlades[0].rotation, {duration: 0.07, z: 0.4});
-
-   // .to(scissorBlades[0].rotation, {duration: 0.07, z: 0.4,  yoyo:true, ease: Linear.easeNone});
+    createjs.Tween.get(scissorBlades[1].rotation, {loop: true})
+        .to({ z: 0.1 }, 700, createjs.Ease.linear) //this first animation never stops
+        .to({ z: 0.4 }, 900, createjs.Ease.linear); //this second animation never starts
 
 }
 
-function checkValue (scissorBlade) {
-
-    if (scissorBlade.rotation.z <= 0.11 )
-        return 0.4
-    else if (scissorBlade.rotation.z >= 0.39)
-        return 0.1
-    /*
-        if (scissorBlade.rotation.z <= 0.11 )
-            return 0.1
-
-     */
-
-
-}
 
 function rotateCameraSheepScene(){
 
     /** instantiate ObjectControls**/
     controls = new ObjectControls( camera, renderer.domElement, sheepBody );
-    controls.setDistance(8, 200); // set min - max distance for zoom
-    controls.setZoomSpeed(0.5); // set zoom speed
+    controls.setObjectToMove(sheepBody);
+    controls.setDistance(50, 100); // set min - max distance for zoom
+    controls.setZoomSpeed(0.05); // set zoom speed
     controls.enableVerticalRotation();
     controls.setMaxVerticalRotationAngle(Math.PI / 4, Math.PI / 4);
-    controls.setRotationSpeed(0.0002);
+    //controls.setMaxHorizontalRotationAngle(Math.PI / 2, Math.PI / 2);
+    controls.setRotationSpeed(0.02);
 
 }
