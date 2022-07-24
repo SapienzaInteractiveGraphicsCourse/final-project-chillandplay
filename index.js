@@ -1,11 +1,11 @@
 import * as THREE from './libs/three/build/three.module.js'
 import { ObjectControls } from './libs/ObjectControls.js';
-import {Vec3} from "./libs/three/examples/jsm/libs/OimoPhysics";
+//import {Vec3} from "./libs/three/examples/jsm/libs/OimoPhysics";
 
 // -------------- VARIABLES DECLARATION ---------------------
 let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
 let scissorBody, scissorBlades, scissorHandles;
-let group, group2, groupPivotLegR, groupPivotLegL;
+let flyGroup, group2, groupPivotLegR, groupPivotLegL;
 let titleHomeArea;
 let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogAnimation, frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
@@ -27,12 +27,21 @@ let frogHeadVerticalAnimation, frogHeadHorizontalAnimation
 
 
 // -------------- BACKUP VARIABLES --------------------
-let frogBodyPositionBackup, frogBodyRotationBackup, frogHeadPositionBackup, frogHeadRotationBackup , frogMouthBackup, frogEyeRBackup, frogEyeLBackup, frogPupilRBackup,
-    frogPupilLBackup, frogCheekRBackup, frogMouthPivotBackup, frogCheekLBackup, frogUpperRightLegBackup, frogUpperLeftLegBackup,
-    frogLowerRightLegBackup, frogLowerLeftLegBackup, frogTongueBackup, frogTongueTipBackup;
+let frogBodyPositionBackup, frogBodyRotationBackup, 
+    frogHeadPositionBackup, frogHeadRotationBackup,
+    frogPupilPositionBackupR, frogPupilRotationBackupR,
+    frogPupilPositionBackupL, frogPupilRotationBackupL,
+    frogMouthPivotPositionBackup, frogMouthPivotRotationBackup, 
+    frogLegPivotPositionBackupR, frogLegPivotRotationBackupR, 
+    frogLegPivotPositionBackupL, frogLegPivotRotationBackupL,
+    frogLowerLegPositionBackupR, frogLowerLegRotationBackupR, 
+    frogLowerLegPositionBackupL, frogLowerLegRotationBackupL, 
+    frogTonguePositionBackup, frogTongueRotationBackup, 
+    frogTongueTipPositionBackup, frogTongueTipRotationBackup;
 
 // -------------- MATERIALS DECLARATION --------------------
 const greyMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
+const whiteMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
 const darkMaterial = new THREE.MeshLambertMaterial({color: 0x5a6e6c});
 const pinkMaterial = new THREE.MeshLambertMaterial({color: 0xffc9c8});
 const bordeauxMaterial = new THREE.MeshLambertMaterial({color: 0x9c4c6e});
@@ -112,33 +121,14 @@ function createLights(){
 
 function backupFrogHome(){
 
-    console.log("frogHeadRotationBackup.x = "+ frogHeadRotationBackup.x)
-    console.log("frogHead.rotation.x = "+ frogHead.rotation.x)
+    groupPivotLegR.rotation.setFromVector3(frogLegPivotRotationBackupR);
+    groupPivotLegL.rotation.setFromVector3(frogLegPivotRotationBackupL);
 
-//    frogBody.position.set (frogBodyPositionBackup.x, frogBodyPositionBackup.y, frogBodyPositionBackup.z)
-   // frogBody.position.y = frogBodyPositionBackup.y;
-   // frogBody.position.z = frogBodyPositionBackup.z;
+    frogMouthPivot.rotation.setFromVector3(frogMouthPivotRotationBackup);
+    frogLowerLeftLeg.rotation.setFromVector3(frogLowerLegRotationBackupL);
+    frogLowerRightLeg.rotation.setFromVector3(frogLowerLegRotationBackupR);
 
-   // console.log("frogBodyPositionBackup.x = "+ frogBodyPositionBackup.x)
-  //  frogBody.rotation.set(frogBodyRotationBackup.x, frogBodyRotationBackup.y, frogBodyRotationBackup.z);
- //   frogBody.rotation.y = frogBodyRotationBackup.y;
- //   frogBody.rotation.z = frogBodyRotationBackup.z;
-
-
- //   frogHead.position.set(frogHeadPositionBackup.x, frogHeadPositionBackup.y, frogHeadPositionBackup.z);
-    //frogHead.position.y = frogHeadPositionBackup.y;
-    //frogHead.position.z = frogHeadPositionBackup.z;
-
-   // frogHead.yRotate = -2;
-    frogUpperRightLeg.rotation.setFromVector3(frogHeadRotationBackup);
-
-
-    // frogHead.rotateZ(frogHeadRotationBackup.z);
-
-    //  frogHead.rotation.y = frogHeadRotationBackup.y;
-  //  frogHead.rotation.z = frogHeadRotationBackup.z;
-    console.log("frogHead.rotation.x = "+ frogHead.rotation.x)
-
+    frogHead.rotation.setFromVector3(frogHeadRotationBackup);
 
 }
 
@@ -199,9 +189,11 @@ function createFrogBody(scale){
         groupPivotLegR.translateY(-0.3);
         groupPivotLegL.translateY(-0.3);
         groupPivotLegL.translateX(-0.4);
-      //  frogBodyPositionBackup = frogBody.position;
-      //  frogBodyRotationBackup = frogBody.rotation;
         frogBody.add(groupPivotLegL);
+
+        frogLegPivotRotationBackupR = new THREE.Vector3(groupPivotLegR.rotation.x, groupPivotLegR.rotation.y, groupPivotLegR.rotation.z);
+        frogLegPivotRotationBackupL = new THREE.Vector3(groupPivotLegL.rotation.x, groupPivotLegL.rotation.y, groupPivotLegL.rotation.z);
+    
         scene.add(frogBody);
     }
 }
@@ -230,9 +222,7 @@ function createFrogHead(scale) {
     frogHead.translateZ(0.3);
     frogHead.rotateX(-0.2);
     frogHead.scale.multiplyScalar(scale);
-   // frogHeadPositionBackup = new THREE.Vector3(frogHead.position.x, frogHead.position.y, frogHead.position.z);
-    //frogHeadRotationBackup = frogHead.rotation
-    //console.log("frogHeadRotationBackup  = " + frogHeadRotationBackup.x)
+    frogHeadRotationBackup = new THREE.Vector3(frogHead.rotation.x, frogHead.rotation.y, frogHead.rotation.z);
 
     frogBody.add(frogHead);
 }
@@ -264,6 +254,8 @@ function createFrogPivotAndMouth(scale){
     frogMouth.translateZ(0.3);
     frogMouth.scale.multiplyScalar(scale);
     frogMouthPivot.add( frogMouth );
+
+    frogMouthPivotRotationBackup = new THREE.Vector3(frogMouthPivot.rotation.x, frogMouthPivot.rotation.y, frogMouthPivot.rotation.z);
 }
 
 function createFrogEyeR(scale){
@@ -393,8 +385,8 @@ function createFrogUpperRightLeg(scale){
     frogUpperRightLeg.translateX(0.15);
     frogUpperRightLeg.rotateY(1.55);
     frogUpperRightLeg.rotateX(0.6);
-    frogHeadRotationBackup = new THREE.Vector3(frogUpperRightLeg.rotation.x, frogUpperRightLeg.rotation.y, frogUpperRightLeg.rotation.z);
-    frogHeadPositionBackup = frogUpperRightLeg.position;
+    frogHeadRotationBackup = new THREE.Vector3(groupPivotLegR.rotation.x, groupPivotLegR.rotation.y, groupPivotLegR.rotation.z);
+    frogHeadPositionBackup = groupPivotLegR.position;
     //frogUpperRightLeg.translateOnAxis(frogUpperRightLeg.worldToLocal(new THREE.Vector3(0,1,0)), 0.3);
     //frogUpperRightLeg.translateOnAxis(frogUpperRightLeg.worldToLocal(new THREE.Vector3(0,0,1)), 0.5);
     frogUpperRightLeg.scale.multiplyScalar(scale);
@@ -444,6 +436,9 @@ function createFrogLowerRightLeg(scale){
     frogLowerRightLeg.translateOnAxis(frogLowerRightLeg.worldToLocal(new THREE.Vector3(0,1,0)),-0.36);
     frogLowerRightLeg.scale.multiplyScalar(scale);
     frogUpperRightLeg.add( frogLowerRightLeg );
+
+    frogLowerLegRotationBackupR = new THREE.Vector3(frogLowerRightLeg.rotation.x, frogLowerRightLeg.rotation.y, frogLowerRightLeg.rotation.z);
+
 }
 
 function createFrogLowerLeftLeg(scale){
@@ -470,6 +465,9 @@ function createFrogLowerLeftLeg(scale){
     frogLowerLeftLeg.translateOnAxis(frogLowerRightLeg.worldToLocal(new THREE.Vector3(0,1,0)),-0.36);
     frogLowerLeftLeg.scale.multiplyScalar(scale);
     frogUpperLeftLeg.add( frogLowerLeftLeg );
+
+    frogLowerLegRotationBackupL = new THREE.Vector3(frogLowerLeftLeg.rotation.x, frogLowerLeftLeg.rotation.y, frogLowerLeftLeg.rotation.z);
+
 }
 
 
@@ -591,7 +589,7 @@ function createSheepEyes(){
     let geo_eye = new THREE.CylinderGeometry(0.3, 0.2, 0.3, 8);
     sheepEyes = [];
     for (let i = 0; i < 2; i++) {
-        sheepEyes[i] = new THREE.Mesh(geo_eye, greyMaterial);
+        sheepEyes[i] = new THREE.Mesh(geo_eye, whiteMaterial);
         sheepHead.add(sheepEyes[i]);
         sheepEyes[i].castShadow = true;
         sheepEyes[i].position.set(0, sheepHead.position.y + 0.1, 0.7);
@@ -916,7 +914,7 @@ function createFly(){
     createBiggerWings();
     createSmallerWings();
     flyFlag = true;
-    group.scale.multiplyScalar(2.5);
+    flyGroup.scale.multiplyScalar(2.5);
 }
 
 // ------------- FLY PARTS ----------------------------------
@@ -926,6 +924,7 @@ function createFlyBody(){
     flyBody = new THREE.Mesh( flyGeometry, flyMaterial );
     flyBody.castShadow = true;
     flyBody.scale.z = 1.2;
+    flyGroup.add(flyBody);
 }
 
 function createFlyEyes(){
@@ -934,7 +933,7 @@ function createFlyEyes(){
     flyEyes = [];
     for (let i = 0; i < 2; i++) {
         flyEyes[i] = new THREE.Mesh(flyEyeGeometry, bordeauxMaterial);
-        group.add(flyEyes[i]);
+        flyGroup.add(flyEyes[i]);
         flyEyes[i].castShadow = true;
     }
     flyEyes[0].translateX(0.04);
@@ -951,7 +950,7 @@ function createBiggerWings(){
     flyBiggerWings = [];
     for (let i = 0; i < 2; i++) {
         flyBiggerWings[i] = new THREE.Mesh(flyBiggerWingsGeometry, greyMaterial);
-        group.add(flyBiggerWings[i]);
+        flyGroup.add(flyBiggerWings[i]);
         flyBiggerWings[i].castShadow = true;
     }
     flyBiggerWings[0].translateX(0.07);
@@ -975,7 +974,7 @@ function createSmallerWings(){
     flySmallerWings = [];
     for (let i = 0; i < 2; i++) {
         flySmallerWings[i] = new THREE.Mesh(flySmallerWingsGeometry, greyMaterial);
-        group.add(flySmallerWings[i]);
+        flyGroup.add(flySmallerWings[i]);
         flySmallerWings[i].castShadow = true;
     }
     flySmallerWings[0].translateX(0.07);
@@ -1070,15 +1069,9 @@ function animate() {
    //sheepBody.rotation.y = 0.4;
    //sheepBody.rotation.x = -0.2;
 
-    group.rotation.x += 0.03;
+    flyGroup.rotation.x += 0.03;
     //group.rotation.y += 0.01;
-    group.rotation.z += 0.03;
-
-    //group2.rotation.x += 0.01;
-  //animate with create js?
-    //group2.rotation.y -= 0.01; //find the way to reach a certain angle 
- 
-  //  group2.rotation.z += 0.01;
+    flyGroup.rotation.z += 0.03;
     renderer.render(scene, camera);
 }
 
@@ -1192,7 +1185,7 @@ let onMouseOverButton = function (event) {
             buttonFlag = false;
             break;
         case homeButtonID:
-            scene.remove(group);
+            scene.remove(flyGroup);
             scene.remove(group2);
             if (homeButtonFlag)
                 homeButton.scale.multiplyScalar(1.6);
@@ -1206,7 +1199,7 @@ let onMouseOverButton = function (event) {
             }
             break;
         case resetAnimationButtonID:
-            scene.remove(group);
+            scene.remove(flyGroup);
             scene.remove(group2);
             if (resetAnimationButtonFlag) 
                 resetAnimationButton.scale.multiplyScalar(1.6);
@@ -1224,7 +1217,7 @@ let onMouseOverButton = function (event) {
             }
             if (!homeButtonFlag && selected === "FROG") {
                 homeButton.scale.multiplyScalar(0.625);
-                scene.add(group);
+                scene.add(flyGroup);
                 homeButtonFlag = true;
             }
             if(!homeButtonFlag && selected === "SHEEP"){
@@ -1234,7 +1227,7 @@ let onMouseOverButton = function (event) {
             }
             if (!resetAnimationButtonFlag && selected === "FROG") {
                 resetAnimationButton.scale.multiplyScalar(0.625);
-                scene.add(group);
+                scene.add(flyGroup);
                 resetAnimationButtonFlag = true;
             }
             if(!resetAnimationButtonFlag && selected === "SHEEP"){
@@ -1271,7 +1264,7 @@ let onClickButton = function (event) {
                 homeButtonFlag = true;
                 frogBody.scale.multiplyScalar(0.5);
                 scene.remove(frogBody);
-                scene.remove(flyBody);
+                scene.remove(flyGroup);
                 frogBody.translateX(-2);
                 resetSceneHome();
                 break;
@@ -1333,7 +1326,7 @@ function followMouse(event){
     raycaster.setFromCamera(mouse, camera);
     raycaster.ray.intersectPlane(windowPlane, intersects);
     if (flyFlag)
-        group.position.set(intersects.x, intersects.y, intersects.z);
+        flyGroup.position.set(intersects.x, intersects.y, intersects.z);
     else {
         flyFlag = false;
     }
@@ -1397,13 +1390,14 @@ function stopHomeAnimation(){
 function createSceneFrog(){
     stopHomeAnimation();
     backupFrogHome();
+    makeFlyAppear();
     currentScrren = "FROG";
     scene.remove(sheepArea);
     scene.remove(sheepBody);
     scene.remove(frogArea);
-    scene.add(flyBody);
-    group.add(flyBody);
-    scene.add(group);
+    //scene.add(flyBody);
+    //flyGroup.add(flyBody);
+    scene.add(flyGroup);
     frogBody.translateX(2);
     setHomeButtonTexture('textures/homeFrog.jpg');
     scene.add(homeButton);
@@ -1562,17 +1556,80 @@ function createSheepAreaSubTitle() {
         scene.add(subTitleSheepArea);
     })
 }
-function stopFrogAnimation (){
-    cancelAnimationFrame( frogRequestAnimationFrame );
-   // frogHeadVerticalAnimation.setPaused(true);
-   // frogHeadHorizontalAnimation.setPaused(true);
+
+function restartHomeAnimation() {
+    frogLowerRightLegAnimation.setPaused(false);
+    frogLowerLeftLegAnimation.setPaused(false);
+    groupPivotLegRAnimation.setPaused(false);
+    groupPivotLegLAnimation.setPaused(false);
+    frogPupilRAnimation.setPaused(false);
+    frogPupilLAnimation.setPaused(false);
+    frogMouthAnimation.setPaused(false);
+}
+
+function makeFlyDisappear() {
+    window.removeEventListener( 'mousemove', followMouse, false);
+
+    flyBody.castShadow = false;
+    flyBody.material.opacity = 0.0;
+    flyBody.material.transparent = true;
+    flyBody.material.needsUpdate = true;
+
+    flyBiggerWings[0].castShadow = false;
+    flyBiggerWings[0].material.opacity = 0.0;
+    flyBiggerWings[0].material.transparent = true;
+    flyBiggerWings[0].material.needsUpdate = true;
+    flyBiggerWings[1].castShadow = false;
+
+    flySmallerWings[0].castShadow = false;
+    flySmallerWings[1].castShadow = false;
+    flySmallerWings[1].material.opacity = 0.0;
+    flySmallerWings[1].material.transparent = true;
+    flySmallerWings[1].material.needsUpdate = true;
+
+    flyEyes[0].castShadow = false;
+    flyEyes[1].castShadow = false;
+    flyEyes[1].material.opacity = 0.0;
+    flyEyes[1].material.transparent = true;
+    flyEyes[1].material.needsUpdate = true;
+}
+
+function makeFlyAppear() {
+    window.addEventListener( 'mousemove', followMouse, false);
+
+    flyBody.castShadow = true;
+    flyBody.material.transparent = false;
+    flyBody.material.needsUpdate = true;
+
+    flyBiggerWings[0].castShadow = true;
+    flyBiggerWings[0].material.transparent = false;
+    flyBiggerWings[0].material.needsUpdate = true;
+    flyBiggerWings[1].castShadow = true;
+
+    flySmallerWings[0].castShadow = true;
+    flySmallerWings[1].castShadow = true;
+    flySmallerWings[1].material.transparent = false;
+    flySmallerWings[1].material.needsUpdate = true;
+
+    flyEyes[0].castShadow = true;
+    flyEyes[1].castShadow = true;
+    flyEyes[1].material.transparent = false;
+    flyEyes[1].material.needsUpdate = true;
+}
+
+function stopSceneFrogAnimation (){
+    flyGroup.position.set(0, 0.4, 5);
+    frogHeadVerticalAnimation.setPaused(true);
+    frogHeadHorizontalAnimation.setPaused(true);
+    makeFlyDisappear();
 }
 function resetSceneHome(){
-    stopFrogAnimation();
+    stopSceneFrogAnimation();
+    restartHomeAnimation();
     backupFrogHome();
     selected = "HOME";
     currentScrren = "HOME";
-    scene.remove(group);
+    //scene.remove(group);
     scene.remove(group2);
     scene.background = backGroundHome;
     scene.add(frogBody);
@@ -1661,7 +1718,7 @@ function createSceneHome(){
     createLights();
     createButton();
     createHomeButton();
-    group = new THREE.Group();
+    flyGroup = new THREE.Group();
     createFly();
     group2 = new THREE.Group();
     createScissor();
@@ -1685,7 +1742,6 @@ function animateSceneSheep(){
 }
 
 function animateFrogEyeBalls(){
-    if (selected === "FROG"){
         var targetPos = new THREE.Vector3();
         flyBody.getWorldPosition(targetPos);
     
@@ -1697,27 +1753,20 @@ function animateFrogEyeBalls(){
                 
         createjs.Tween.get(frogPupilR.position)
                 .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);    
-    }
 }
 
 function animateFrogHead(){
-    if (selected === "FROG"){
         //MOVIMENTO ORIZZONTALE DELLA TESTA
         //variable for the mouse
         var targetPos = new THREE.Vector3();
         flyBody.getWorldPosition(targetPos);
 
         var headDistance = targetPos.z - frogHead.position.z;
-        //console.log("distanza raggio headDistance: " + headDistance);
         var targetDivision = targetPos.x/headDistance;
 
         //check if I have a value that is acceptable by Math.asin
-        if(targetDivision >= 1){
-            targetDivision = 1;
-        }
-        if(targetDivision <= -1){
-            targetDivision = -1;
-        }
+        if(targetDivision >= 1) targetDivision = 1;
+        if(targetDivision <= -1) targetDivision = -1;
 
         //angle
         var targetAngle = Math.asin(targetDivision);
@@ -1726,32 +1775,18 @@ function animateFrogHead(){
         var maxTargetAngle = 0.7;
 
         //check if the angle surpass a certain limit
-        if(targetAngle>= maxTargetAngle){
-            targetAngle = maxTargetAngle;
-        }
-        if(targetAngle <= -maxTargetAngle){
-            targetAngle = -maxTargetAngle;
-        }
+        if(targetAngle>= maxTargetAngle) targetAngle = maxTargetAngle;
+        if(targetAngle <= -maxTargetAngle) targetAngle = -maxTargetAngle;
 
         frogHeadHorizontalAnimation = createjs.Tween.get(frogHead.rotation)
         .to({y: targetAngle }, 80, createjs.Ease.linear);
 
-        //ATTENZIONE: modificare il valore massimo degli occhi perchè 
-        //con il limite dell'angolo escono fuori dalla figura
-
-
-
         //MOVIMENTO VERTICALE DELLA TESTA
-        //console.log("distanza raggio headDistance: " + headDistance);
         var targetDivisionVertical = targetPos.y/headDistance;
 
         //check if I have a value that is acceptable by Math.asin
-        if(targetDivisionVertical >= 1){
-            targetDivisionVertical = 1;
-        }
-        if(targetDivisionVertical <= -1){
-            targetDivisionVertical = -1;
-        }
+        if(targetDivisionVertical >= 1) targetDivisionVertical = 1;
+        if(targetDivisionVertical <= -1) targetDivisionVertical = -1;
 
         //angle
         targetAngleVertical = Math.asin(targetDivisionVertical);
@@ -1760,19 +1795,11 @@ function animateFrogHead(){
         var maxTargetAngleVertical = 0.7;
 
         //check if the angle surpass a certain limit
-        if(targetAngleVertical>= maxTargetAngleVertical){
-            targetAngleVertical = maxTargetAngleVertical;
-        }
-        if(targetAngleVertical <= 0){
-            targetAngleVertical = 0;
-        } 
-
-        //console.log("ANGOLO TARGET " + targetAngleVertical);
+        if(targetAngleVertical >= maxTargetAngleVertical) targetAngleVertical = maxTargetAngleVertical;
+        if(targetAngleVertical <= 0) targetAngleVertical = 0;
 
         frogHeadVerticalAnimation = createjs.Tween.get(frogHead.rotation)
             .to({x: -targetAngleVertical }, 80, createjs.Ease.linear);
-
-    }
 
 }
 
