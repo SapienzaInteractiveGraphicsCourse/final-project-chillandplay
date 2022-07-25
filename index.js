@@ -37,7 +37,10 @@ let frogBodyPositionBackup, frogBodyRotationBackup,
     frogLowerLegPositionBackupR, frogLowerLegRotationBackupR, 
     frogLowerLegPositionBackupL, frogLowerLegRotationBackupL, 
     frogTonguePositionBackup, frogTongueRotationBackup, 
-    frogTongueTipPositionBackup, frogTongueTipRotationBackup;
+    frogTongueTipPositionBackup, frogTongueTipRotationBackup,
+    frogPupilHeightBackup;
+
+let initialFlyBiggerWingsPos, initialFlySmallerWingsPos;
 
 // -------------- MATERIALS DECLARATION --------------------
 const greyMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
@@ -130,6 +133,15 @@ function backupFrogHome(){
 
     frogHead.rotation.setFromVector3(frogHeadRotationBackup);
 
+    //questo serve altrimenti le ali ripartono ogni volta dall' ultima posizione lasciata
+    //e quindi a volte perdono completamente l'animazione
+    flyBiggerWings[0].rotation.z = initialFlyBiggerWingsPos;
+    flyBiggerWings[1].rotation.z = -initialFlyBiggerWingsPos;
+    flySmallerWings[0].rotation.z = initialFlySmallerWingsPos;
+    flySmallerWings[1].rotation.z = -initialFlySmallerWingsPos;
+
+    frogPupilR.scale.set(1, 1, 1);
+    frogPupilL.scale.set(1, 1, 1);
 }
 
 // ------------- FROG ----------------------------------------
@@ -330,6 +342,9 @@ function createFrogPupilR(scale){
     frogPupilR.translateZ(0.1);
     frogPupilR.scale.multiplyScalar(scale);
     frogEyeR.add( frogPupilR );
+
+    frogPupilHeightBackup = new THREE.Vector3(frogPupilR.scale.x, frogPupilR.scale.y, frogPupilR.scale.z);
+
 }
 
 function createFrogPupilL(scale){
@@ -966,6 +981,8 @@ function createBiggerWings(){
     flyBiggerWings[1].rotateZ(-1.0);
     flyBiggerWings[1].translateZ(-0.045);
     flyBiggerWings[1].rotateY(-0.4);
+
+    initialFlyBiggerWingsPos = flyBiggerWings[0].rotation.z; //backup position for wings
 }
 
 function createSmallerWings(){
@@ -990,18 +1007,18 @@ function createSmallerWings(){
     flySmallerWings[1].rotateZ(-0.5);
     flySmallerWings[1].translateZ(-0.045);
     flySmallerWings[1].rotateY(-0.4);
+
+    initialFlySmallerWingsPos = flySmallerWings[0].rotation.z; //backup position for wings
 }
 
 function animateFly(){
-    let initialFlyBiggerWingsZ = flyBiggerWings[0].rotation.z;
     createjs.Tween.get(flyBiggerWings[0].rotation, {loop: true})
         .to({ z: 0.1 }, 450, createjs.Ease.linear)
-        .to({ z: initialFlyBiggerWingsZ }, 450, createjs.Ease.linear);
+        .to({ z: initialFlyBiggerWingsPos }, 450, createjs.Ease.linear);
 
-    initialFlyBiggerWingsZ = flyBiggerWings[1].rotation.z;
     createjs.Tween.get(flyBiggerWings[1].rotation, {loop: true})
         .to({ z: 0 }, 550, createjs.Ease.linear)
-        .to({ z: initialFlyBiggerWingsZ }, 350, createjs.Ease.linear);
+        .to({ z: -initialFlyBiggerWingsPos }, 350, createjs.Ease.linear);
 
     createjs.Tween.get(flySmallerWings[0].rotation, {loop: true})
         .to({ z: 0 }, 100, createjs.Ease.linear);
