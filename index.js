@@ -1743,11 +1743,16 @@ function animateSceneSheep(){
 
 function animateFrogEyeBalls(){
         var targetPos = new THREE.Vector3();
-        flyBody.getWorldPosition(targetPos);
-    
-        //questa formula non funziona, dobbiamo trovare il modo di farla dipendere sia dalla larghezza che dall'altezza dello schermo
-        var targetPosScaled = {x: ((8*targetPos.x)/(Math.min(window.innerWidth, window.innerHeight)/2)), y:((4*targetPos.y)/(window.innerHeight/2))+2};
-    
+        flyGroup.getWorldPosition(targetPos);
+        
+        //compute width and height of the three js scene
+        var vFOV = THREE.MathUtils.degToRad( camera.fov ); // convert vertical fov to radians
+        var height = 2 * Math.tan( vFOV / 2 ) * 80; // visible height
+        var width = height * camera.aspect;
+
+        //computes the range of movement of the eyeball (proportion between screen dimensions and eye dimensions)
+        var targetPosScaled = {x: (((targetPos.x)*0.2)/width), y:(((targetPos.y)*0.2)/height)+2};
+
         createjs.Tween.get(frogPupilL.position)
                 .to({x: targetPosScaled.x, y: targetPosScaled.y-2}, 80, createjs.Ease.linear);
                 
