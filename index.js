@@ -1586,6 +1586,58 @@ function animateFrogHome(){
         .wait(5500);
 
 }
+
+function animateSheepHome(){
+   //EYEBALLS ANIMATION
+    let initialX = sheepEyeBalls[0].position.x;
+    createjs.Tween.get(sheepEyeBalls[0].position, {loop: true})
+        .to({ x: -0.1 }, 600, createjs.Ease.linear)
+        .to({ x: initialX },600, createjs.Ease.linear)
+        .wait(2500)
+        .to({ x: 0.1 }, 600, createjs.Ease.linear)
+        .to({ x: initialX },600, createjs.Ease.linear)
+        .wait(2500);
+    
+    initialX = sheepEyeBalls[1].position.x;
+    createjs.Tween.get(sheepEyeBalls[1].position, {loop: true})
+        .to({ x: -0.1 }, 600, createjs.Ease.linear)
+        .to({ x: initialX },600, createjs.Ease.linear)
+        .wait(2500)
+        .to({ x: 0.1 }, 600, createjs.Ease.linear)
+        .to({ x: initialX },600, createjs.Ease.linear)
+        .wait(2500);
+
+   //HEAD ANIMATION
+   let initialY = sheepHead.rotation.y;
+    createjs.Tween.get(sheepHead.rotation, {loop: true})
+        .to({ y: -0.3 }, 600, createjs.Ease.linear)
+        .to({ y: initialY },600, createjs.Ease.linear)
+        .wait(2500)
+        .to({ y: 0.3 }, 600, createjs.Ease.linear)
+        .to({ y: initialY },600, createjs.Ease.linear)
+        .wait(2500);
+
+    //LEGS ANIMATION 
+    initialX = sheepFrontLeftLeg.rotation.x;
+    createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
+        .to({ x: -0.8 }, 600, createjs.Ease.linear)
+        .to({ x: initialX },600, createjs.Ease.linear)
+        .wait(5000)
+        .to({ x: 0.8 }, 600, createjs.Ease.linear)
+        .to({ x: initialX },600, createjs.Ease.linear)
+        .wait(6000);
+    
+    initialX = sheepFrontRightLeg.rotation.x;
+    createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
+        .to({ x: 0.8 }, 600, createjs.Ease.linear)
+        .to({ x: initialX },600, createjs.Ease.linear)
+        .wait(5000)
+        .to({ x: -0.8 }, 600, createjs.Ease.linear)
+        .to({ x: initialX },600, createjs.Ease.linear)
+        .wait(6000);
+    
+}
+
 function createSceneHome(){
     currentScrren = "HOME";
     groupPivotLegR = new THREE.Group();
@@ -1603,6 +1655,7 @@ function createSceneHome(){
     createResetAnimationButton();
     createAreaTitle();
     animateFrogHome();
+    animateSheepHome();
     animate();
     render();
 }
@@ -1615,6 +1668,7 @@ function animateSceneFrog(){ //attenzione: l'animazione della rana continua anch
 }
 
 function animateSceneSheep(){
+    //requestAnimationFrame( animateSceneSheep );
     rotateCameraSheepScene();
     animateScissors();
 }
