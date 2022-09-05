@@ -769,7 +769,7 @@ function createSheepWool(){
 
     // Fifth circle of wool from the head
     for (let i = 0; i < 15; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         //if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
          //   wool[i].scale.set(0.2, 0.2, 0.2);
          if (i === 1 || i === 0)
@@ -795,7 +795,7 @@ function createSheepWool(){
 
     // Sixth circle of wool from the head
     for (let i = 0; i < 9; i++) {
-        wool[i] = new THREE.Mesh(woolGeometry, greyMaterial);
+        wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
        // if (i === 9  || i === 12 || i === 3 || i === 5 )
         //    wool[i].scale.set(0.2, 0.2, 0.2);
         if (i === 1 || i === 0 || i === 7)
@@ -816,28 +816,32 @@ function createSheepWool(){
     radius = 0.36;
     angle = 0;
     z = -0.21;
-    wool[0] = new THREE.Mesh(woolGeometry, greyMaterial);
+    wool[0] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
     wool[0].scale.set(0.25, 0.25, 0.25);
     wool[0].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    wool[0].castShadow = true;
     sheepBody.add(wool[0]);
     angle = 2.12;
     radius = 0.4;
     z = -0.02;
-    wool[1] = new THREE.Mesh(woolGeometry, greyMaterial);
+    wool[1] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
     wool[1].scale.set(0.3, 0.3, 0.3);
     wool[1].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    wool[1].castShadow = true;
     sheepBody.add(wool[1]);
     angle = 3.15;
     radius = 0.35;
     z = -0.21;
-    wool[2] = new THREE.Mesh(woolGeometry, greyMaterial);
+    wool[2] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
     wool[2].scale.set(0.3, 0.3, 0.3);
     wool[2].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    wool[2].castShadow = true;
     sheepBody.add(wool[2]);
     z = -0.38;
-    wool[3] = new THREE.Mesh(woolGeometry, greyMaterial);
+    wool[3] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
     wool[3].scale.set(0.35, 0.35, 0.35);
     wool[3].position.set(0, 0, z);
+    wool[3].castShadow = true;
     sheepBody.add(wool[3]);
 
 
@@ -1045,7 +1049,7 @@ let onclick = function (event) {
             goButton.translateX(0.15);
             setButtonTexture('textures/goFrog.jpg');
             frogArea.add(goButton);
-            if (oldSelectedID == sheepID) sheepBody.translateY(-0.5);
+            //if (oldSelectedID == sheepID) sheepBody.translateY(-0.5); // a cosa serve questa cosa?
             oldSelectedID = objectID;
             selected = "FROG";
             scene.remove(titleHomeArea);
