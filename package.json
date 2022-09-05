@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "threejs-object-controls": "^1.2.8",
     "tweenjs": "^1.0.2"
   }
 }
