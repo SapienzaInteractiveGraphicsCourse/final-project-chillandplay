@@ -1771,45 +1771,40 @@ function animateSheepHome(){
     initialX = sheepFrontLeftLeg.rotation.x;
     createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
         .wait(8000)    
-        .to({ x: -0.8 }, 400, createjs.Ease.linear)
-        .to({ x: initialX },400, createjs.Ease.linear)
-        .to({ x: 0.8 }, 400, createjs.Ease.linear)
-        .to({ x: initialX },400, createjs.Ease.linear)
+        .to({ x: 0.6 }, 500, createjs.Ease.linear)
+        .to({ x: initialX }, 500, createjs.Ease.linear)
         .wait(5000);
     
     initialX = sheepFrontRightLeg.rotation.x;
     createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
         .wait(8000)    
-        .to({ x: 0.8 }, 400, createjs.Ease.linear)
-        .to({ x: initialX },400, createjs.Ease.linear) 
-        .to({ x: -0.8 }, 400, createjs.Ease.linear)
-        .to({ x: initialX },400, createjs.Ease.linear)
+        .to({ x: 0.6 }, 500, createjs.Ease.linear)
+        .to({ x: initialX }, 500, createjs.Ease.linear) 
         .wait(5000);
-    
-    //SHEEP BODY ANIMATION
-    initialX = sheepBody.rotation.x;
-    createjs.Tween.get(sheepBody.rotation, {loop: true})
-        .wait(8000)    
-        .to({ x: -0.2 }, 800, createjs.Ease.linear)
-        .to({ x: initialX },800, createjs.Ease.linear)
-        .wait(5000);
-    
+
     //BACK LEGS ANIMATION 
     initialX = sheepBackLeftLeg.rotation.x;
     createjs.Tween.get(sheepBackLeftLeg.rotation, {loop: true})
          .wait(8000)    
-         .to({ x: 0.4 }, 800, createjs.Ease.linear)
-         .to({ x: initialX },800, createjs.Ease.linear)
+         .to({ x: -0.6 }, 500, createjs.Ease.linear)
+         .to({ x: initialX }, 500, createjs.Ease.linear)
          .wait(5000)
         
      
     initialX = sheepBackRightLeg.rotation.x;
     createjs.Tween.get(sheepBackRightLeg.rotation, {loop: true})
-         .wait(6000)    
-         .to({ x: 0.4 }, 800, createjs.Ease.linear)
-         .to({ x: initialX },800, createjs.Ease.linear)
+         .wait(8000)    
+         .to({ x: -0.6 }, 500, createjs.Ease.linear)
+         .to({ x: initialX }, 500, createjs.Ease.linear)
          .wait(5000)
-         
+    
+    //SHEEP BODY ANIMATION
+    initialX = sheepBody.position.y;
+    createjs.Tween.get(sheepBody.position, {loop: true})
+        .wait(8000)    
+        .to({ y: -0.2 }, 500, createjs.Ease.linear)
+        .to({ y: initialX }, 500, createjs.Ease.linear)
+        .wait(5000);         
 
 }
 
