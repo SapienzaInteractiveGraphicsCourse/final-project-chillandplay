@@ -1142,9 +1142,11 @@ window.addEventListener('click', onclick);
 
 function resetButton(oldSelectedID){
     switch (oldSelectedID){
-        case frogID:
+        case frogID: {
             goButton.translateX(-0.15);
+            homeButton.translateX(0.6);
             break;
+        }
         case sheepID:
             goButton.translateX(0.15);
             break;
@@ -1417,9 +1419,12 @@ function createSceneFrog(){
     scene.add(flyGroup);
     frogBody.translateX(2);
     setHomeButtonTexture('textures/homeFrog.jpg');
+    homeButton.translateX(-0.6);
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetFrog.jpg');
-    scene.add(resetAnimationButton);
+   // scene.add(resetAnimationButton);
+    animate();
+    render();
     animateSceneFrog();
     animateFly();
     scene.remove(titleHomeArea);
@@ -1427,6 +1432,7 @@ function createSceneFrog(){
     scene.remove(titleFrogArea);
     scene.remove(subTitleSheepArea);
     createFrogAreaSubTitle();
+
 }
 
 function createSceneSheep(){
@@ -1746,11 +1752,60 @@ function createSceneHome(){
     render();
 }
 
+function animateSceneFrog(){
+    animateFrogJump();
+    animateFrogHeadAndEyes();
 
-function animateSceneFrog(){ //attenzione: l'animazione della rana continua anche quando si ritorna nella schermata home
-    frogRequestAnimationFrame =  requestAnimationFrame( animateSceneFrog ); //serve solo per il movimento degli occhi
+}
+
+function animateFrogHeadAndEyes(){ //attenzione: l'animazione della rana continua anche quando si ritorna nella schermata home
+    frogRequestAnimationFrame =  requestAnimationFrame( animateFrogHeadAndEyes ); //serve solo per il movimento degli occhi
     animateFrogEyeBalls();
     animateFrogHead();
+}
+
+function animateFrogJump(){
+    // UPPER LEGS ANIMATION
+    let initialZ = groupPivotLegL.rotation.z;
+    groupPivotLegLAnimation = createjs.Tween.get(groupPivotLegL.rotation, {loop: true})
+        .to({ z: 0.2 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(1500)
+        .to({ z: 0.1 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(3000);
+
+    initialZ = groupPivotLegR.rotation.z;
+    groupPivotLegRAnimation = createjs.Tween.get(groupPivotLegR.rotation, {loop: true})
+        .to({ z: -0.2 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(1500)
+        .to({ z: -0.1 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(3000);
+
+    // BODY ANIMATION
+    let initialY = frogBody.position.y;
+    createjs.Tween.get(frogBody.position, {loop: true})
+        .to({ y: 0.12 }, 500, createjs.Ease.circOut)
+        .to({ y: initialY }, 500, createjs.Ease.circOut)
+        .wait(1500)
+        .to({ y: 0.1 }, 500, createjs.Ease.circOut)
+        .to({ y: initialY }, 500, createjs.Ease.circOut)
+        .wait(3000);
+
+    // LOWER LEGS ANIMATION
+    initialZ = frogLowerLeftLeg.rotation.z;
+    frogLowerLeftLegAnimation = createjs.Tween.get(frogLowerLeftLeg.rotation, {loop: true})
+        .to({ z: -0.8 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(5500);
+
+    initialZ = frogLowerRightLeg.rotation.z;
+    frogLowerRightLegAnimation = createjs.Tween.get(frogLowerRightLeg.rotation, {loop: true})
+        .to({ z: -0.8 }, 500, createjs.Ease.linear)
+        .to({ z: initialZ }, 500, createjs.Ease.linear)
+        .wait(5500);
 }
 
 function animateSceneSheep(){
