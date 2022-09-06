@@ -1591,35 +1591,37 @@ function animateSheepHome(){
    //EYEBALLS ANIMATION
     let initialX = sheepEyeBalls[0].position.x;
     createjs.Tween.get(sheepEyeBalls[0].position, {loop: true})
-        .to({ x: -0.1 }, 600, createjs.Ease.linear)
-        .to({ x: initialX },600, createjs.Ease.linear)
-        .wait(2500)
-        .to({ x: 0.1 }, 600, createjs.Ease.linear)
-        .to({ x: initialX },600, createjs.Ease.linear)
-        .wait(2500);
+        .to({ x: -0.1 }, 500, createjs.Ease.linear)
+        .to({ x: initialX }, 500, createjs.Ease.linear)
+        .wait(1000)
+        .to({ x: 0.1 }, 500, createjs.Ease.linear)
+        .to({ x: initialX }, 500, createjs.Ease.linear)
+        .wait(1000);
     
     initialX = sheepEyeBalls[1].position.x;
     createjs.Tween.get(sheepEyeBalls[1].position, {loop: true})
-        .to({ x: -0.1 }, 600, createjs.Ease.linear)
-        .to({ x: initialX },600, createjs.Ease.linear)
-        .wait(2500)
-        .to({ x: 0.1 }, 600, createjs.Ease.linear)
-        .to({ x: initialX },600, createjs.Ease.linear)
-        .wait(2500);
+        .to({ x: -0.1 }, 500, createjs.Ease.linear)
+        .to({ x: initialX },500, createjs.Ease.linear)
+        .wait(1000)
+        .to({ x: 0.1 }, 500, createjs.Ease.linear)
+        .to({ x: initialX },500, createjs.Ease.linear)
+        .wait(1000);
 
    //HEAD ANIMATION
-   let initialY = sheepHead.rotation.y;
+   initialX = sheepHead.rotation.y;
     createjs.Tween.get(sheepHead.rotation, {loop: true})
-        .to({ y: -0.3 }, 600, createjs.Ease.linear)
-        .to({ y: initialY },600, createjs.Ease.linear)
-        .wait(2500)
-        .to({ y: 0.3 }, 600, createjs.Ease.linear)
-        .to({ y: initialY },600, createjs.Ease.linear)
-        .wait(2500);
+        .wait(4000)
+        .to({ y: -0.3 }, 500, createjs.Ease.linear)
+        .to({ y: initialX },500, createjs.Ease.linear)
+        .wait(1000)
+        .to({ y: 0.3 }, 500, createjs.Ease.linear)
+        .to({ y: initialX }, 500, createjs.Ease.linear)
+        .wait(6000);
 
     //LEGS ANIMATION 
     initialX = sheepFrontLeftLeg.rotation.x;
     createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
+        .wait(6000)    
         .to({ x: -0.8 }, 600, createjs.Ease.linear)
         .to({ x: initialX },600, createjs.Ease.linear)
         .wait(5000)
@@ -1629,6 +1631,7 @@ function animateSheepHome(){
     
     initialX = sheepFrontRightLeg.rotation.x;
     createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
+        .wait(6000)    
         .to({ x: 0.8 }, 600, createjs.Ease.linear)
         .to({ x: initialX },600, createjs.Ease.linear)
         .wait(5000)
@@ -1636,6 +1639,14 @@ function animateSheepHome(){
         .to({ x: initialX },600, createjs.Ease.linear)
         .wait(6000);
     
+    initialX = sheepBody.rotation.x;
+    createjs.Tween.get(sheepBody.rotation, {loop: true})
+        .wait(6000)    
+        .to({ x: -0.4 }, 800, createjs.Ease.linear)
+        .to({ x: initialX },800, createjs.Ease.linear)
+        .wait(5000);
+        
+
 }
 
 function createSceneHome(){
