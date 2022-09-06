@@ -1739,7 +1739,7 @@ function animateFrogHome(){
 function animateSheepHome(){
    //EYEBALLS ANIMATION
     let initialX = sheepEyeBalls[0].position.x;
-    createjs.Tween.get(sheepEyeBalls[0].position, {loop: true})
+    createjs.Tween.get(sheepEyeBalls[0].position, {loop: true})   
         .to({ x: -0.1 }, 500, createjs.Ease.linear)
         .to({ x: initialX }, 500, createjs.Ease.linear)
         .wait(1000)
@@ -1757,7 +1757,7 @@ function animateSheepHome(){
         .wait(1000);
 
    //HEAD ANIMATION
-   initialX = sheepHead.rotation.y;
+    initialX = sheepHead.rotation.y;
     createjs.Tween.get(sheepHead.rotation, {loop: true})
         .wait(4000)
         .to({ y: -0.3 }, 500, createjs.Ease.linear)
@@ -1765,36 +1765,51 @@ function animateSheepHome(){
         .wait(1000)
         .to({ y: 0.3 }, 500, createjs.Ease.linear)
         .to({ y: initialX }, 500, createjs.Ease.linear)
-        .wait(6000);
+        .wait(1000);
 
-    //LEGS ANIMATION 
+    //FRONT LEGS ANIMATION 
     initialX = sheepFrontLeftLeg.rotation.x;
     createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
-        .wait(6000)    
-        .to({ x: -0.8 }, 600, createjs.Ease.linear)
-        .to({ x: initialX },600, createjs.Ease.linear)
-        .wait(5000)
-        .to({ x: 0.8 }, 600, createjs.Ease.linear)
-        .to({ x: initialX },600, createjs.Ease.linear)
-        .wait(6000);
+        .wait(8000)    
+        .to({ x: -0.8 }, 400, createjs.Ease.linear)
+        .to({ x: initialX },400, createjs.Ease.linear)
+        .to({ x: 0.8 }, 400, createjs.Ease.linear)
+        .to({ x: initialX },400, createjs.Ease.linear)
+        .wait(5000);
     
     initialX = sheepFrontRightLeg.rotation.x;
     createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
-        .wait(6000)    
-        .to({ x: 0.8 }, 600, createjs.Ease.linear)
-        .to({ x: initialX },600, createjs.Ease.linear)
-        .wait(5000)
-        .to({ x: -0.8 }, 600, createjs.Ease.linear)
-        .to({ x: initialX },600, createjs.Ease.linear)
-        .wait(6000);
+        .wait(8000)    
+        .to({ x: 0.8 }, 400, createjs.Ease.linear)
+        .to({ x: initialX },400, createjs.Ease.linear) 
+        .to({ x: -0.8 }, 400, createjs.Ease.linear)
+        .to({ x: initialX },400, createjs.Ease.linear)
+        .wait(5000);
     
+    //SHEEP BODY ANIMATION
     initialX = sheepBody.rotation.x;
     createjs.Tween.get(sheepBody.rotation, {loop: true})
-        .wait(6000)    
-        .to({ x: -0.4 }, 800, createjs.Ease.linear)
+        .wait(8000)    
+        .to({ x: -0.2 }, 800, createjs.Ease.linear)
         .to({ x: initialX },800, createjs.Ease.linear)
         .wait(5000);
+    
+    //BACK LEGS ANIMATION 
+    initialX = sheepBackLeftLeg.rotation.x;
+    createjs.Tween.get(sheepBackLeftLeg.rotation, {loop: true})
+         .wait(8000)    
+         .to({ x: 0.4 }, 800, createjs.Ease.linear)
+         .to({ x: initialX },800, createjs.Ease.linear)
+         .wait(5000)
         
+     
+    initialX = sheepBackRightLeg.rotation.x;
+    createjs.Tween.get(sheepBackRightLeg.rotation, {loop: true})
+         .wait(6000)    
+         .to({ x: 0.4 }, 800, createjs.Ease.linear)
+         .to({ x: initialX },800, createjs.Ease.linear)
+         .wait(5000)
+         
 
 }
 
