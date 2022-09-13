@@ -11,13 +11,14 @@ let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogAnimation, frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
     frogMouthPivot, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip, titleFrogArea, descriptionFrogArea, subTitleFrogArea;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
-    sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea;
+    sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[];
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
 let plane;
 let intersects;
 let frogRequestAnimationFrame;
+
 
 // -------------- ANIMATIONS VARIABLES --------------------
 let frogLowerRightLegAnimation, frogLowerLeftLegAnimation, groupPivotLegRAnimation,
@@ -61,6 +62,7 @@ const sheepID = 30;
 const goButtonID = 147;
 const homeButtonID = 148;
 const resetAnimationButtonID = 162;
+const scissorID = 158;
 
 // -------------- FLAGS DECLARATION -------------------
 let buttonFlag = true;
@@ -73,6 +75,7 @@ let currentScrren;
 
 let targetAngleVertical;
 let inclination;
+let woolArray = [];
 
 // ----------- BACKGROUND COLORS DECLARATION ----------
 const backGroundHome = new THREE.Color(0xbfe3dd);
@@ -715,7 +718,6 @@ function createSheepLegs(scale){
 
 function createSheepWool(){
     //Sheep hair
-    let wool = [];
     let radius = 0.2;
     let angle = 0;
     let z = 0.4;
@@ -750,7 +752,7 @@ function createSheepWool(){
     z = 0.3;
 
     // Second circle of wool from the head
-    for (let i = 0; i < 12; i++) {
+    for (let i = 8; i < 20; i++) {
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 2 || i === 5 || i === 0 || i ===4 )
             wool[i].scale.set(0.2, 0.2, 0.2);
@@ -771,12 +773,12 @@ function createSheepWool(){
     z = 0.2;
 
     // Second circle of wool from the head
-    for (let i = 0; i < 13; i++) {
+    for (let i = 20; i < 33; i++) {
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9 || i === 5 || i === 7 || i === 12 || i === 4 || i === 3)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 0)
-            wool[i].scale.set(0.25, 0.25, 0.25);
+            woole[i].scale.set(0.25, 0.25, 0.25);
         else
             wool[i].scale.set(0.3, 0.3, 0.3);
         wool[i].castShadow = true;
@@ -791,7 +793,7 @@ function createSheepWool(){
     z = 0.05;
 
     // Third circle of wool from the head
-    for (let i = 0; i < 16; i++) {
+    for (let i = 33; i < 49; i++) {
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
             wool[i].scale.set(0.2, 0.2, 0.2);
@@ -812,7 +814,7 @@ function createSheepWool(){
     z = -0.1;
 
     // Fourth circle of wool from the head
-    for (let i = 0; i < 16; i++) {
+    for (let i = 49; i < 65; i++) {
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
             wool[i].scale.set(0.2, 0.2, 0.2);
@@ -833,7 +835,7 @@ function createSheepWool(){
     z = -0.24;
 
     // Fifth circle of wool from the head
-    for (let i = 0; i < 15; i++) {
+    for (let i = 65; i < 80; i++) {
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
         //if (i === 9  || i === 7 || i === 12 || i === 3 || i === 5)
          //   wool[i].scale.set(0.2, 0.2, 0.2);
@@ -859,7 +861,7 @@ function createSheepWool(){
     z = -0.35;
 
     // Sixth circle of wool from the head
-    for (let i = 0; i < 9; i++) {
+    for (let i = 80; i < 89; i++) {
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
        // if (i === 9  || i === 12 || i === 3 || i === 5 )
         //    wool[i].scale.set(0.2, 0.2, 0.2);
@@ -881,33 +883,33 @@ function createSheepWool(){
     radius = 0.36;
     angle = 0;
     z = -0.21;
-    wool[0] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
-    wool[0].scale.set(0.25, 0.25, 0.25);
-    wool[0].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
-    wool[0].castShadow = true;
-    sheepBody.add(wool[0]);
+    wool[89] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
+    wool[89].scale.set(0.25, 0.25, 0.25);
+    wool[89].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    wool[89].castShadow = true;
+    sheepBody.add(wool[89]);
     angle = 2.12;
     radius = 0.4;
     z = -0.02;
-    wool[1] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
-    wool[1].scale.set(0.3, 0.3, 0.3);
-    wool[1].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
-    wool[1].castShadow = true;
-    sheepBody.add(wool[1]);
+    wool[90] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
+    wool[90].scale.set(0.3, 0.3, 0.3);
+    wool[90].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    wool[90].castShadow = true;
+    sheepBody.add(wool[90]);
     angle = 3.15;
     radius = 0.35;
     z = -0.21;
-    wool[2] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
-    wool[2].scale.set(0.3, 0.3, 0.3);
-    wool[2].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
-    wool[2].castShadow = true;
-    sheepBody.add(wool[2]);
+    wool[91] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
+    wool[91].scale.set(0.3, 0.3, 0.3);
+    wool[91].position.set(radius * Math.cos(angle), radius * Math.sin(angle), z);
+    wool[91].castShadow = true;
+    sheepBody.add(wool[91]);
     z = -0.38;
-    wool[3] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
-    wool[3].scale.set(0.35, 0.35, 0.35);
-    wool[3].position.set(0, 0, z);
-    wool[3].castShadow = true;
-    sheepBody.add(wool[3]);
+    wool[92] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
+    wool[92].scale.set(0.35, 0.35, 0.35);
+    wool[92].position.set(0, 0, z);
+    wool[92].castShadow = true;
+    sheepBody.add(wool[92]);
 
 
 }
@@ -1355,7 +1357,8 @@ function followMouse(event){
     }
     //NB: gli if else devono essere staccati altrimenti non segue il mouse la forbice
     if (scissorFlag){
-        group2.position.set(intersects.x, intersects.y, intersects.z);
+        //+0.5 per non avere il mouse sulla forbice
+        group2.position.set(intersects.x+0.5, intersects.y, intersects.z);
     }
     else{ 
         scissorFlag = false;
@@ -1456,6 +1459,34 @@ function createSceneSheep(){
     scene.remove(subTitleFrogArea);
     createSheepAreaSubTitle();
     animateSceneSheep();
+
+
+    let onWoolOverButton = function (event) {
+        mouseSetting(event);
+        if (intersects.length > 1) {
+            for (let i = 0; i < intersects.length; i += 1) {
+                for (let j=0; j<wool.length; j+=1) {
+                    if (intersects[i].object.id === wool[j])
+                        objectID = intersects[i].object.id;
+                }
+            }
+        }
+        switch (objectID) {
+            case objectID:
+                for (let j=0; j<woolArray.length; j+=1) {
+                    if (objectID==woolArray[j]) {
+                        console.log("L'id wool è: "+woolArray[j]);
+                        //sheepBody.remove(wool[j]);
+                        animateWool(j);
+                        count_wool -= 1;
+                    }
+                }
+                break;
+    
+        }
+    };
+    window.addEventListener('dblclick', onWoolOverButton);
+
 }
 
 function loadTexture(url) {
@@ -1808,6 +1839,7 @@ function animateSheepHome(){
 
 }
 
+
 function createSceneHome(){
     currentScrren = "HOME";
     groupPivotLegR = new THREE.Group();
@@ -1891,6 +1923,51 @@ function animateSceneSheep(){
     rotateCameraSheepScene();
     animateScissors();
 }
+
+function arrayWoolID() {
+    for (let i=47; i<=139; i+=1) {
+        woolArray.push(i);
+    }
+    console.log("L'array di wool è: "+woolArray);
+    console.log("L'array : "+wool);
+
+}
+arrayWoolID();
+var count_wool = woolArray.length-1; //numero pallocchi
+
+function gameOver() {
+    loadTexture('textures/title.jpg').then(texture => {
+        const gameOverGeometry = new THREE.BoxGeometry(15, 5, 0);
+        const materials = [
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial({map: texture}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
+        ];
+        gameOverSheep = new THREE.Mesh( gameOverGeometry, materials);
+        gameOverSheep.translateY(4.3);
+        scene.add(gameOverSheep);
+    })
+
+}
+
+
+function animateWool(j) {
+    //sheepBody.remove(wool[i]);
+    // WOOL ANIMATION
+    createjs.Tween.get(wool[j].position, {loop: false})
+    .to({ y: -1.2 }, 2000, createjs.Ease.circOut) //0.68
+    console.log("pallocchi rimasti: "+count_wool);
+
+
+    if (count_wool == 0) {
+       gameOver();
+        //console.log("pallocchi rimasti: "+count_wool);
+    }
+}
+
 
 function animateFrogEyeBalls(){
         var targetPos = new THREE.Vector3();
