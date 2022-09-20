@@ -1450,6 +1450,7 @@ function createSceneSheep(){
     scene.add(group2);
     sheepBody.translateX(-2);
     setHomeButtonTexture('textures/homeSheep.jpg');
+    //homeButton.translateX(-0.6);
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetSheep.jpg');
     scene.add(resetAnimationButton);
@@ -1477,15 +1478,18 @@ function createSceneSheep(){
                     if (objectID==woolArray[j]) {
                         console.log("L'id wool è: "+woolArray[j]);
                         //sheepBody.remove(wool[j]);
+                        
                         animateWool(j);
-                        count_wool -= 1;
+                        //count_array.splice(woolArray[j], 1);
+                        
+                        //count_wool -= 1;
                     }
                 }
                 break;
     
         }
     };
-    window.addEventListener('dblclick', onWoolOverButton);
+    window.addEventListener('mousemove', onWoolOverButton);
 
 }
 
@@ -1611,6 +1615,7 @@ function createSheepAreaSubTitle() {
         ];
         subTitleSheepArea = new THREE.Mesh( titleAreaGeometry, materials);
         subTitleSheepArea.translateY(3.3);
+        subTitleSheepArea.translateZ(-1.5);
         scene.add(subTitleSheepArea);
     })
 }
@@ -1933,41 +1938,60 @@ function arrayWoolID() {
 
 }
 arrayWoolID();
-var count_wool = woolArray.length-1; //numero pallocchi
+let count_array = woolArray.slice();
+//console.log("count array è: "+count_array.splice(0, 1));
+console.log("count array nuovo è: "+count_array.length);
+//var count_wool = woolArray.length-1; //numero pallocchi
 
 function gameOver() {
-    loadTexture('textures/title.jpg').then(texture => {
-        const gameOverGeometry = new THREE.BoxGeometry(15, 5, 0);
-        const materials = [
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial({map: texture}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
-        ];
-        gameOverSheep = new THREE.Mesh( gameOverGeometry, materials);
-        gameOverSheep.translateY(4.3);
-        scene.add(gameOverSheep);
-    })
+        loadTexture('textures/title.jpg').then(texture => {
+            const gameOverGeometry = new THREE.BoxGeometry(15, 5, 0);
+            const materials = [
+                new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+                new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+                new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+                new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+                new THREE.MeshBasicMaterial({map: texture}),
+                new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
+            ];
+            gameOverSheep = new THREE.Mesh( gameOverGeometry, materials);
+            gameOverSheep.translateY(4.3);
+            scene.add(gameOverSheep);
+        })
 
 }
-
-
+var count;
 function animateWool(j) {
-    //sheepBody.remove(wool[i]);
     // WOOL ANIMATION
+    count = 0;
     createjs.Tween.get(wool[j].position, {loop: false})
-    .to({ y: -1.2 }, 2000, createjs.Ease.circOut) //0.68
-    console.log("pallocchi rimasti: "+count_wool);
+    .to({ y: -0.7}, 2000, createjs.Ease.bounceOut)
+
+    createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
+    .to({x: 0.005, y: 0.005, z: 0.005}, 2000, createjs.Ease.bounceOut)
+
+    createjs.Tween.get(wool[j].position, {loop: false}).wait(3000)
+    .to({ z: -0.1}, 2000, createjs.Ease.linear)
+
+    for (let i=0; i<wool.length; i++) {
+        if (wool[i].position.z == -0.1) {
+            count += 1;
+        }
+    }
+
+    console.log("count vale: "+count);
+    if (count == 43) {
+        gameOver();
+    }
+    //count_array.splice(count_array[j], 1);
+    //console.log("pallocchi rimasti: "+count_array.length);
 
 
-    if (count_wool == 0) {
+    /*if (count_array.length == 0) {
        gameOver();
         //console.log("pallocchi rimasti: "+count_wool);
-    }
+    }*/
 }
-
 
 function animateFrogEyeBalls(){
         var targetPos = new THREE.Vector3();
