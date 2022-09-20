@@ -1901,7 +1901,7 @@ function animateFrogEyeBalls(){
         var height = 2 * Math.tan( vFOV / 2 ) * 80; // visible height
         var width = height * camera.aspect;
 
-        //computes the range of movement of the eyeball (proportion between screen dimensions and eye dimensions)
+        //computes the range of movement of the eyeball (proportion between scene dimensions and eye dimensions)
         var targetPosScaled = {x: (((targetPos.x)*0.2)/width), y:(((targetPos.y)*0.2)/height)+2};
 
         createjs.Tween.get(frogPupilL.position)
@@ -1912,13 +1912,14 @@ function animateFrogEyeBalls(){
 }
 
 function animateFrogHead(){
-        //MOVIMENTO ORIZZONTALE DELLA TESTA
         //variable for the mouse
         var targetPos = new THREE.Vector3();
         flyBody.getWorldPosition(targetPos);
-
         var headDistance = targetPos.z - frogHead.position.z;
-        var targetDivision = targetPos.x/headDistance;
+
+        //MOVIMENTO ORIZZONTALE DELLA TESTA
+        var i = Math.sqrt(Math.pow(headDistance, 2)+Math.pow(targetPos.x, 2));
+        var targetDivision = targetPos.x/i;
 
         //check if I have a value that is acceptable by Math.asin
         if(targetDivision >= 1) targetDivision = 1;
@@ -1938,7 +1939,8 @@ function animateFrogHead(){
         .to({y: targetAngle }, 80, createjs.Ease.linear);
 
         //MOVIMENTO VERTICALE DELLA TESTA
-        var targetDivisionVertical = targetPos.y/headDistance;
+        var iHorizontal = Math.sqrt(Math.pow(headDistance, 2)+Math.pow(targetPos.y, 2));
+        var targetDivisionVertical = targetPos.y/iHorizontal;
 
         //check if I have a value that is acceptable by Math.asin
         if(targetDivisionVertical >= 1) targetDivisionVertical = 1;
