@@ -11,7 +11,7 @@ let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
 let frogAnimation, frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
     frogMouthPivot, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip, titleFrogArea, descriptionFrogArea, subTitleFrogArea;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
-    sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[];
+    sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[], playSheepArea;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
@@ -1102,6 +1102,7 @@ function render(){
     renderer.render(scene, camera);
 }
 
+
 let onclick = function (event) {
     mouseSetting(event);
     switch (objectID) {
@@ -1113,7 +1114,7 @@ let onclick = function (event) {
             goButton.translateX(0.15);
             setButtonTexture('textures/goFrog.jpg');
             frogArea.add(goButton);
-            //if (oldSelectedID == sheepID) sheepBody.translateY(-0.5); // a cosa serve questa cosa?
+            if (oldSelectedID == sheepID) sheepBody.translateY(-0.5); //la pecora torna alla sua posizione originale
             oldSelectedID = objectID;
             selected = "FROG";
             scene.remove(titleHomeArea);
@@ -1324,18 +1325,20 @@ let onClickButton = function (event) {
 window.addEventListener( 'click', onClickButton, false);
 
 function setButtonTexture(texturePath){
-    goButtonLoader = new THREE.TextureLoader();
-    goButton.material = new THREE.MeshBasicMaterial({
-        map:  goButtonLoader.load(texturePath),
-        side: THREE.DoubleSide
-    });
-    goButton.material.needsUpdate = true;
-
+    loadTexture(texturePath).then(texture => {
+        goButton.material = new THREE.MeshBasicMaterial({
+            map:  texture,
+            side: THREE.DoubleSide
+        });
+        goButton.material.needsUpdate = true;
+    })
 }
 
 function createButton(){
     goButtonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
     goButtonMaterial = new THREE.MeshBasicMaterial({color: 0x003060});
+    goButtonMaterial.transparent = true;
+    goButtonMaterial.opacity = 0;
     goButton = new THREE.Mesh( goButtonGeometry, goButtonMaterial );
     goButton.translateY(-3.7);
     goButton.translateZ(5.0);
@@ -1370,26 +1373,30 @@ function followMouse(event){
 window.addEventListener( 'mousemove', followMouse, false);
 
 function setHomeButtonTexture(texturePath){
-    homeButtonLoader = new THREE.TextureLoader();
-    homeButton.material = new THREE.MeshBasicMaterial({
-        map:  homeButtonLoader.load(texturePath),
-        side: THREE.DoubleSide
-    });
-    goButton.material.needsUpdate = true;
+    loadTexture(texturePath).then(texture => {
+        homeButton.material = new THREE.MeshBasicMaterial({
+            map:  texture,
+            side: THREE.DoubleSide
+        });
+        homeButton.material.needsUpdate = true;
+    })
 }
 
 function setResetAnimationButtonTexture(texturePath){
-    resetAnimationButtonLoader = new THREE.TextureLoader();
-    resetAnimationButton.material = new THREE.MeshBasicMaterial({
-        map:  resetAnimationButtonLoader.load(texturePath),
-        side: THREE.DoubleSide
-    });
-    resetAnimationButton.material.needsUpdate = true;
+    loadTexture(texturePath).then(texture => {
+        resetAnimationButton.material = new THREE.MeshBasicMaterial({
+            map:  texture,
+            side: THREE.DoubleSide
+        });
+        resetAnimationButton.material.needsUpdate = true;
+    })
 }
 
 function createHomeButton(){
     homeButtonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
     homeButtonMaterial = new THREE.MeshBasicMaterial({color: 0x003060});
+    homeButtonMaterial.transparent = true;
+    homeButtonMaterial.opacity = 0;
     homeButton = new THREE.Mesh( homeButtonGeometry, homeButtonMaterial );
     homeButton.translateX(0.6);
     homeButton.translateY(-5.0);
@@ -1399,6 +1406,8 @@ function createHomeButton(){
 function createResetAnimationButton(){
     resetAnimationButtonGeometry = new THREE.CircleGeometry(0.4,32,0, 6.283185307179586);
     resetAnimationButtonMaterial = new THREE.MeshBasicMaterial({color: 0x003060});
+    resetAnimationButtonMaterial.transparent = true;
+    resetAnimationButtonMaterial.opacity = 0;
     resetAnimationButton = new THREE.Mesh( resetAnimationButtonGeometry, resetAnimationButtonMaterial );
     resetAnimationButton.translateX(-0.6);
     resetAnimationButton.translateY(-5.0);
@@ -1708,6 +1717,7 @@ function resetSceneHome(){
     scene.add(titleHomeArea);
     scene.remove(subTitleFrogArea);
     scene.remove(subTitleSheepArea);
+    scene.remove(playSheepArea);
 }
 function animateFrogHome(){
 
@@ -1807,14 +1817,14 @@ function animateSheepHome(){
     initialX = sheepFrontLeftLeg.rotation.x;
     createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
         .wait(8000)    
-        .to({ x: 0.6 }, 500, createjs.Ease.linear)
+        .to({ x: -0.6 }, 500, createjs.Ease.linear)
         .to({ x: initialX }, 500, createjs.Ease.linear)
         .wait(5000);
     
     initialX = sheepFrontRightLeg.rotation.x;
     createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
         .wait(8000)    
-        .to({ x: 0.6 }, 500, createjs.Ease.linear)
+        .to({ x: -0.6 }, 500, createjs.Ease.linear)
         .to({ x: initialX }, 500, createjs.Ease.linear) 
         .wait(5000);
 
@@ -1835,12 +1845,14 @@ function animateSheepHome(){
          .wait(5000)
     
     //SHEEP BODY ANIMATION
-    initialX = sheepBody.position.y;
+    /*initialX = sheepBody.position.y;
     createjs.Tween.get(sheepBody.position, {loop: true})
         .wait(8000)    
         .to({ y: -0.2 }, 500, createjs.Ease.linear)
         .to({ y: initialX }, 500, createjs.Ease.linear)
-        .wait(5000);         
+        .wait(5000);*/ 
+        
+        
 
 }
 
@@ -1944,53 +1956,70 @@ console.log("count array nuovo è: "+count_array.length);
 //var count_wool = woolArray.length-1; //numero pallocchi
 
 function gameOver() {
-        loadTexture('textures/title.jpg').then(texture => {
-            const gameOverGeometry = new THREE.BoxGeometry(15, 5, 0);
-            const materials = [
-                new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-                new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-                new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-                new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-                new THREE.MeshBasicMaterial({map: texture}),
-                new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
-            ];
-            gameOverSheep = new THREE.Mesh( gameOverGeometry, materials);
-            gameOverSheep.translateY(4.3);
-            scene.add(gameOverSheep);
-        })
+    loadTexture('textures/happySheep2.jpg').then(texture => {
+        const titleAreaGeometry = new THREE.BoxGeometry(10, 3, 0);
+        const materials = [
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial({map: texture}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
+        ];
+        subTitleSheepArea = new THREE.Mesh( titleAreaGeometry, materials);
+        subTitleSheepArea.translateY(3.3);
+        subTitleSheepArea.translateZ(-1.5);
+        scene.add(subTitleSheepArea);
+    })
 
 }
-var count;
+
+function sheepPlayArea() {
+    loadTexture('textures/playAgain.png').then(texture => {
+        const playAreaGeometry = new THREE.BoxGeometry(6.7, 4, 0);
+        const materials = [
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial({map: texture}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
+        ];
+        playSheepArea = new THREE.Mesh( playAreaGeometry, materials);
+        playSheepArea.translateY(-5.3);
+        scene.add(playSheepArea);
+    
+    })
+}
+
+var count=0;
 function animateWool(j) {
     // WOOL ANIMATION
-    count = 0;
     createjs.Tween.get(wool[j].position, {loop: false})
     .to({ y: -0.7}, 2000, createjs.Ease.bounceOut)
 
     createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
-    .to({x: 0.005, y: 0.005, z: 0.005}, 2000, createjs.Ease.bounceOut)
+    .to({x: 0.001, y: 0.001, z: 0.001}, 2000, createjs.Ease.bounceOut)
 
-    createjs.Tween.get(wool[j].position, {loop: false}).wait(3000)
-    .to({ z: -0.1}, 2000, createjs.Ease.linear)
-
-    for (let i=0; i<wool.length; i++) {
-        if (wool[i].position.z == -0.1) {
+    for (var i=0; i<count_array.length; i++) {
+        if (count_array[i]===woolArray[j]) {
+            count_array.splice(i, 1);
+            //console.log("HO ELIMINATO: "+count_array.splice(i, 1));
             count += 1;
         }
-    }
+        else {
+            continue;
+        }
 
+    }
+  
     console.log("count vale: "+count);
-    if (count == 43) {
-        gameOver();
-    }
-    //count_array.splice(count_array[j], 1);
-    //console.log("pallocchi rimasti: "+count_array.length);
 
-
-    /*if (count_array.length == 0) {
+    console.log("TI STAMPO COUNT ARRAY: "+count_array);
+    if (count_array.length == 0) {
        gameOver();
-        //console.log("pallocchi rimasti: "+count_wool);
-    }*/
+       sheepPlayArea();
+    }
 }
 
 function animateFrogEyeBalls(){
