@@ -59,9 +59,9 @@ const pi = Math.PI;
 let objectID;
 let oldSelectedID = 13;
 const frogID = 12;
-const deathAreaID = 168;
-const warningAreaID = 167;
-const chillAreaID = 166;
+const deathAreaID = 170;
+const warningAreaID = 169;
+const chillAreaID = 168;
 const sheepID = 30;
 const goButtonID = 147;
 const homeButtonID = 148;
@@ -1036,6 +1036,7 @@ function createSmallerWings(){
 }
 
 function animateFly(){
+
     createjs.Tween.get(flyBiggerWings[0].rotation, {loop: true})
         .to({ z: 0.1 }, 450, createjs.Ease.linear)
         .to({ z: initialFlyBiggerWingsPos }, 450, createjs.Ease.linear);
@@ -1049,6 +1050,20 @@ function animateFly(){
 
     createjs.Tween.get(flySmallerWings[1].rotation, {loop: true})
         .to({ z: 0 }, 100, createjs.Ease.linear);
+}
+
+function createFlySound(){
+    const listener = new THREE.AudioListener();
+    const sound = new THREE.Audio( listener );
+
+    // load a sound and set it as the Audio object's buffer
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load( 'sounds/test.ogg', function( buffer ) {
+        sound.setBuffer( buffer );
+        sound.setLoop( true );
+        sound.setVolume( 0.5 );
+        sound.play();
+    });
 }
 // ------------- SCISSOR ----------------------------------------
 function createScissor(){
@@ -1498,7 +1513,7 @@ function createSceneFrog(){
     scene.remove(subTitleSheepArea);
     createFrogAreas();
     //createFrogAreaSubTitle();
-
+    createFlySound();
 }
 
 function createSceneSheep(){
@@ -1813,6 +1828,12 @@ function resetSceneHome(){
     scene.remove(subTitleFrogArea);
     scene.remove(subTitleSheepArea);
     scene.remove(playSheepArea);
+
+    scene.remove(frogAreaChill);
+    scene.remove(frogAreaWarning);
+    scene.remove(frogAreaDeath);
+
+
 }
 function animateFrogHome(){
 
@@ -2363,6 +2384,7 @@ let onMousePause = function (event) {
     timer = setTimeout(function() {
         if (currentScrren === "FROG"){
             mouseSetting(event);
+            console.log(intersects[2].object.id);
             for (let i = 0; i < intersects.length; i += 1) {
                 if (intersects[i].object.id === deathAreaID) death = true;
                 else if (intersects[i].object.id  === warningAreaID) warning = true;
