@@ -7,8 +7,8 @@ let flyBody, flyEyes, flyBiggerWings, flySmallerWings;
 let scissorBody, scissorBlades, scissorHandles;
 let flyGroup, group2, groupPivotLegR, groupPivotLegL;
 let titleHomeArea;
-let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -10);
-let frogAnimation, frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
+let windowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -3);
+let frogAnimation, bodyFrogAnimation,  frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR, frogEyeL, frogPupilR, frogPupilL, frogCheekR,
     frogMouthPivot, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip, titleFrogArea, descriptionFrogArea, subTitleFrogArea;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
     sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[], playSheepArea;
@@ -18,7 +18,8 @@ let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMate
 let plane;
 let intersects;
 let frogRequestAnimationFrame;
-var targetAngle ;
+var targetAngle;
+let frogEating = false;
 
 
 // -------------- ANIMATIONS VARIABLES --------------------
@@ -75,6 +76,7 @@ let selected;
 let currentScrren;
 
 let targetAngleVertical;
+let targetAngleVerticalOriginal;
 let inclination;
 let woolArray = [];
 
@@ -1894,47 +1896,48 @@ function animateFrogHeadAndEyes(){ //attenzione: l'animazione della rana continu
 }
 
 function animateFrogJump(){
-    // UPPER LEGS ANIMATION
-    let initialZ = groupPivotLegL.rotation.z;
-    groupPivotLegLAnimation = createjs.Tween.get(groupPivotLegL.rotation, {loop: true})
-        .to({ z: 0.2 }, 500, createjs.Ease.linear)
-        .to({ z: initialZ }, 500, createjs.Ease.linear)
-        .wait(1500)
-        .to({ z: 0.1 }, 500, createjs.Ease.linear)
-        .to({ z: initialZ }, 500, createjs.Ease.linear)
-        .wait(3000);
 
-    initialZ = groupPivotLegR.rotation.z;
-    groupPivotLegRAnimation = createjs.Tween.get(groupPivotLegR.rotation, {loop: true})
-        .to({ z: -0.2 }, 500, createjs.Ease.linear)
-        .to({ z: initialZ }, 500, createjs.Ease.linear)
-        .wait(1500)
-        .to({ z: -0.1 }, 500, createjs.Ease.linear)
-        .to({ z: initialZ }, 500, createjs.Ease.linear)
-        .wait(3000);
+        // UPPER LEGS ANIMATION
+        let initialZ = groupPivotLegL.rotation.z;
+        groupPivotLegLAnimation = createjs.Tween.get(groupPivotLegL.rotation, {loop: true})
+            .to({z: 0.2}, 500, createjs.Ease.linear)
+            .to({z: initialZ}, 500, createjs.Ease.linear)
+            .wait(1500)
+            .to({z: 0.1}, 500, createjs.Ease.linear)
+            .to({z: initialZ}, 500, createjs.Ease.linear)
+            .wait(3000);
 
-    // BODY ANIMATION
-    let initialY = frogBody.position.y;
-    createjs.Tween.get(frogBody.position, {loop: true})
-        .to({ y: 0.12 }, 500, createjs.Ease.circOut)
-        .to({ y: initialY }, 500, createjs.Ease.circOut)
-        .wait(1500)
-        .to({ y: 0.1 }, 500, createjs.Ease.circOut)
-        .to({ y: initialY }, 500, createjs.Ease.circOut)
-        .wait(3000);
+        initialZ = groupPivotLegR.rotation.z;
+        groupPivotLegRAnimation = createjs.Tween.get(groupPivotLegR.rotation, {loop: true})
+            .to({z: -0.2}, 500, createjs.Ease.linear)
+            .to({z: initialZ}, 500, createjs.Ease.linear)
+            .wait(1500)
+            .to({z: -0.1}, 500, createjs.Ease.linear)
+            .to({z: initialZ}, 500, createjs.Ease.linear)
+            .wait(3000);
 
-    // LOWER LEGS ANIMATION
-    initialZ = frogLowerLeftLeg.rotation.z;
-    frogLowerLeftLegAnimation = createjs.Tween.get(frogLowerLeftLeg.rotation, {loop: true})
-        .to({ z: -0.8 }, 500, createjs.Ease.linear)
-        .to({ z: initialZ }, 500, createjs.Ease.linear)
-        .wait(5500);
+        // BODY ANIMATION
+        let initialY = frogBody.position.y;
+        bodyFrogAnimation = createjs.Tween.get(frogBody.position, {loop: true})
+            .to({y: 0.12}, 500, createjs.Ease.circOut)
+            .to({y: initialY}, 500, createjs.Ease.circOut)
+            .wait(1500)
+            .to({y: 0.1}, 500, createjs.Ease.circOut)
+            .to({y: initialY}, 500, createjs.Ease.circOut)
+            .wait(3000);
 
-    initialZ = frogLowerRightLeg.rotation.z;
-    frogLowerRightLegAnimation = createjs.Tween.get(frogLowerRightLeg.rotation, {loop: true})
-        .to({ z: -0.8 }, 500, createjs.Ease.linear)
-        .to({ z: initialZ }, 500, createjs.Ease.linear)
-        .wait(5500);
+        // LOWER LEGS ANIMATION
+        initialZ = frogLowerLeftLeg.rotation.z;
+        frogLowerLeftLegAnimation = createjs.Tween.get(frogLowerLeftLeg.rotation, {loop: true})
+            .to({z: -0.8}, 500, createjs.Ease.linear)
+            .to({z: initialZ}, 500, createjs.Ease.linear)
+            .wait(5500);
+
+        initialZ = frogLowerRightLeg.rotation.z;
+        frogLowerRightLegAnimation = createjs.Tween.get(frogLowerRightLeg.rotation, {loop: true})
+            .to({z: -0.8}, 500, createjs.Ease.linear)
+            .to({z: initialZ}, 500, createjs.Ease.linear)
+            .wait(5500);
 }
 
 function animateSceneSheep(){
@@ -2086,6 +2089,7 @@ function animateFrogHead(){
         var catchVariable = 0.4;
 
         //check if the angle surpass a certain limit
+        targetAngleVerticalOriginal = targetAngleVertical
         if(targetAngleVertical >= maxTargetAngleVertical) targetAngleVertical = maxTargetAngleVertical;
         if(targetAngleVertical <= 0) targetAngleVertical = 0;
 
@@ -2097,43 +2101,52 @@ function animateFrogHead(){
 function stretchFrogTongue(){
     cancelAnimationFrame(frogRequestAnimationFrame)
 
-    createjs.Tween.get(frogHead.rotation)
-        .to({ x: -0.4, y: Number(targetAngle) }, 800, createjs.Ease.linear);
+    createjs.Tween.get(frogHead.rotation, {loop:false})
+        .to({ x: Number(-targetAngleVertical) - 0.25, y: Number(targetAngle) }, 800, createjs.Ease.linear)
+        .wait(1500)
+        .to({ x: 0, y:0 }, 500, createjs.Ease.linear);
 
-    createjs.Tween.get(frogMouthPivot.rotation)
-        .to({ x: 0.6 }, 800, createjs.Ease.linear);
+     createjs.Tween.get(frogMouthPivot.rotation, {loop:false})
+        .to({ x: 0.6 }, 800, createjs.Ease.linear)
+         .wait(1800)
+         .to({ x: 0.25 }, 500, createjs.Ease.linear)
+         .wait(2000)
+         .to({ x: 0.4 }, 500, createjs.Ease.linear)
 
-    //animazione per allungare la lingua verso la mosca
-    createjs.Tween.get(frogTongue.scale)
-        .to({x: 0.2 }, 800, createjs.Ease.linear);
+    console.log("VEIDMAO = " + targetAngleVerticalOriginal)
+    targetAngleVerticalOriginal = targetAngleVerticalOriginal > 0.2 ? 0.2 : targetAngleVerticalOriginal
+  //  targetAngleVerticalOriginal = targetAngleVerticalOriginal < -0.1 && targetAngleVerticalOriginal > -0.2  ? 0 : targetAngleVerticalOriginal
+    //targetAngleVerticalOriginal = targetAngleVerticalOriginal < -0.05 ? -0.05 : targetAngleVerticalOriginal
+    if (targetAngleVerticalOriginal <= 0 && targetAngleVerticalOriginal >= -0.2) targetAngleVerticalOriginal = 0.1
+    else if (targetAngleVerticalOriginal < -0.2) targetAngleVerticalOriginal= -0.2
+    createjs.Tween.get(frogTongue.rotation, {loop:false})
+        .to({ x: Number(-targetAngleVerticalOriginal) }, 800, createjs.Ease.linear)
+        .wait(1500)
+        .to({ x: 0 }, 500, createjs.Ease.linear);
 
-    createjs.Tween.get(frogTongue.position)
+    createjs.Tween.get(frogTongue.scale, {loop:false})
+        .to({ x: 0.2 }, 800, createjs.Ease.linear)
+        .wait(1500)
+        .to({ x: 0.06 }, 500, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongue.position, {loop:false})
       //  .to({y: 0.1, z: -2.2}, 800, createjs.Ease.linear);
         .to({z: -0.8, y: 0.1 }, 800, createjs.Ease.linear);
 
-    createjs.Tween.get(frogTongueTip.position)
-        .to({y: -0.1}, 800, createjs.Ease.linear);
+    createjs.Tween.get(frogTongueTip.position, {loop:false})
+        .to({ y: -0.1 }, 800, createjs.Ease.linear);
 
-    createjs.Tween.get(frogTongueTip.scale)
-        .to({x: 4.5, y: 5, z:4.3}, 800, createjs.Ease.linear);
-
-
+    createjs.Tween.get(frogTongueTip.scale, {loop:false})
+        .to({ x: 4.5, y: 5, z:4.3 }, 800, createjs.Ease.linear);
 
 }
 
 function foldFrogTongue(){
-    //animazione per allungare la lingua verso la mosca
-    createjs.Tween.get(frogTongue.scale)
-        .to({x: 0.05 }, 800, createjs.Ease.linear); // il valore 0.05 lo mettiamo perchè è il valore di quando abbiamo creato la tongue
 
-    createjs.Tween.get(frogTongue.position)
-        .to({y: 0, z: -0.5}, 800, createjs.Ease.linear);    
+    createjs.Tween.get(frogHead.rotation)
+        .to({ x:0, y: 0 }, 800, createjs.Ease.linear);
 
-    createjs.Tween.get(frogTongueTip.position)
-        .to({y: 0}, 800, createjs.Ease.linear);
 
-    createjs.Tween.get(frogTongueTip.scale)
-        .to({x: 1, y: 5, z:4.4}, 800, createjs.Ease.linear);
 
 }
 
@@ -2144,8 +2157,10 @@ let onMousePause = function (event) {
 
     timer = setTimeout(function() {
         if (currentScrren === "FROG")
+            frogEating = true;
             stretchFrogTongue();
-    }, 3000);
+    }, 1000);
+
 }
 
 window.addEventListener('mousemove', onMousePause);
