@@ -18,6 +18,7 @@ let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMate
 let plane;
 let intersects;
 let frogRequestAnimationFrame;
+var targetAngle ;
 
 
 // -------------- ANIMATIONS VARIABLES --------------------
@@ -499,20 +500,21 @@ function createFrogTongue(scale){
         getPoint( t, optionalTarget = new THREE.Vector3() ) {
             
             const tx = t * 1 - 1.5; // per l'animazione cambiare 1 aumentandolo fino a 3
-            const ty = 0.5 * Math.sin(Math.PI * t );
+            const ty = 0.2 * Math.sin(3 * Math.PI * t );
             const tz = 0;
             return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale );
         }
     
     }
     const tonguePath = new CustomSinCurve( 10 );
-    const tongueGeometry = new THREE.TubeGeometry( tonguePath, 500, 1.1, 8, false);
+    const tongueGeometry = new THREE.TubeGeometry( tonguePath, 100, 1.1, 20, false);
     //const tongueMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
     frogTongue = new THREE.Mesh( tongueGeometry, redMaterial );
     //scene.add( frogTongue );
     frogTongue.scale.multiplyScalar(0.05*scale);
     frogTongue.material.side = THREE.DoubleSide;
     frogMouth.add(frogTongue);
+    frogTongue.translateY(0.1);
     frogTongue.translateZ(-0.5); // mentre si anima va traslata in valori sempre più positivi fino a 1
     frogTongue.rotateY(1.57);
     frogTongue.scale.z = 0.25; //allarga la lingua lateralmente
@@ -2031,7 +2033,7 @@ function animateFrogEyeBalls(){
         var height = 2 * Math.tan( vFOV / 2 ) * 80; // visible height
         var width = height * camera.aspect;
 
-        //computes the range of movement of the eyeball (proportion between screen dimensions and eye dimensions)
+        //computes the range of movement of the eyeball (proportion between scene dimensions and eye dimensions)
         var targetPosScaled = {x: (((targetPos.x)*0.2)/width), y:(((targetPos.y)*0.2)/height)+2};
 
         createjs.Tween.get(frogPupilL.position)
@@ -2042,20 +2044,21 @@ function animateFrogEyeBalls(){
 }
 
 function animateFrogHead(){
-        //MOVIMENTO ORIZZONTALE DELLA TESTA
         //variable for the mouse
         var targetPos = new THREE.Vector3();
         flyBody.getWorldPosition(targetPos);
-
         var headDistance = targetPos.z - frogHead.position.z;
-        var targetDivision = targetPos.x/headDistance;
+
+        //MOVIMENTO ORIZZONTALE DELLA TESTA
+        var i = Math.sqrt(Math.pow(headDistance, 2)+Math.pow(targetPos.x, 2));
+        var targetDivision = targetPos.x/i;
 
         //check if I have a value that is acceptable by Math.asin
         if(targetDivision >= 1) targetDivision = 1;
         if(targetDivision <= -1) targetDivision = -1;
 
         //angle
-        var targetAngle = Math.asin(targetDivision);
+        targetAngle = Math.asin(targetDivision);
 
         //setting the limit value to the right and left
         var maxTargetAngle = 0.7;
@@ -2068,7 +2071,8 @@ function animateFrogHead(){
         .to({y: targetAngle }, 80, createjs.Ease.linear);
 
         //MOVIMENTO VERTICALE DELLA TESTA
-        var targetDivisionVertical = targetPos.y/headDistance;
+        var iHorizontal = Math.sqrt(Math.pow(headDistance, 2)+Math.pow(targetPos.y, 2));
+        var targetDivisionVertical = targetPos.y/iHorizontal;
 
         //check if I have a value that is acceptable by Math.asin
         if(targetDivisionVertical >= 1) targetDivisionVertical = 1;
@@ -2091,27 +2095,28 @@ function animateFrogHead(){
 }
 
 function stretchFrogTongue(){
+    cancelAnimationFrame(frogRequestAnimationFrame)
 
     createjs.Tween.get(frogHead.rotation)
-        .to({x: 1.57 }, 800, createjs.Ease.linear);
+        .to({ x: -0.4, y: Number(targetAngle) }, 800, createjs.Ease.linear);
+
+    createjs.Tween.get(frogMouthPivot.rotation)
+        .to({ x: 0.6 }, 800, createjs.Ease.linear);
 
     //animazione per allungare la lingua verso la mosca
     createjs.Tween.get(frogTongue.scale)
-        .to({x: 0.5 }, 800, createjs.Ease.linear);
+        .to({x: 0.2 }, 800, createjs.Ease.linear);
 
     createjs.Tween.get(frogTongue.position)
-        .to({y: 0.1, z: -2.2}, 800, createjs.Ease.linear);
-    
+      //  .to({y: 0.1, z: -2.2}, 800, createjs.Ease.linear);
+        .to({z: -0.8, y: 0.1 }, 800, createjs.Ease.linear);
+
     createjs.Tween.get(frogTongueTip.position)
         .to({y: -0.1}, 800, createjs.Ease.linear);
 
     createjs.Tween.get(frogTongueTip.scale)
         .to({x: 4.5, y: 5, z:4.3}, 800, createjs.Ease.linear);
 
-    //la testa va un po' indietro per simulare apertura bocca
-    //console.log("angolo attuale "+targetAngleVertical);
-    createjs.Tween.get(frogHead.rotation)
-        .to({y: -targetAngleVertical-0.4}, 800, createjs.Ease.linear);
 
 
 }
