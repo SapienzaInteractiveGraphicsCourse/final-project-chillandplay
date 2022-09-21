@@ -111,6 +111,8 @@ document.body.appendChild(renderer.domElement);
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
 let timer; //timer per gestire la lingua che parte verso la mosca
+let timerSad;
+let timerEat;
 
 createSceneHome();
 
@@ -2190,7 +2192,7 @@ function animateFrogHead(){
 
 }
 
-function stretchFrogTongue(){
+function stretchFrogTongue(){ //DEATH AREA
     cancelAnimationFrame(frogRequestAnimationFrame);
 
     createjs.Tween.get(frogHead.rotation, {loop:false})
@@ -2270,13 +2272,20 @@ function stretchFrogTongue(){
         .to({x: frogPupilPositionBackupL.x, y: frogPupilPositionBackupL.y, z: frogPupilPositionBackupL.z}, 100, createjs.Ease.linear)
 
     createjs.Tween.get(flyGroup.scale, {loop: false}).wait(200)
-        .to({x: 0.1, y: 0.1, z: 0.1}, 250, createjs.Ease.bounceOut);
+        .to({x: 0.1, y: 0.1, z: 0.1}, 250, createjs.Ease.bounceOut)
+        .wait(1000)
+        .to({x: 2.5, y: 2.5, z: 2.5}, 3500, createjs.Ease.bounceOut)
     
     createjs.Tween.get(flyGroup.position, {loop: false}).wait(200)
         .to({x: 0, y: 0, z: 0.5}, 250, createjs.Ease.linear);
+
+    clearTimeout(timerEat);
+    timerEat = setTimeout(function() {
+        animateFrogHeadAndEyes();
+    }, 850);
 }
 
-function sadFrogAnimation(){
+function sadFrogAnimation(){ //AREA WARNING
     cancelAnimationFrame(frogRequestAnimationFrame);
 
     createjs.Tween.get(frogHead.rotation, {loop:false})
@@ -2284,14 +2293,15 @@ function sadFrogAnimation(){
         .wait(50)
         .to({ x: 0, y:0 }, 200, createjs.Ease.linear)
         .wait(50)
-        .to({y: 0.2 }, 100, createjs.Ease.linear)
-        .to({y: -0.2 }, 100, createjs.Ease.linear)
-        .to({y: 0.2 }, 100, createjs.Ease.linear)
-        .to({y: -0.2 }, 100, createjs.Ease.linear);
+        .to({y: 0.2 }, 100, createjs.Ease.bounceIn)
+        .to({y: -0.2 }, 100, createjs.Ease.bounceIn)
+        .to({y: 0.1 }, 100, createjs.Ease.bounceIn)
+        .to({y: -0.1 }, 100, createjs.Ease.bounceIn)
+        .to({y: 0 }, 100, createjs.Ease.bounceIn);
 
 
      createjs.Tween.get(frogMouthPivot.rotation, {loop:false})
-        .to({ x: 1 }, 200, createjs.Ease.linear) //0.6
+        .to({ x: 1 }, 200, createjs.Ease.linear)
          .wait(50)
          .to({ x: 0.25 }, 200, createjs.Ease.linear)
          .wait(1000)
@@ -2331,11 +2341,18 @@ function sadFrogAnimation(){
 
     createjs.Tween.get(frogPupilR.position, {loop:false})
         .wait(450)
-        .to({x: frogPupilPositionBackupR.x, y: frogPupilPositionBackupR.y, z: frogPupilPositionBackupR.z}, 100, createjs.Ease.linear)
+        .to({x: frogPupilPositionBackupR.x, y: frogPupilPositionBackupR.y, z: frogPupilPositionBackupR.z}, 100, createjs.Ease.linear);
 
     createjs.Tween.get(frogPupilL.position, {loop:false})
         .wait(450)
-        .to({x: frogPupilPositionBackupL.x, y: frogPupilPositionBackupL.y, z: frogPupilPositionBackupL.z}, 100, createjs.Ease.linear)
+        .to({x: frogPupilPositionBackupL.x, y: frogPupilPositionBackupL.y, z: frogPupilPositionBackupL.z}, 100, createjs.Ease.linear);
+
+    clearTimeout(timerSad);
+    timerSad = setTimeout(function() {
+        animateFrogHeadAndEyes();
+        console.log("riattivo animation frame");
+    }, 1050);
+    
 }
 
 let onMousePause = function (event) {
