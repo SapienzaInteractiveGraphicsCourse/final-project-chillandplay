@@ -1455,6 +1455,12 @@ function createSceneFrog(){
 
 function createSceneSheep(){
     currentScrren = "SHEEP";
+    console.log("POSIZIONE X: "+sheepBody.position.x);
+    console.log("POSIZIONE Y: "+sheepBody.position.y);
+    console.log("POSIZIONE Z: "+sheepBody.position.z);
+    console.log("ROTAZIONE X: "+sheepBody.rotation.x);
+    console.log("ROTAZIONE Y: "+sheepBody.rotation.y);
+    console.log("ROTAZIONE Z: "+sheepBody.rotation.z);
     scene.remove(frogArea);
     scene.remove(frogBody);
     scene.remove(sheepArea);
@@ -1816,7 +1822,7 @@ function animateSheepHome(){
         .wait(1000);
 
     //FRONT LEGS ANIMATION 
-    initialX = sheepFrontLeftLeg.rotation.x;
+    /*initialX = sheepFrontLeftLeg.rotation.x;
     createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
         .wait(8000)    
         .to({ x: -0.6 }, 500, createjs.Ease.linear)
@@ -1844,7 +1850,7 @@ function animateSheepHome(){
          .wait(8000)    
          .to({ x: -0.6 }, 500, createjs.Ease.linear)
          .to({ x: initialX }, 500, createjs.Ease.linear)
-         .wait(5000)
+         .wait(5000)*/
     
     //SHEEP BODY ANIMATION
     /*initialX = sheepBody.position.y;
@@ -1957,6 +1963,73 @@ let count_array = woolArray.slice();
 console.log("count array nuovo è: "+count_array.length);
 //var count_wool = woolArray.length-1; //numero pallocchi
 
+function resetSheepPosition() {
+            //SHEEP BODY ANIMATION
+            const positionX = 0.0;
+            const positionY = 0.09999999999999998;
+            const positionZ = 0;
+            const rotationX = 0;
+            const rotationY = 0;
+            const rotationZ = 0;
+
+            //FRONT LEGS ANIMATION 
+            let initialX = sheepFrontLeftLeg.rotation.x;
+            createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
+            .wait(500)    
+            .to({ x: -0.6 }, 2000, createjs.Ease.linear)
+            .to({ x: initialX }, 2000, createjs.Ease.linear)
+            .wait(5000);
+        
+            initialX = sheepFrontRightLeg.rotation.x;
+            createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
+            .wait(500)    
+            .to({ x: -0.6 }, 2000, createjs.Ease.linear)
+            .to({ x: initialX }, 2000, createjs.Ease.linear) 
+            .wait(5000);
+
+            //BACK LEGS ANIMATION 
+            initialX = sheepBackLeftLeg.rotation.x;
+            createjs.Tween.get(sheepBackLeftLeg.rotation, {loop: true})
+            .wait(500)    
+            .to({ x: -0.6 }, 2000, createjs.Ease.linear)
+            .to({ x: initialX }, 2000, createjs.Ease.linear)
+            .wait(5000)
+        
+     
+            initialX = sheepBackRightLeg.rotation.x;
+            createjs.Tween.get(sheepBackRightLeg.rotation, {loop: true})
+            .wait(500)    
+            .to({ x: -0.6 }, 2000, createjs.Ease.linear)
+            .to({ x: initialX }, 2000, createjs.Ease.linear)
+            .wait(5000)
+
+            createjs.Tween.get(sheepBody.position, {loop: false})
+            .wait(500)    
+            .to({ x: positionX }, 2000, createjs.Ease.linear)
+            .to({ y: positionY }, 2000, createjs.Ease.linear)
+            .to({ z: positionZ }, 2000, createjs.Ease.linear)
+            .wait(5000);
+        
+            createjs.Tween.get(sheepBody.rotation, {loop: false})
+            .wait(500)    
+            .to({ x: rotationX }, 2000, createjs.Ease.linear)
+            .to({ y: rotationY }, 2000, createjs.Ease.linear)
+            .to({ z: rotationZ }, 2000, createjs.Ease.linear)
+            .wait(5000);
+
+    
+}
+
+function jumpSheep() {
+        // BODY ANIMATION
+        let initialY = sheepBody.position.y;
+        createjs.Tween.get(sheepBody.position, {loop: true}).wait(6000)
+            .to({ y: 1.7 }, 500, createjs.Ease.circOut)
+            .to({ y: initialY }, 500, createjs.Ease.circOut)
+            .wait(1500)
+
+}
+
 function gameOver() {
     loadTexture('textures/happySheep2.jpg').then(texture => {
         const titleAreaGeometry = new THREE.BoxGeometry(10, 3, 0);
@@ -1973,6 +2046,8 @@ function gameOver() {
         subTitleSheepArea.translateZ(-1.5);
         scene.add(subTitleSheepArea);
     })
+
+
 
 }
 
@@ -2019,8 +2094,10 @@ function animateWool(j) {
 
     console.log("TI STAMPO COUNT ARRAY: "+count_array);
     if (count_array.length == 0) {
-       gameOver();
-       sheepPlayArea();
+        resetSheepPosition();
+        jumpSheep();
+        gameOver();
+        sheepPlayArea();
     }
 }
 
