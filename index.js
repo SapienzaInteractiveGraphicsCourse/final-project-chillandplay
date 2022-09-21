@@ -59,6 +59,9 @@ const pi = Math.PI;
 let objectID;
 let oldSelectedID = 13;
 const frogID = 12;
+const deathAreaID = 168;
+const warningAreaID = 167;
+const chillAreaID = 166;
 const sheepID = 30;
 const goButtonID = 147;
 const homeButtonID = 148;
@@ -1530,7 +1533,7 @@ function createSceneSheep(){
             case objectID:
                 for (let j=0; j<woolArray.length; j+=1) {
                     if (objectID==woolArray[j]) {
-                        console.log("L'id wool è: "+woolArray[j]);
+                        //console.log("L'id wool è: "+woolArray[j]);
                         //sheepBody.remove(wool[j]);
                         
                         animateWool(j);
@@ -2038,14 +2041,14 @@ function arrayWoolID() {
     for (let i=47; i<=139; i+=1) {
         woolArray.push(i);
     }
-    console.log("L'array di wool è: "+woolArray);
-    console.log("L'array : "+wool);
+    //console.log("L'array di wool è: "+woolArray);
+    //console.log("L'array : "+wool);
 
 }
 arrayWoolID();
 let count_array = woolArray.slice();
 //console.log("count array è: "+count_array.splice(0, 1));
-console.log("count array nuovo è: "+count_array.length);
+//console.log("count array nuovo è: "+count_array.length);
 //var count_wool = woolArray.length-1; //numero pallocchi
 
 function gameOver() {
@@ -2106,9 +2109,9 @@ function animateWool(j) {
 
     }
   
-    console.log("count vale: "+count);
+    //console.log("count vale: "+count);
 
-    console.log("TI STAMPO COUNT ARRAY: "+count_array);
+    //console.log("TI STAMPO COUNT ARRAY: "+count_array);
     if (count_array.length == 0) {
        gameOver();
        sheepPlayArea();
@@ -2202,8 +2205,6 @@ function stretchFrogTongue(){
          .wait(1000)
          .to({ x: 0.4 }, 200, createjs.Ease.linear)
 
-    console.log("Angolo orizzontale testa" + targetAngleHorizontalOriginal);
-    console.log("Angolo verticale testa = " + targetAngleVerticalOriginal);
     var tongueVertAngle = targetAngleVerticalOriginal;
     var tongueHorizAngle = targetAngleHorizontalOriginal;
 
@@ -2215,9 +2216,6 @@ function stretchFrogTongue(){
     else if(tongueVertAngle <-0.2 && tongueVertAngle >= -0.4) tongueVertAngle = 0.1;
     else if(tongueVertAngle <-0.4 && tongueVertAngle >= -0.6) tongueVertAngle = 0;
     else if (tongueVertAngle < -0.6) tongueVertAngle = -0.1;
-    console.log("Angolo verticale lingua = " + tongueVertAngle);
-
-    console.log("Angolo orizzontale lingua = " + tongueHorizAngle);
 
 
     createjs.Tween.get(frogTongue.rotation, {loop:false})
@@ -2278,13 +2276,85 @@ function stretchFrogTongue(){
         .to({x: 0, y: 0, z: 0.5}, 250, createjs.Ease.linear);
 }
 
+function sadFrogAnimation(){
+    cancelAnimationFrame(frogRequestAnimationFrame);
+
+    createjs.Tween.get(frogHead.rotation, {loop:false})
+        .to({ x: Number(-targetAngleVertical) - 0.65, y: Number(targetAngle) }, 200, createjs.Ease.linear)  //-0.25
+        .wait(50)
+        .to({ x: 0, y:0 }, 200, createjs.Ease.linear)
+        .wait(50)
+        .to({y: 0.2 }, 100, createjs.Ease.linear)
+        .to({y: -0.2 }, 100, createjs.Ease.linear)
+        .to({y: 0.2 }, 100, createjs.Ease.linear)
+        .to({y: -0.2 }, 100, createjs.Ease.linear);
+
+
+     createjs.Tween.get(frogMouthPivot.rotation, {loop:false})
+        .to({ x: 1 }, 200, createjs.Ease.linear) //0.6
+         .wait(50)
+         .to({ x: 0.25 }, 200, createjs.Ease.linear)
+         .wait(1000)
+         .to({ x: 0.4 }, 200, createjs.Ease.linear)
+
+    var tongueVertAngle = targetAngleVerticalOriginal;
+    var tongueHorizAngle = targetAngleHorizontalOriginal;
+
+    if(tongueVertAngle >= 0.3) tongueVertAngle = 0.3;
+    if(tongueVertAngle >= 0.2 && tongueVertAngle < 0.3) tongueVertAngle = tongueVertAngle;//ok va bene lasciare tongueAngle
+    else if(tongueVertAngle>0 && tongueVertAngle<0.2) tongueVertAngle = 0.3;
+    else if(tongueVertAngle <0 && tongueVertAngle >=-0.1) tongueVertAngle = 0.25;
+    else if(tongueVertAngle <-0.1 && tongueVertAngle >= -0.2) tongueVertAngle = 0.2;
+    else if(tongueVertAngle <-0.2 && tongueVertAngle >= -0.4) tongueVertAngle = 0.1;
+    else if(tongueVertAngle <-0.4 && tongueVertAngle >= -0.6) tongueVertAngle = 0;
+    else if (tongueVertAngle < -0.6) tongueVertAngle = -0.1;
+
+
+    createjs.Tween.get(frogTongue.rotation, {loop:false})
+        .to({ x: Number(-tongueVertAngle), y: 1.57+Number(tongueHorizAngle)/8 }, 200, createjs.Ease.linear)
+        .wait(50)
+        .to({ x: 0, y: 1.57 }, 200, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongue.scale, {loop:false})
+        .to({ x: 0.2 }, 200, createjs.Ease.linear)
+        .wait(50)
+        .to({ x: 0.06 }, 200, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongue.position, {loop:false})
+        .to({z: -0.8, y: 0.1 }, 200, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongueTip.position, {loop:false})
+        .to({ y: -0.1 }, 200, createjs.Ease.linear);
+
+    createjs.Tween.get(frogTongueTip.scale, {loop:false})
+        .to({ x: 4.5, y: 5, z:4.3 }, 200, createjs.Ease.linear);
+
+    createjs.Tween.get(frogPupilR.position, {loop:false})
+        .wait(450)
+        .to({x: frogPupilPositionBackupR.x, y: frogPupilPositionBackupR.y, z: frogPupilPositionBackupR.z}, 100, createjs.Ease.linear)
+
+    createjs.Tween.get(frogPupilL.position, {loop:false})
+        .wait(450)
+        .to({x: frogPupilPositionBackupL.x, y: frogPupilPositionBackupL.y, z: frogPupilPositionBackupL.z}, 100, createjs.Ease.linear)
+}
 
 let onMousePause = function (event) {
     clearTimeout(timer);
 
+    var chill, warning, death = false;
+
     timer = setTimeout(function() {
-        if (currentScrren === "FROG")
-            stretchFrogTongue();
+        if (currentScrren === "FROG"){
+            mouseSetting(event);
+            for (let i = 0; i < intersects.length; i += 1) {
+                if (intersects[i].object.id === deathAreaID) death = true;
+                else if (intersects[i].object.id  === warningAreaID) warning = true;
+                else if (intersects[i].object.id  === chillAreaID) chill = true;
+            }
+
+            if (death) stretchFrogTongue();
+            else if (warning && !death) sadFrogAnimation();
+        }
     }, 1000);
 
 }
