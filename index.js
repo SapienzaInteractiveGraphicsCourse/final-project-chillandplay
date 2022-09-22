@@ -13,7 +13,7 @@ let frogAnimation,  frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR
     frogAreaChill, frogAreaWarning, frogAreaDeath;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
     sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[], playSheepArea, positionWoolX=[], positionWoolY=[], positionWoolZ=[],
-    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[], woolFalling, woolSmall;
+    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[], woolFalling, woolSmall, woolFallingFlag, woolSmallFlag;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
@@ -21,6 +21,8 @@ let plane;
 let intersects;
 let frogRequestAnimationFrame;
 var targetAngle;
+woolFallingFlag=false;
+woolSmallFlag=false;
 
 // -------------- ANIMATIONS VARIABLES --------------------
 let bodyFrogAnimation, frogLowerRightLegAnimation, frogLowerLeftLegAnimation, groupPivotLegRAnimation,
@@ -1913,8 +1915,12 @@ function stopSceneFrogAnimation (){
 }
 
 function stopSceneSheepAnimation (){
-    woolFalling.setPaused(true);
-    woolSmall.setPaused(true);
+    if (woolFallingFlag && woolSmallFlag) {
+        woolFalling.setPaused(true);
+        woolSmall.setPaused(true);
+        woolFallingFlag=false;
+        woolSmallFlag=false;
+    }
 }
 
 function resetSceneHome(){
@@ -2239,6 +2245,8 @@ function animateWool(j) {
         gameOver();
         sheepPlayArea();
     }
+    woolFallingFlag=true;
+    woolSmallFlag=true;
 }
 
 function animateFrogEyeBalls(){
