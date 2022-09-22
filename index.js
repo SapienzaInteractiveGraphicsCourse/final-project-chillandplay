@@ -12,7 +12,7 @@ let frogAnimation, frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR,
     frogMouthPivot, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip, titleFrogArea, descriptionFrogArea, subTitleFrogArea;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
     sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[], playSheepArea, positionWoolX=[], positionWoolY=[], positionWoolZ=[],
-    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[];
+    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[], woolFalling, woolSmall;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
@@ -559,8 +559,6 @@ function backupSheepHome(){
     sheepBody.position.z = sheepBodyPositionBackup.z;
 
     //BACKUP LEG POSITION
-    //sheepFrontLeftLeg.position.setFromVector3(sheepFrontLeftPositionLegBackup);
-    //sheepFrontRightLeg.position.setFromVector3(sheepFrontRightPositionLegBackup);
     sheepFrontLeftLeg.position.x = sheepFrontLeftPositionLegBackup.x;
     sheepFrontLeftLeg.position.y = sheepFrontLeftPositionLegBackup.y;
     sheepFrontLeftLeg.position.z = sheepFrontLeftPositionLegBackup.z;
@@ -569,8 +567,6 @@ function backupSheepHome(){
     sheepFrontRightLeg.position.y = sheepFrontRightPositionLegBackup.y;
     sheepFrontRightLeg.position.z = sheepFrontRightPositionLegBackup.z;
 
-    //sheepBackLeftLeg.position.setFromVector3(sheepBackLeftPositionLegBackup);
-    //sheepBackRightLeg.position.setFromVector3(sheepBackRightPositionLegBackup);
     sheepBackLeftLeg.position.x = sheepBackLeftPositionLegBackup.x;
     sheepBackLeftLeg.position.y = sheepBackLeftPositionLegBackup.y;
     sheepBackLeftLeg.position.z = sheepBackLeftPositionLegBackup.z;
@@ -595,16 +591,22 @@ function backupSheepHome(){
     //BACKUP WOOL POSITION
     for (var j=0 ; j<wool.length; j++) {
         createjs.Tween.get(wool[j].position, {loop: false})
-        .to({x: positionWoolX[j], y: positionWoolY[j], z: positionWoolZ[j]}, 2000, createjs.Ease.linear)
+        .to({x: positionWoolX[j], y: positionWoolY[j], z: positionWoolZ[j]}, 1000, createjs.Ease.linear)
     
         createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
-        .to({x: scaleWoolX[j], y: scaleWoolY[j], z: scaleWoolZ[j]}, 2000, createjs.Ease.linear)
+        .to({x: scaleWoolX[j], y: scaleWoolY[j], z: scaleWoolZ[j]}, 1000, createjs.Ease.linear)
 
     }
 
+    /*for (var j=0 ; j<wool.length; j++) {
+        wool[j].position.x =  positionWoolX[j];
+        wool[j].position.y =  positionWoolY[j];
+        wool[j].position.z =  positionWoolZ[j];
 
-    //frogPupilR.scale.set(1, 1, 1);
-    //frogPupilL.scale.set(1, 1, 1);
+        wool[j].scale.x = scaleWoolX[j];
+        wool[j].scale.y = scaleWoolY[j];
+        wool[j].scale.z = scaleWoolZ[j];  
+    }*/
 }
 
 // ------------- SHEEP ----------------------------------------
@@ -1000,21 +1002,22 @@ function createSheepWool(){
     wool[92].castShadow = true;
     sheepBody.add(wool[92]);
 
+    //Create array of wool positions
+    for (var j=0 ; j<wool.length; j++) {
+        positionWoolX[j] = wool[j].position.x;
+        positionWoolY[j] = wool[j].position.y;
+        positionWoolZ[j] = wool[j].position.z;
+
+        scaleWoolX[j] = wool[j].scale.x;
+        scaleWoolY[j] = wool[j].scale.y;
+        scaleWoolZ[j] = wool[j].scale.z;
 
 }
 
-//Create array of wool positions
-for (var j=0 ; j<wool.length; j++) {
-    positionWoolX[j] = wool[j].position.x;
-    positionWoolY[j] = wool[j].position.y;
-    positionWoolZ[j] = wool[j].position.z;
 
-    scaleWoolX[j] = wool[j].scale.x;
-    scaleWoolY[j] = wool[j].scale.y;
-    scaleWoolZ[j] = wool[j].scale.z;
-
-    
 }
+
+
 // ----------------------------------------------------------
 
 // ------------- PLANE --------------------------------------
@@ -1800,8 +1803,15 @@ function stopSceneFrogAnimation (){
     frogHeadHorizontalAnimation.setPaused(true);
     makeFlyDisappear();
 }
+
+function stopSceneSheepAnimation (){
+    woolFalling.setPaused(true);
+    woolSmall.setPaused(true);
+}
+
 function resetSceneHome(){
-    //stopSceneFrogAnimation();
+    //stopSceneFrogAnimation(); //SE LO DECOMMENTO NON FUNZIONA IL TASTO HOME DELLA PECORA
+    stopSceneSheepAnimation();
     restartHomeAnimation();
     backupFrogHome();
     backupSheepHome();
@@ -1892,89 +1902,40 @@ function animateSheepHome(){
    //EYEBALLS ANIMATION
     let initialX = sheepEyeBalls[0].position.x;
     createjs.Tween.get(sheepEyeBalls[0].position, {loop: true})
-        .wait(3000)  
-        .to({ x: -0.1 }, 500, createjs.Ease.linear).wait(3000)
-        .to({ x: initialX }, 500, createjs.Ease.linear)
-        .wait(600)
-        .to({ x: 0.1 }, 500, createjs.Ease.linear).wait(3000)
-        .to({ x: initialX }, 500, createjs.Ease.linear)
-        .wait(600);
+        //.wait(3000)  
+        .to({ x: -0.1 }, 300, createjs.Ease.linear).wait(1000)
+        .to({ x: 0.1 }, 600, createjs.Ease.linear).wait(1000)
+        .to({ x: initialX }, 300, createjs.Ease.linear)
+        .wait(1350);
     
     initialX = sheepEyeBalls[1].position.x;
     createjs.Tween.get(sheepEyeBalls[1].position, {loop: true})
-        .wait(3000)
-        .to({ x: -0.1 }, 500, createjs.Ease.linear).wait(3000)
-        .to({ x: initialX },500, createjs.Ease.linear)
-        .wait(600)
-        .to({ x: 0.1 }, 500, createjs.Ease.linear).wait(3000)
-        .to({ x: initialX },500, createjs.Ease.linear)
-        .wait(600);
+        //.wait(3000)
+        .to({ x: -0.1 }, 300, createjs.Ease.linear).wait(1000)
+        .to({ x: 0.1 }, 600, createjs.Ease.linear).wait(1000)
+        .to({ x: initialX },300, createjs.Ease.linear)
+        .wait(1350);
 
    //HEAD ANIMATION
     initialX = sheepHead.rotation.y;
     createjs.Tween.get(sheepHead.rotation, {loop: true})
-        .wait(3000)
-        .to({ y: -0.3 }, 500, createjs.Ease.linear).wait(3000)
-        .to({ y: initialX },500, createjs.Ease.linear)
-        .wait(600)
-        .to({ y: 0.3 }, 500, createjs.Ease.linear).wait(3000)
-        .to({ y: initialX }, 500, createjs.Ease.linear)
-        .wait(600);
-
-    //FRONT LEGS ANIMATION 
-    /*initialX = sheepFrontLeftLeg.rotation.x;
-    createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
-        .wait(8000)    
-        .to({ x: 0.6 }, 500, createjs.Ease.linear)
-        .to({ x: initialX }, 500, createjs.Ease.linear)
-        .wait(5000);
-    
-    initialX = sheepFrontRightLeg.rotation.x;
-    createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
-        .wait(8000)    
-        .to({ x: 0.6 }, 500, createjs.Ease.linear)
-        .to({ x: initialX }, 500, createjs.Ease.linear) 
-        .wait(5000);
-
-    //BACK LEGS ANIMATION 
-    initialX = sheepBackLeftLeg.rotation.x;
-    createjs.Tween.get(sheepBackLeftLeg.rotation, {loop: true})
-         .wait(8000)    
-         .to({ x: -0.6 }, 500, createjs.Ease.linear)
-         .to({ x: initialX }, 500, createjs.Ease.linear)
-         .wait(5000)
-        
-     
-    initialX = sheepBackRightLeg.rotation.x;
-    createjs.Tween.get(sheepBackRightLeg.rotation, {loop: true})
-         .wait(8000)    
-         .to({ x: -0.6 }, 500, createjs.Ease.linear)
-         .to({ x: initialX }, 500, createjs.Ease.linear)
-         .wait(5000)*/
-    
-    //SHEEP BODY ANIMATION
-    /*initialX = sheepBody.position.y;
-    createjs.Tween.get(sheepBody.position, {loop: true})
-        .wait(8000)    
-        .to({ y: -0.2 }, 500, createjs.Ease.linear)
-        .to({ y: initialX }, 500, createjs.Ease.linear)
-        .wait(5000);*/
+        //.wait(3000)
+        .to({ y: -0.3 }, 300, createjs.Ease.circIn).wait(1000)
+        .to({ y: 0.3 }, 600, createjs.Ease.circIn).wait(1000)
+        .to({ y: initialX }, 300, createjs.Ease.circIn)
+        .wait(1350);
     
     //WOOL ANIMATION HOME
     for (var i=0; i<wool.length; i++) {
         let initialZ = wool[i].rotation.z;
         createjs.Tween.get(wool[i].rotation, {loop: true})
-            .wait(500)    
-            .to({ z: -0.5 }, 400, createjs.Ease.linear)
-            .to({ z: initialZ }, 400, createjs.Ease.linear)
-            .wait(11000);
+            .wait(3200)    
+            .to({ z: -0.5 }, 200, createjs.Ease.linear)
+            .to({ z: 0.5 }, 200, createjs.Ease.linear)
+            .to({ z: initialZ }, 200, createjs.Ease.linear)
+            .wait(750);
     }
-
-        
-        
-
 }
-
 
 function createSceneHome(){
     currentScrren = "HOME";
@@ -2076,77 +2037,18 @@ console.log("count array nuovo è: "+count_array.length);
 
 function resetSheepPosition() {
             //SHEEP BODY ANIMATION
-            const positionX = 0.0;
-            const positionY = 0.09999999999999998;
-            const positionZ = 0;
-            const rotationX = 0;
-            const rotationY = 0;
-            const rotationZ = 0;
-
-            //FRONT LEGS ANIMATION 
-            let initialX = sheepFrontLeftLeg.rotation.x;
-            createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
-            .wait(5300)    
-            .to({ x: 0.4 }, 500, createjs.Ease.linear)
-            .to({ x: initialX }, 500, createjs.Ease.linear)
-            .wait(1500);
-        
-            initialX = sheepFrontRightLeg.rotation.x;
-            createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
-            .wait(5300)    
-            .to({ x: 0.4 }, 500, createjs.Ease.linear)
-            .to({ x: initialX }, 500, createjs.Ease.linear) 
-            .wait(1500);
-
-            //BACK LEGS ANIMATION 
-            initialX = sheepBackLeftLeg.rotation.x;
-            createjs.Tween.get(sheepBackLeftLeg.rotation, {loop: true})
-            .wait(5300)    
-            .to({ x: -0.4 }, 500, createjs.Ease.linear)
-            .to({ x: initialX }, 500, createjs.Ease.linear)
-            .wait(1500)
-        
-            initialX = sheepBackRightLeg.rotation.x;
-            createjs.Tween.get(sheepBackRightLeg.rotation, {loop: true})
-            .wait(5300)    
-            .to({ x: -0.4 }, 500, createjs.Ease.linear)
-            .to({ x: initialX }, 500, createjs.Ease.linear)
-            .wait(1500)
-
-            //RESET BODY POSITION AND ROTATION SHEEP 
-            createjs.Tween.get(sheepBody.position, {loop: false})
-            .wait(500)    
-            .to({ x: positionX }, 2000, createjs.Ease.linear)
-            .to({ y: positionY }, 2000, createjs.Ease.linear)
-            .to({ z: positionZ }, 2000, createjs.Ease.linear)
-            .wait(5000);
-        
-            createjs.Tween.get(sheepBody.rotation, {loop: false})
-            .wait(500)    
-            .to({ x: rotationX }, 2000, createjs.Ease.linear)
-            .to({ y: rotationY }, 2000, createjs.Ease.linear)
-            .to({ z: rotationZ }, 2000, createjs.Ease.linear)
-            .wait(5000);
-
-            //RESET HEAD ROTATION SHEEP
-            createjs.Tween.get(sheepHead.rotation, {loop: false})
-            .wait(500)    
-            .to({ x: -0.2 }, 2000, createjs.Ease.linear)
-            .to({ y: 0.0 }, 2000, createjs.Ease.linear)
-            .to({ z: 0.0 }, 2000, createjs.Ease.linear)
-            .wait(5000);
+            createjs.Tween.get(sheepBody.rotation, {loop: false})  
+            .to({ x: 0, y: 0, z: 0 }, 1500, createjs.Ease.linear);
     
 }
 
 function jumpSheep() {
         // BODY ANIMATION
         let initialY = sheepBody.position.y;
-        createjs.Tween.get(sheepBody.position, {loop: true}).wait(5300)
+        createjs.Tween.get(sheepBody.position, {loop: false}).wait(1600)
             .to({ y: 1.5 }, 500, createjs.Ease.circOut)
             .to({ y: initialY }, 500, createjs.Ease.circOut)
-            .wait(9000)
-
-
+            .wait(9000);
 }
 
 function gameOver() {
@@ -2191,10 +2093,10 @@ function sheepPlayArea() {
 var count=0;
 function animateWool(j) {
     // WOOL ANIMATION
-    createjs.Tween.get(wool[j].position, {loop: false})
+    woolFalling = createjs.Tween.get(wool[j].position, {loop: false})
     .to({ y: -0.7}, 2000, createjs.Ease.bounceOut)
 
-    createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
+    woolSmall = createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
     .to({x: 0.001, y: 0.001, z: 0.001}, 2000, createjs.Ease.bounceOut)
 
     for (var i=0; i<count_array.length; i++) {
