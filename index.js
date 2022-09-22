@@ -24,7 +24,7 @@ var targetAngle;
 let soundFly;
 let timerFlyCatch;
 let soundFlyCatch;
-
+let frogJumpSound;
 
 
 // -------------- ANIMATIONS VARIABLES --------------------
@@ -73,9 +73,9 @@ const pi = Math.PI;
 let objectID;
 let oldSelectedID = 13;
 const frogID = 12;
-const deathAreaID = 170;
-const warningAreaID = 169;
-const chillAreaID = 168;
+const deathAreaID = 172;
+const warningAreaID = 171;
+const chillAreaID = 170;
 const sheepID = 30;
 const goButtonID = 147;
 const homeButtonID = 148;
@@ -2096,47 +2096,62 @@ function animateFrogHeadAndEyes(){ //attenzione: l'animazione della rana continu
 
 function animateFrogJump(){
 
-        // UPPER LEGS ANIMATION
-        let initialZ = groupPivotLegL.rotation.z;
-        groupPivotLegLAnimation = createjs.Tween.get(groupPivotLegL.rotation, {loop: true})
-            .to({z: 0.2}, 500, createjs.Ease.linear)
-            .to({z: initialZ}, 500, createjs.Ease.linear)
-            .wait(1500)
-            .to({z: 0.1}, 500, createjs.Ease.linear)
-            .to({z: initialZ}, 500, createjs.Ease.linear)
-            .wait(3000);
+    // UPPER LEGS ANIMATION
+    let initialZ = groupPivotLegL.rotation.z;
+    groupPivotLegLAnimation = createjs.Tween.get(groupPivotLegL.rotation, {loop: true})
+        .to({z: 0.2}, 500, createjs.Ease.linear)
+        .to({z: initialZ}, 500, createjs.Ease.linear)
+        .wait(1500)
+        .to({z: 0.1}, 500, createjs.Ease.linear)
+        .to({z: initialZ}, 500, createjs.Ease.linear)
+        .wait(3000);
 
-        initialZ = groupPivotLegR.rotation.z;
-        groupPivotLegRAnimation = createjs.Tween.get(groupPivotLegR.rotation, {loop: true})
-            .to({z: -0.2}, 500, createjs.Ease.linear)
-            .to({z: initialZ}, 500, createjs.Ease.linear)
-            .wait(1500)
-            .to({z: -0.1}, 500, createjs.Ease.linear)
-            .to({z: initialZ}, 500, createjs.Ease.linear)
-            .wait(3000);
+    initialZ = groupPivotLegR.rotation.z;
+    groupPivotLegRAnimation = createjs.Tween.get(groupPivotLegR.rotation, {loop: true})
+        .to({z: -0.2}, 500, createjs.Ease.linear)
+        .to({z: initialZ}, 500, createjs.Ease.linear)
+        .wait(1500)
+        .to({z: -0.1}, 500, createjs.Ease.linear)
+        .to({z: initialZ}, 500, createjs.Ease.linear)
+        .wait(3000);
 
-        // BODY ANIMATION
-        let initialY = frogBody.position.y;
-        bodyFrogAnimation = createjs.Tween.get(frogBody.position, {loop: true})
-            .to({y: 0.12}, 500, createjs.Ease.circOut)
-            .to({y: initialY}, 500, createjs.Ease.circOut)
-            .wait(1500)
-            .to({y: 0.1}, 500, createjs.Ease.circOut)
-            .to({y: initialY}, 500, createjs.Ease.circOut)
-            .wait(3000);
+    // BODY ANIMATION
+    let initialY = frogBody.position.y;
+    bodyFrogAnimation = createjs.Tween.get(frogBody.position, {loop: true})
+        .to({y: 0.12}, 500, createjs.Ease.circOut)
+        .to({y: initialY}, 500, createjs.Ease.circOut)
+        .wait(1500)
+        .to({y: 0.1}, 500, createjs.Ease.circOut)
+        .to({y: initialY}, 500, createjs.Ease.circOut)
+        .wait(3000);
 
-        // LOWER LEGS ANIMATION
-        initialZ = frogLowerLeftLeg.rotation.z;
-        frogLowerLeftLegAnimation = createjs.Tween.get(frogLowerLeftLeg.rotation, {loop: true})
-            .to({z: -0.8}, 500, createjs.Ease.linear)
-            .to({z: initialZ}, 500, createjs.Ease.linear)
-            .wait(5500);
+    // LOWER LEGS ANIMATION
+    initialZ = frogLowerLeftLeg.rotation.z;
+    frogLowerLeftLegAnimation = createjs.Tween.get(frogLowerLeftLeg.rotation, {loop: true})
+        .to({z: -0.8}, 500, createjs.Ease.linear)
+        .to({z: initialZ}, 500, createjs.Ease.linear)
+        .wait(5500);
 
-        initialZ = frogLowerRightLeg.rotation.z;
-        frogLowerRightLegAnimation = createjs.Tween.get(frogLowerRightLeg.rotation, {loop: true})
-            .to({z: -0.8}, 500, createjs.Ease.linear)
-            .to({z: initialZ}, 500, createjs.Ease.linear)
-            .wait(5500);
+    initialZ = frogLowerRightLeg.rotation.z;
+    frogLowerRightLegAnimation = createjs.Tween.get(frogLowerRightLeg.rotation, {loop: true})
+        .to({z: -0.8}, 500, createjs.Ease.linear)
+        .to({z: initialZ}, 500, createjs.Ease.linear)
+        .wait(5500);
+
+    let listenerFrogJump = new THREE.AudioListener();
+    let audioLoaderFrogJump = new THREE.AudioLoader();
+    frogJumpSound = new THREE.Audio(listenerFrogJump);
+    audioLoaderFrogJump.load('sounds/idle1.ogg', function (buffer) {
+        frogJumpSound.setBuffer(buffer);
+        frogJumpSound.setLoop(false);
+        frogJumpSound.setVolume(0.3);
+    })
+
+    const interval2 = setInterval(function () {
+        let rnd = Math.floor((Math.random() * 8));
+        frogJumpSound.play();
+    }, 3000);
+
 }
 
 function animateSceneSheep(){
