@@ -1595,12 +1595,12 @@ function createFrogAreas() {
     loadTexture('textures/frogTitle.jpg').then(texture => {
         const chillAreaGeometry = new THREE.BoxGeometry(30, 30, 0);
         const materials = [
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0x007700}), //map: texture}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
+            new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
+            new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
+            new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
+            new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
+            new THREE.MeshBasicMaterial( { color: 0xfae2a1}), //map: texture}),
+            new THREE.MeshBasicMaterial( { color: 0xfae2a1})
         ];
         frogAreaChill = new THREE.Mesh( chillAreaGeometry, materials);
         scene.add(frogAreaChill);
@@ -1609,12 +1609,12 @@ function createFrogAreas() {
     loadTexture('textures/frogTitle.jpg').then(texture => {
         const warningAreaGeometry = new THREE.BoxGeometry(15, 10, 0);
         const materials = [
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0x770077}), //map: texture}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
+            new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
+            new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
+            new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
+            new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
+            new THREE.MeshBasicMaterial( { color: 0xf5bf83}), //map: texture}),
+            new THREE.MeshBasicMaterial( { color: 0xf5bf83})
         ];
         frogAreaWarning = new THREE.Mesh( warningAreaGeometry, materials);
         scene.add(frogAreaWarning);
@@ -1623,12 +1623,12 @@ function createFrogAreas() {
     loadTexture('textures/frogTitle.jpg').then(texture => {
         const deathAreaGeometry = new THREE.BoxGeometry(7, 6, 0);
         const materials = [
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
-            new THREE.MeshBasicMaterial( { color: 0x770000}), //map: texture}),
-            new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
+            new THREE.MeshBasicMaterial( { color: 0xf79675}),
+            new THREE.MeshBasicMaterial( { color: 0xf79675}),
+            new THREE.MeshBasicMaterial( { color: 0xf79675}),
+            new THREE.MeshBasicMaterial( { color: 0xf79675}),
+            new THREE.MeshBasicMaterial( { color: 0xf79675}), //map: texture}),
+            new THREE.MeshBasicMaterial( { color: 0xf79675})
         ];
         frogAreaDeath = new THREE.Mesh( deathAreaGeometry, materials);
         frogAreaDeath.translateY(0.3);
