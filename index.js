@@ -29,6 +29,8 @@ let frogJumpSound;
 woolFallingFlag=false;
 woolSmallFlag=false;
 
+let frogVisited = false;
+
 
 // -------------- ANIMATIONS VARIABLES --------------------
 let bodyFrogAnimation, frogLowerRightLegAnimation, frogLowerLeftLegAnimation, groupPivotLegRAnimation,
@@ -620,10 +622,10 @@ function backupSheepHome(){
     //BACKUP WOOL POSITION
     for (var j=0 ; j<wool.length; j++) {
         createjs.Tween.get(wool[j].position, {loop: false})
-        .to({x: positionWoolX[j], y: positionWoolY[j], z: positionWoolZ[j]}, 1000, createjs.Ease.linear)
+        .to({x: positionWoolX[j], y: positionWoolY[j], z: positionWoolZ[j]}, 2000, createjs.Ease.linear)
     
         createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
-        .to({x: scaleWoolX[j], y: scaleWoolY[j], z: scaleWoolZ[j]}, 1000, createjs.Ease.linear)
+        .to({x: scaleWoolX[j], y: scaleWoolY[j], z: scaleWoolZ[j]}, 2000, createjs.Ease.linear)
     }
 }
 
@@ -1621,6 +1623,7 @@ function stopHomeAnimation(){
     
 }
 function createSceneFrog(){
+    frogVisited = true;
     stopHomeAnimation();
     backupFrogHome();
     makeFlyAppear();
@@ -1959,8 +1962,10 @@ function resetSceneHome(){
         scene.remove(frogAreaDeath);
     }
     else if (selected == "SHEEP") {
-        stopSceneFrogAnimation();
-        backupFrogHome();
+        if (frogVisited) {
+            stopSceneFrogAnimation();
+            backupFrogHome();
+        }
         stopSceneSheepAnimation();
         backupSheepHome();
         scene.remove(group2);
