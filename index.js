@@ -21,6 +21,11 @@ let plane;
 let intersects;
 let frogRequestAnimationFrame;
 var targetAngle;
+let soundFly;
+let timerFlyCatch;
+let soundFlyCatch;
+
+
 woolFallingFlag=false;
 woolSmallFlag=false;
 
@@ -124,6 +129,7 @@ let mouse = new THREE.Vector2();
 let timer; //timer per gestire la lingua che parte verso la mosca
 let timerSad;
 let timerEat;
+let flyTimer;
 
 createSceneHome();
 
@@ -1158,16 +1164,15 @@ function animateFly(){
 }
 
 function createFlySound(){
-    const listener = new THREE.AudioListener();
-    const sound = new THREE.Audio( listener );
 
-    // load a sound and set it as the Audio object's buffer
+    const listener = new THREE.AudioListener();
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load( 'sounds/test.ogg', function( buffer ) {
-        sound.setBuffer( buffer );
-        sound.setLoop( true );
-        sound.setVolume( 0.5 );
-        sound.play();
+    soundFly = new THREE.Audio( listener );
+    audioLoader.load( 'sounds/flySound1.ogg', function( buffer ) {
+        soundFly.setBuffer( buffer );
+        soundFly.setLoop( true );
+        soundFly.setVolume( 0.5 );
+        soundFly.play();
     });
 }
 // ------------- SCISSOR ----------------------------------------
@@ -2412,6 +2417,20 @@ function stretchFrogTongue(){ //DEATH AREA
     timerEat = setTimeout(function() {
         animateFrogHeadAndEyes();
     }, 850);
+
+    clearTimeout(timerFlyCatch);
+    timerFlyCatch = setTimeout(function() {
+        soundFly.setVolume(0);
+        const listenerFlyCatch = new THREE.AudioListener();
+        const audioLoaderFlyCatch = new THREE.AudioLoader();
+        soundFlyCatch = new THREE.Audio( listenerFlyCatch );
+        audioLoaderFlyCatch.load( 'sounds/death.ogg', function( buffer ) {
+            soundFlyCatch.setBuffer( buffer );
+            soundFlyCatch.setLoop( false );
+            soundFlyCatch.setVolume(0.5);
+            soundFlyCatch.play();
+        });
+    }, 200);
 }
 
 function sadFrogAnimation(){ //AREA WARNING
@@ -2486,8 +2505,16 @@ function sadFrogAnimation(){ //AREA WARNING
 
 let onMousePause = function (event) {
     clearTimeout(timer);
-
+    clearTimeout(flyTimer);
     var chill, warning, death = false;
+
+    if (currentScrren === "FROG")
+        soundFly.setVolume(0.5);
+
+    flyTimer = setTimeout(function() {
+        if (currentScrren === "FROG")
+        soundFly.setVolume(0);
+    }, 100);
 
     timer = setTimeout(function() {
         if (currentScrren === "FROG"){
