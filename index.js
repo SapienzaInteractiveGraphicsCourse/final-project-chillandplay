@@ -12,7 +12,8 @@ let frogAnimation,  frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR
     frogMouthPivot, frogCheekL, frogUpperRightLeg, frogUpperLeftLeg, frogLowerRightLeg, frogLowerLeftLeg, frogTongue, frogTongueTip, titleFrogArea, descriptionFrogArea, subTitleFrogArea,
     frogAreaChill, frogAreaWarning, frogAreaDeath;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
-    sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[], playSheepArea;
+    sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[], playSheepArea, positionWoolX=[], positionWoolY=[], positionWoolZ=[],
+    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[], woolFalling, woolSmall;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
@@ -48,6 +49,14 @@ let frogBodyPositionBackup, frogBodyRotationBackup,
     frogPupilHeightBackup;
 
 let initialFlyBiggerWingsPos, initialFlySmallerWingsPos;
+
+let sheepBodyPositionBackup, sheepBodyRotationBackup, 
+    sheepHeadPositionBackup, sheepHeadRotationBackup,
+    sheepFrontLeftPositionLegBackup, sheepFrontRightPositionLegBackup, 
+    sheepBackLeftPositionLegBackup, sheepBackRightPositionLegBackup, 
+    sheepFrontLeftRotationLegBackup, sheepFrontRightRotationLegBackup, 
+    sheepBackLeftRotationLegBackup, sheepBackRightRotationLegBackup, 
+    sheepWoolPositionBackup, sheepWoolRotationBackup; 
 
 // -------------- MATERIALS DECLARATION --------------------
 const greyMaterial = new THREE.MeshLambertMaterial({color: 0xf3f2f7});
@@ -560,6 +569,67 @@ function createFrogTongue(scale){
 }
 
 // ------------------------------------------------------------
+function backupSheepHome(){
+
+    //STOP CAMERA MOVEMENT
+    //controls.setObjectToMove();
+
+    //BACKUP BODY
+    sheepBody.rotation.setFromVector3(sheepBodyRotationBackup);
+    sheepBody.position.x = sheepBodyPositionBackup.x;
+    sheepBody.position.y = sheepBodyPositionBackup.y;
+    sheepBody.position.z = sheepBodyPositionBackup.z;
+
+    //BACKUP LEG POSITION
+    sheepFrontLeftLeg.position.x = sheepFrontLeftPositionLegBackup.x;
+    sheepFrontLeftLeg.position.y = sheepFrontLeftPositionLegBackup.y;
+    sheepFrontLeftLeg.position.z = sheepFrontLeftPositionLegBackup.z;
+
+    sheepFrontRightLeg.position.x = sheepFrontRightPositionLegBackup.x;
+    sheepFrontRightLeg.position.y = sheepFrontRightPositionLegBackup.y;
+    sheepFrontRightLeg.position.z = sheepFrontRightPositionLegBackup.z;
+
+    sheepBackLeftLeg.position.x = sheepBackLeftPositionLegBackup.x;
+    sheepBackLeftLeg.position.y = sheepBackLeftPositionLegBackup.y;
+    sheepBackLeftLeg.position.z = sheepBackLeftPositionLegBackup.z;
+
+    sheepBackRightLeg.position.x = sheepBackRightPositionLegBackup.x;
+    sheepBackRightLeg.position.y = sheepBackRightPositionLegBackup.y;
+    sheepBackRightLeg.position.z = sheepBackRightPositionLegBackup.z;
+
+    //BACKUP LEG ROTATION
+    sheepFrontLeftLeg.rotation.setFromVector3(sheepFrontLeftRotationLegBackup);
+    sheepFrontRightLeg.rotation.setFromVector3(sheepFrontRightRotationLegBackup);
+
+    sheepBackLeftLeg.rotation.setFromVector3(sheepBackLeftRotationLegBackup);
+    sheepBackRightLeg.rotation.setFromVector3(sheepBackRightRotationLegBackup);
+
+    //BACKUP HEAD ROTATION AND POSITION
+    sheepHead.rotation.setFromVector3(sheepHeadRotationBackup);
+    sheepHead.position.x = (sheepHeadPositionBackup.x);
+    sheepHead.position.y = (sheepHeadPositionBackup.y);
+    sheepHead.position.z = (sheepHeadPositionBackup.z);
+
+    //BACKUP WOOL POSITION
+    for (var j=0 ; j<wool.length; j++) {
+        createjs.Tween.get(wool[j].position, {loop: false})
+        .to({x: positionWoolX[j], y: positionWoolY[j], z: positionWoolZ[j]}, 1000, createjs.Ease.linear)
+    
+        createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
+        .to({x: scaleWoolX[j], y: scaleWoolY[j], z: scaleWoolZ[j]}, 1000, createjs.Ease.linear)
+
+    }
+
+    /*for (var j=0 ; j<wool.length; j++) {
+        wool[j].position.x =  positionWoolX[j];
+        wool[j].position.y =  positionWoolY[j];
+        wool[j].position.z =  positionWoolZ[j];
+
+        wool[j].scale.x = scaleWoolX[j];
+        wool[j].scale.y = scaleWoolY[j];
+        wool[j].scale.z = scaleWoolZ[j];  
+    }*/
+}
 
 // ------------- SHEEP ----------------------------------------
 
@@ -610,6 +680,8 @@ function createSheepBody(scale){
     sheepBody.translateY(-0.4);
     sheepBody.translateX(2);
     scene.add( sheepBody );
+    sheepBodyRotationBackup = new THREE.Vector3(sheepBody.rotation.x, sheepBody.rotation.y, sheepBody.rotation.z);
+    sheepBodyPositionBackup = sheepBody.position;
 }
 
 function createSheepHead(){
@@ -624,6 +696,9 @@ function createSheepHead(){
     sheepHead.rotation.x = -0.2;
     sheepHead.position.z = 0.55;
     sheepBody.add(sheepHead);
+
+    sheepHeadRotationBackup = new THREE.Vector3(sheepHead.rotation.x, sheepHead.rotation.y, sheepHead.rotation.z);
+    sheepHeadPositionBackup = sheepHead.position;
 }
 
 function createSheepEyes(){
@@ -721,23 +796,36 @@ function createSheepLegs(scale){
     sheepFrontRightLeg.position.set(0.20, -0.2, 0.18);
     sheepFrontRightLeg.rotation.x = -0.20944; //rad -12
     sheepFrontRightLeg.scale.multiplyScalar(0.2*scale);
-
     sheepBody.add(sheepFrontRightLeg);
+    //backup vectors
+    sheepFrontRightRotationLegBackup = new THREE.Vector3(sheepFrontRightLeg.rotation.x, sheepFrontRightLeg.rotation.y, sheepFrontRightLeg.rotation.z);
+    sheepFrontRightPositionLegBackup = sheepFrontRightLeg.position;
+
 
     sheepFrontLeftLeg = sheepFrontRightLeg.clone();
     sheepFrontLeftLeg.position.x = -sheepFrontRightLeg.position.x;
     sheepFrontLeftLeg.rotation.z = -sheepFrontRightLeg.rotation.z;
     sheepBody.add(sheepFrontLeftLeg);
+    //backup vectors
+    sheepFrontLeftRotationLegBackup = new THREE.Vector3(sheepFrontLeftLeg.rotation.x, sheepFrontLeftLeg.rotation.y, sheepFrontLeftLeg.rotation.z);
+    sheepFrontLeftPositionLegBackup = sheepFrontLeftLeg.position;
 
     sheepBackRightLeg = sheepFrontRightLeg.clone();
     sheepBackRightLeg.position.z = -sheepFrontRightLeg.position.z;
     sheepBackRightLeg.rotation.x = -sheepFrontRightLeg.rotation.x;
     sheepBody.add(sheepBackRightLeg);
+    //backup vectors
+    sheepBackRightRotationLegBackup = new THREE.Vector3(sheepBackRightLeg.rotation.x, sheepBackRightLeg.rotation.y, sheepBackRightLeg.rotation.z);
+    sheepBackRightPositionLegBackup = sheepBackRightLeg.position;
+
 
     sheepBackLeftLeg = sheepFrontLeftLeg.clone();
     sheepBackLeftLeg.position.z = -sheepFrontLeftLeg.position.z;
     sheepBackLeftLeg.rotation.x = -sheepFrontLeftLeg.rotation.x;
     sheepBody.add(sheepBackLeftLeg);
+    //backup vectors
+    sheepBackLeftRotationLegBackup = new THREE.Vector3(sheepBackLeftLeg.rotation.x, sheepBackLeftLeg.rotation.y, sheepBackRightLeg.rotation.z);
+    sheepBackLeftPositionLegBackup = sheepBackLeftLeg.position;
 }
 
 function createSheepWool(){
@@ -889,20 +977,21 @@ function createSheepWool(){
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
        // if (i === 9  || i === 12 || i === 3 || i === 5 )
         //    wool[i].scale.set(0.2, 0.2, 0.2);
-        if (i === 1 || i === 0 || i === 7)
-            wool[i].scale.set(0.25, 0.25, 0.25);
-        else
+       
             wool[i].scale.set(0.3, 0.3, 0.3);
-        wool[i].castShadow = true;
-        sheepBody.add(wool[i]);
-        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
-        angle += 0.68;
-        if(i === 7){
-            wool[i].translateZ(-0.01);
-            wool[i].translateY(-0.05);
-        }
+            wool[i].castShadow = true;
+            sheepBody.add(wool[i]);
+            wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
+            angle += 0.68;
+            if(i === 7){
+                wool[i].translateZ(-0.01);
+                wool[i].translateY(-0.05);
+            }
+        
     }
 
+    sheepBody.remove(wool[82]);
+    
     // Extra wool
     radius = 0.36;
     angle = 0;
@@ -935,8 +1024,22 @@ function createSheepWool(){
     wool[92].castShadow = true;
     sheepBody.add(wool[92]);
 
+    //Create array of wool positions
+    for (var j=0 ; j<wool.length; j++) {
+        positionWoolX[j] = wool[j].position.x;
+        positionWoolY[j] = wool[j].position.y;
+        positionWoolZ[j] = wool[j].position.z;
+
+        scaleWoolX[j] = wool[j].scale.x;
+        scaleWoolY[j] = wool[j].scale.y;
+        scaleWoolZ[j] = wool[j].scale.z;
 
 }
+
+
+}
+
+
 // ----------------------------------------------------------
 
 // ------------- PLANE --------------------------------------
@@ -1374,7 +1477,10 @@ let onClickButton = function (event) {
                 scene.remove(scissorBody);
                 sheepBody.translateX(2);
                 sheepBody.translateY(-0.5);
+                console.log("STO QUI");
                 resetSceneHome();
+                console.log("ORA STO QUI");
+                
                 break;
             default:
                 break;
@@ -1523,6 +1629,7 @@ function createSceneFrog(){
 
 function createSceneSheep(){
     currentScrren = "SHEEP";
+    rotateCameraSheepScene();
     scene.remove(frogArea);
     scene.remove(frogBody);
     scene.remove(sheepArea);
@@ -1557,7 +1664,6 @@ function createSceneSheep(){
                     if (objectID==woolArray[j]) {
                         //console.log("L'id wool è: "+woolArray[j]);
                         //sheepBody.remove(wool[j]);
-                        
                         animateWool(j);
                         //count_array.splice(woolArray[j], 1);
                         
@@ -1810,34 +1916,44 @@ function stopSceneFrogAnimation (){
     frogHeadHorizontalAnimation.setPaused(true);
     makeFlyDisappear();
 }
+
+function stopSceneSheepAnimation (){
+    woolFalling.setPaused(true);
+    woolSmall.setPaused(true);
+}
+
 function resetSceneHome(){
-    stopSceneFrogAnimation();
+    if (selected == "FROG") {
+        stopSceneFrogAnimation();
+        backupFrogHome();
+        scene.remove(titleFrogArea);
+        frogArea.remove(descriptionFrogArea);
+        scene.remove(subTitleFrogArea);
+        scene.remove(frogAreaChill);
+        scene.remove(frogAreaWarning);
+        scene.remove(frogAreaDeath);
+    }
+    else if (selected == "SHEEP") {
+        stopSceneSheepAnimation();
+        backupSheepHome();
+        scene.remove(group2);
+        scene.remove(titleSheepArea);
+        sheepArea.remove(descriptionSheepArea);
+        scene.remove(titleSheepArea);
+        scene.remove(subTitleSheepArea);
+        scene.remove(playSheepArea);
+        
+    }
     restartHomeAnimation();
-    backupFrogHome();
     selected = "HOME";
     currentScrren = "HOME";
-    //scene.remove(group);
-    scene.remove(group2);
     scene.background = backGroundHome;
     scene.add(frogBody);
     scene.add(frogArea);
     scene.add(sheepBody);
     scene.add(sheepArea);
     oldSelectedID = 0;
-    scene.remove(titleFrogArea);
-    scene.remove(titleSheepArea);
-    frogArea.remove(descriptionFrogArea);
-    sheepArea.remove(descriptionSheepArea);
-    scene.remove(titleSheepArea);
     scene.add(titleHomeArea);
-    scene.remove(subTitleFrogArea);
-    scene.remove(subTitleSheepArea);
-    scene.remove(playSheepArea);
-
-    scene.remove(frogAreaChill);
-    scene.remove(frogAreaWarning);
-    scene.remove(frogAreaDeath);
-
 
 }
 function animateFrogHome(){
@@ -1908,77 +2024,41 @@ function animateFrogHome(){
 function animateSheepHome(){
    //EYEBALLS ANIMATION
     let initialX = sheepEyeBalls[0].position.x;
-    createjs.Tween.get(sheepEyeBalls[0].position, {loop: true})   
-        .to({ x: -0.1 }, 500, createjs.Ease.linear)
-        .to({ x: initialX }, 500, createjs.Ease.linear)
-        .wait(1000)
-        .to({ x: 0.1 }, 500, createjs.Ease.linear)
-        .to({ x: initialX }, 500, createjs.Ease.linear)
-        .wait(1000);
+    createjs.Tween.get(sheepEyeBalls[0].position, {loop: true})
+        //.wait(3000)  
+        .to({ x: -0.1 }, 300, createjs.Ease.linear).wait(1000)
+        .to({ x: 0.1 }, 600, createjs.Ease.linear).wait(1000)
+        .to({ x: initialX }, 300, createjs.Ease.linear)
+        .wait(1350);
     
     initialX = sheepEyeBalls[1].position.x;
     createjs.Tween.get(sheepEyeBalls[1].position, {loop: true})
-        .to({ x: -0.1 }, 500, createjs.Ease.linear)
-        .to({ x: initialX },500, createjs.Ease.linear)
-        .wait(1000)
-        .to({ x: 0.1 }, 500, createjs.Ease.linear)
-        .to({ x: initialX },500, createjs.Ease.linear)
-        .wait(1000);
+        //.wait(3000)
+        .to({ x: -0.1 }, 300, createjs.Ease.linear).wait(1000)
+        .to({ x: 0.1 }, 600, createjs.Ease.linear).wait(1000)
+        .to({ x: initialX },300, createjs.Ease.linear)
+        .wait(1350);
 
    //HEAD ANIMATION
     initialX = sheepHead.rotation.y;
     createjs.Tween.get(sheepHead.rotation, {loop: true})
-        .wait(4000)
-        .to({ y: -0.3 }, 500, createjs.Ease.linear)
-        .to({ y: initialX },500, createjs.Ease.linear)
-        .wait(1000)
-        .to({ y: 0.3 }, 500, createjs.Ease.linear)
-        .to({ y: initialX }, 500, createjs.Ease.linear)
-        .wait(1000);
-
-    //FRONT LEGS ANIMATION 
-    initialX = sheepFrontLeftLeg.rotation.x;
-    createjs.Tween.get(sheepFrontLeftLeg.rotation, {loop: true})
-        .wait(8000)    
-        .to({ x: -0.6 }, 500, createjs.Ease.linear)
-        .to({ x: initialX }, 500, createjs.Ease.linear)
-        .wait(5000);
+        //.wait(3000)
+        .to({ y: -0.3 }, 300, createjs.Ease.circIn).wait(1000)
+        .to({ y: 0.3 }, 600, createjs.Ease.circIn).wait(1000)
+        .to({ y: initialX }, 300, createjs.Ease.circIn)
+        .wait(1350);
     
-    initialX = sheepFrontRightLeg.rotation.x;
-    createjs.Tween.get(sheepFrontRightLeg.rotation, {loop: true})
-        .wait(8000)    
-        .to({ x: -0.6 }, 500, createjs.Ease.linear)
-        .to({ x: initialX }, 500, createjs.Ease.linear) 
-        .wait(5000);
-
-    //BACK LEGS ANIMATION 
-    initialX = sheepBackLeftLeg.rotation.x;
-    createjs.Tween.get(sheepBackLeftLeg.rotation, {loop: true})
-         .wait(8000)    
-         .to({ x: -0.6 }, 500, createjs.Ease.linear)
-         .to({ x: initialX }, 500, createjs.Ease.linear)
-         .wait(5000)
-        
-     
-    initialX = sheepBackRightLeg.rotation.x;
-    createjs.Tween.get(sheepBackRightLeg.rotation, {loop: true})
-         .wait(8000)    
-         .to({ x: -0.6 }, 500, createjs.Ease.linear)
-         .to({ x: initialX }, 500, createjs.Ease.linear)
-         .wait(5000)
-    
-    //SHEEP BODY ANIMATION
-    /*initialX = sheepBody.position.y;
-    createjs.Tween.get(sheepBody.position, {loop: true})
-        .wait(8000)    
-        .to({ y: -0.2 }, 500, createjs.Ease.linear)
-        .to({ y: initialX }, 500, createjs.Ease.linear)
-        .wait(5000);*/ 
-        
-        
-
+    //WOOL ANIMATION HOME
+    for (var i=0; i<wool.length; i++) {
+        let initialZ = wool[i].rotation.z;
+        createjs.Tween.get(wool[i].rotation, {loop: true})
+            .wait(3200)    
+            .to({ z: -0.5 }, 200, createjs.Ease.linear)
+            .to({ z: 0.5 }, 200, createjs.Ease.linear)
+            .to({ z: initialZ }, 200, createjs.Ease.linear)
+            .wait(750);
+    }
 }
-
 
 function createSceneHome(){
     currentScrren = "HOME";
@@ -2061,7 +2141,7 @@ function animateFrogJump(){
 
 function animateSceneSheep(){
     //requestAnimationFrame( animateSceneSheep );
-    rotateCameraSheepScene();
+    //rotateCameraSheepScene();
     animateScissors();
 }
 
@@ -2079,6 +2159,22 @@ let count_array = woolArray.slice();
 //console.log("count array nuovo è: "+count_array.length);
 //var count_wool = woolArray.length-1; //numero pallocchi
 
+function resetSheepPosition() {
+            //SHEEP BODY ANIMATION
+            createjs.Tween.get(sheepBody.rotation, {loop: false})  
+            .to({ x: 0, y: 0, z: 0 }, 1500, createjs.Ease.linear);
+    
+}
+
+function jumpSheep() {
+        // BODY ANIMATION
+        let initialY = sheepBody.position.y;
+        createjs.Tween.get(sheepBody.position, {loop: false}).wait(1600)
+            .to({ y: 1.5 }, 500, createjs.Ease.circOut)
+            .to({ y: initialY }, 500, createjs.Ease.circOut)
+            .wait(9000);
+}
+
 function gameOver() {
     loadTexture('textures/happySheep2.jpg').then(texture => {
         const titleAreaGeometry = new THREE.BoxGeometry(10, 3, 0);
@@ -2095,6 +2191,8 @@ function gameOver() {
         subTitleSheepArea.translateZ(-1.5);
         scene.add(subTitleSheepArea);
     })
+
+
 
 }
 
@@ -2119,10 +2217,10 @@ function sheepPlayArea() {
 var count=0;
 function animateWool(j) {
     // WOOL ANIMATION
-    createjs.Tween.get(wool[j].position, {loop: false})
+    woolFalling = createjs.Tween.get(wool[j].position, {loop: false})
     .to({ y: -0.7}, 2000, createjs.Ease.bounceOut)
 
-    createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
+    woolSmall = createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
     .to({x: 0.001, y: 0.001, z: 0.001}, 2000, createjs.Ease.bounceOut)
 
     for (var i=0; i<count_array.length; i++) {
@@ -2139,10 +2237,12 @@ function animateWool(j) {
   
     //console.log("count vale: "+count);
 
-    //console.log("TI STAMPO COUNT ARRAY: "+count_array);
-    if (count_array.length == 0) {
-       gameOver();
-       sheepPlayArea();
+    console.log("TI STAMPO COUNT ARRAY: "+count_array);
+    if (count_array.length == 1) {
+        resetSheepPosition();
+        jumpSheep();
+        gameOver();
+        sheepPlayArea();
     }
 }
 
