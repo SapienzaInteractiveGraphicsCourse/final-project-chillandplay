@@ -566,7 +566,7 @@ function createFrogTongue(scale){
 function backupSheepHome(){
 
     //STOP CAMERA MOVEMENT
-    controls.setObjectToMove();
+    //controls.setObjectToMove();
 
     //BACKUP BODY
     sheepBody.rotation.setFromVector3(sheepBodyRotationBackup);
@@ -1918,35 +1918,37 @@ function stopSceneSheepAnimation (){
 }
 
 function resetSceneHome(){
-    //stopSceneFrogAnimation(); //SE LO DECOMMENTO NON FUNZIONA IL TASTO HOME DELLA PECORA
-    stopSceneSheepAnimation();
+    if (selected == "FROG") {
+        stopSceneFrogAnimation();
+        backupFrogHome();
+        scene.remove(titleFrogArea);
+        frogArea.remove(descriptionFrogArea);
+        scene.remove(subTitleFrogArea);
+        scene.remove(frogAreaChill);
+        scene.remove(frogAreaWarning);
+        scene.remove(frogAreaDeath);
+    }
+    else if (selected == "SHEEP") {
+        stopSceneSheepAnimation();
+        backupSheepHome();
+        scene.remove(group2);
+        scene.remove(titleSheepArea);
+        sheepArea.remove(descriptionSheepArea);
+        scene.remove(titleSheepArea);
+        scene.remove(subTitleSheepArea);
+        scene.remove(playSheepArea);
+        
+    }
     restartHomeAnimation();
-    backupFrogHome();
-    backupSheepHome();
     selected = "HOME";
     currentScrren = "HOME";
-    //scene.remove(group);
-    scene.remove(group2);
     scene.background = backGroundHome;
     scene.add(frogBody);
     scene.add(frogArea);
     scene.add(sheepBody);
     scene.add(sheepArea);
     oldSelectedID = 0;
-    scene.remove(titleFrogArea);
-    scene.remove(titleSheepArea);
-    frogArea.remove(descriptionFrogArea);
-    sheepArea.remove(descriptionSheepArea);
-    scene.remove(titleSheepArea);
     scene.add(titleHomeArea);
-    scene.remove(subTitleFrogArea);
-    scene.remove(subTitleSheepArea);
-    scene.remove(playSheepArea);
-
-    scene.remove(frogAreaChill);
-    scene.remove(frogAreaWarning);
-    scene.remove(frogAreaDeath);
-
 
 }
 function animateFrogHome(){
