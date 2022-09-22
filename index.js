@@ -153,6 +153,19 @@ function createLights(){
 
 function backupFrogHome(){
 
+    frogBody.position.x = -2;
+    frogBody.position.y = -1;
+    frogBody.position.z = 0;
+
+    frogEyeR.position.x = -0.37;
+    frogEyeR.position.y = 0.3;
+    frogEyeR.position.z = 0.3;
+
+    frogEyeL.position.x = 0.37;
+    frogEyeL.position.y = 0.3;
+    frogEyeL.position.z = 0.3;
+
+
     groupPivotLegR.rotation.setFromVector3(frogLegPivotRotationBackupR);
     groupPivotLegL.rotation.setFromVector3(frogLegPivotRotationBackupL);
 
@@ -333,6 +346,7 @@ function createFrogEyeR(scale){
      frogEyeR.translateZ(0.3);
      frogEyeR.scale.multiplyScalar(scale);
      frogHead.add( frogEyeR );
+
  }
 
 function createFrogEyeL(scale){
@@ -364,6 +378,8 @@ function createFrogEyeL(scale){
     frogEyeL.translateZ(0.3);
     frogEyeL.scale.multiplyScalar(scale);
     frogHead.add( frogEyeL );
+    console.log(frogEyeL.position.x + " " + frogEyeL.position.y + " " + frogEyeL.position.z)
+
 }
 
 function createFrogPupilR(scale){
@@ -574,6 +590,15 @@ function createFrogTongue(scale){
 // ------------------------------------------------------------
 function backupSheepHome(){
 
+    frogEyeR.position.x = -0.37;
+    frogEyeR.position.y = 0.3;
+    frogEyeR.position.z = 0.3;
+
+    frogEyeL.position.x = 0.37;
+    frogEyeL.position.y = 0.3;
+    frogEyeL.position.z = 0.3;
+
+    window.removeEventListener( 'mousemove', followMouse, false);
     //STOP CAMERA MOVEMENT
 
     controls.disableVerticalRotation();
@@ -1315,12 +1340,12 @@ function resetButton(oldSelectedID){
     switch (oldSelectedID){
         case frogID: {
             goButton.translateX(-0.15);
-            homeButton.translateX(0.6);
+            //homeButton.translateX(0.6);
             break;
         }
         case sheepID:
             goButton.translateX(0.15);
-            homeButton.translateX(0.6);
+            //homeButton.translateX(0.6);
             break;
         default:
             break;
@@ -1475,7 +1500,6 @@ let onClickButton = function (event) {
                 scene.remove(happySheep);
                 resetSceneHome();
                 
-                
                 break;
             default:
                 break;
@@ -1571,7 +1595,7 @@ function createHomeButton(){
     homeButtonMaterial.transparent = true;
     homeButtonMaterial.opacity = 0;
     homeButton = new THREE.Mesh( homeButtonGeometry, homeButtonMaterial );
-    homeButton.translateX(0.6);
+    //homeButton.translateX(0.6);
     homeButton.translateY(-5.0);
     homeButton.translateZ(8.0);
 }
@@ -1609,7 +1633,7 @@ function createSceneFrog(){
     scene.add(flyGroup);
     frogBody.translateX(2);
     setHomeButtonTexture('textures/homeFrog.jpg');
-    homeButton.translateX(-0.6);
+    //homeButton.translateX(-0.6);
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetFrog.jpg');
     //scene.add(resetAnimationButton);
@@ -1636,7 +1660,7 @@ function createSceneSheep(){
     scene.add(group2);
     sheepBody.translateX(-2);
     setHomeButtonTexture('textures/homeSheep.jpg');
-    homeButton.translateX(-0.6);
+    //homeButton.translateX(-0.6);
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetSheep.jpg');
     //scene.add(resetAnimationButton);
@@ -1935,6 +1959,8 @@ function resetSceneHome(){
         scene.remove(frogAreaDeath);
     }
     else if (selected == "SHEEP") {
+        stopSceneFrogAnimation();
+        backupFrogHome();
         stopSceneSheepAnimation();
         backupSheepHome();
         scene.remove(group2);
@@ -2096,6 +2122,7 @@ function animateFrogHeadAndEyes(){ //attenzione: l'animazione della rana continu
     frogRequestAnimationFrame =  requestAnimationFrame( animateFrogHeadAndEyes ); //serve solo per il movimento degli occhi
     animateFrogEyeBalls();
     animateFrogHead();
+
 }
 
 function animateFrogJump(){
