@@ -13,7 +13,7 @@ let frogAnimation,  frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR
     frogAreaChill, frogAreaWarning, frogAreaDeath;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
     sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[], playSheepArea, positionWoolX=[], positionWoolY=[], positionWoolZ=[],
-    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[], woolFalling, woolSmall, woolFallingFlag, woolSmallFlag;
+    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[], woolFalling, woolSmall, woolFallingFlag, woolSmallFlag, happySheep;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
@@ -25,9 +25,9 @@ let soundFly;
 let timerFlyCatch;
 let soundFlyCatch;
 
-
 woolFallingFlag=false;
 woolSmallFlag=false;
+
 
 // -------------- ANIMATIONS VARIABLES --------------------
 let bodyFrogAnimation, frogLowerRightLegAnimation, frogLowerLeftLegAnimation, groupPivotLegRAnimation,
@@ -564,7 +564,7 @@ function createFrogTongue(scale){
     
     frogTongueTip.scale.multiplyScalar(5*scale);
     frogTongueTip.scale.z = 4.4;
-    frogTongueTip.scale.x = 1; // aumentzre fino a 16.4 quando la lingua viene animata all'esterno
+    frogTongueTip.scale.x = 1; // aumentare fino a 16.4 quando la lingua viene animata all'esterno
     frogTongueTip.translateX(-15);
     frogTongue.add( frogTongueTip );
     
@@ -574,37 +574,16 @@ function createFrogTongue(scale){
 function backupSheepHome(){
 
     //STOP CAMERA MOVEMENT
-    //controls.setObjectToMove();
+
+    controls.disableVerticalRotation();
+    controls.disableHorizontalRotation();
+
 
     //BACKUP BODY
     sheepBody.rotation.setFromVector3(sheepBodyRotationBackup);
-    sheepBody.position.x = sheepBodyPositionBackup.x;
-    sheepBody.position.y = sheepBodyPositionBackup.y;
-    sheepBody.position.z = sheepBodyPositionBackup.z;
-
-    //BACKUP LEG POSITION
-    sheepFrontLeftLeg.position.x = sheepFrontLeftPositionLegBackup.x;
-    sheepFrontLeftLeg.position.y = sheepFrontLeftPositionLegBackup.y;
-    sheepFrontLeftLeg.position.z = sheepFrontLeftPositionLegBackup.z;
-
-    sheepFrontRightLeg.position.x = sheepFrontRightPositionLegBackup.x;
-    sheepFrontRightLeg.position.y = sheepFrontRightPositionLegBackup.y;
-    sheepFrontRightLeg.position.z = sheepFrontRightPositionLegBackup.z;
-
-    sheepBackLeftLeg.position.x = sheepBackLeftPositionLegBackup.x;
-    sheepBackLeftLeg.position.y = sheepBackLeftPositionLegBackup.y;
-    sheepBackLeftLeg.position.z = sheepBackLeftPositionLegBackup.z;
-
-    sheepBackRightLeg.position.x = sheepBackRightPositionLegBackup.x;
-    sheepBackRightLeg.position.y = sheepBackRightPositionLegBackup.y;
-    sheepBackRightLeg.position.z = sheepBackRightPositionLegBackup.z;
-
-    //BACKUP LEG ROTATION
-    sheepFrontLeftLeg.rotation.setFromVector3(sheepFrontLeftRotationLegBackup);
-    sheepFrontRightLeg.rotation.setFromVector3(sheepFrontRightRotationLegBackup);
-
-    sheepBackLeftLeg.rotation.setFromVector3(sheepBackLeftRotationLegBackup);
-    sheepBackRightLeg.rotation.setFromVector3(sheepBackRightRotationLegBackup);
+    sheepBody.position.x = 2;
+    sheepBody.position.y = -0.4;
+    sheepBody.position.z = 0;
 
     //BACKUP HEAD ROTATION AND POSITION
     sheepHead.rotation.setFromVector3(sheepHeadRotationBackup);
@@ -619,18 +598,25 @@ function backupSheepHome(){
     
         createjs.Tween.get(wool[j].scale, {loop: false}).wait(2000)
         .to({x: scaleWoolX[j], y: scaleWoolY[j], z: scaleWoolZ[j]}, 1000, createjs.Ease.linear)
+    }
+}
+
+function backupSheepReset(){
+
+    resetAnimationButton.scale.multiplyScalar(0.625);
+    scene.remove(resetAnimationButton);
+    homeButton.translateX(-0.6);
+    scene.add(group2);
+
+    //BACKUP WOOL POSITION
+    for (var j=0 ; j<wool.length; j++) {
+        createjs.Tween.get(wool[j].position, {loop: false})
+        .to({x: positionWoolX[j], y: positionWoolY[j], z: positionWoolZ[j]}, 2000, createjs.Ease.linear)
+    
+        createjs.Tween.get(wool[j].scale, {loop: false})
+        .to({x: scaleWoolX[j], y: scaleWoolY[j], z: scaleWoolZ[j]}, 2000, createjs.Ease.linear)
 
     }
-
-    /*for (var j=0 ; j<wool.length; j++) {
-        wool[j].position.x =  positionWoolX[j];
-        wool[j].position.y =  positionWoolY[j];
-        wool[j].position.z =  positionWoolZ[j];
-
-        wool[j].scale.x = scaleWoolX[j];
-        wool[j].scale.y = scaleWoolY[j];
-        wool[j].scale.z = scaleWoolZ[j];  
-    }*/
 }
 
 // ------------- SHEEP ----------------------------------------
@@ -1280,38 +1266,42 @@ let onclick = function (event) {
     mouseSetting(event);
     switch (objectID) {
         case frogID:
-            scene.background = new THREE.Color(0xfafad2);
-            resetButton(oldSelectedID);
-            resetScale(oldSelectedID);
-            frogBody.scale.multiplyScalar(2);
-            goButton.translateX(0.15);
-            setButtonTexture('textures/goFrog.jpg');
-            frogArea.add(goButton);
+            if (selected != "FROG") {
+                frogBody.scale.multiplyScalar(2);
+                scene.background = new THREE.Color(0xfafad2);
+                setButtonTexture('textures/goFrog.jpg');
+                createFrogAreaTitle();
+                frogAreaDescription();
+                resetButton(oldSelectedID);
+                resetScale(oldSelectedID);
+                frogArea.add(goButton);
+                goButton.translateX(0.15);
+            }
             if (oldSelectedID == sheepID) sheepBody.translateY(-0.5); //la pecora torna alla sua posizione originale
             oldSelectedID = objectID;
             selected = "FROG";
             scene.remove(titleHomeArea);
             scene.remove(titleSheepArea);
             sheepArea.remove(descriptionSheepArea);
-            createFrogAreaTitle();
-            frogAreaDescription();
             break;
         case sheepID:
-            scene.background = new THREE.Color(0xc9f0cf);
-            resetButton(oldSelectedID);
-            resetScale(oldSelectedID);
-            sheepBody.scale.multiplyScalar(2);
-            sheepBody.translateY(0.5);
-            goButton.translateX(-0.15);
-            setButtonTexture('textures/goSheep.jpg');
-            sheepArea.add(goButton);
+            if (selected != "SHEEP") {
+                scene.background = new THREE.Color(0xc9f0cf);
+                sheepBody.scale.multiplyScalar(2);
+                setButtonTexture('textures/goSheep.jpg');
+                sheepBody.translateY(0.5);
+                createSheepAreaTitle();
+                sheepAreaDescription();
+                resetButton(oldSelectedID);
+                resetScale(oldSelectedID);
+                sheepArea.add(goButton);
+                goButton.translateX(-0.15);
+            }
             oldSelectedID = objectID;
             selected = "SHEEP";
             scene.remove(titleHomeArea);
             scene.remove(titleFrogArea);
             frogArea.remove(descriptionFrogArea);
-            createSheepAreaTitle();
-            sheepAreaDescription();
             break;
         default:
             break;
@@ -1329,6 +1319,7 @@ function resetButton(oldSelectedID){
         }
         case sheepID:
             goButton.translateX(0.15);
+            homeButton.translateX(0.6);
             break;
         default:
             break;
@@ -1479,9 +1470,10 @@ let onClickButton = function (event) {
                 scene.remove(scissorBody);
                 sheepBody.translateX(2);
                 sheepBody.translateY(-0.5);
-                console.log("STO QUI");
+                scene.remove(playSheepArea);
+                scene.remove(happySheep);
                 resetSceneHome();
-                console.log("ORA STO QUI");
+                
                 
                 break;
             default:
@@ -1492,6 +1484,12 @@ let onClickButton = function (event) {
             case "FROG":
                 break;
             case "SHEEP":
+                resetAnimationButtonFlag = true;
+                scene.remove(happySheep);
+                scene.remove(playSheepArea);
+                scene.add(subTitleSheepArea);
+                controls.setObjectToMove(sheepBody);
+                backupSheepReset();
                 break;
             default:
                 break;
@@ -1543,8 +1541,6 @@ function followMouse(event){
         scissorFlag = false;
         
     }
-
-
 }
 window.addEventListener( 'mousemove', followMouse, false);
 
@@ -1615,7 +1611,7 @@ function createSceneFrog(){
     homeButton.translateX(-0.6);
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetFrog.jpg');
-   // scene.add(resetAnimationButton);
+    //scene.add(resetAnimationButton);
     animate();
     render();
     animateSceneFrog();
@@ -1630,6 +1626,7 @@ function createSceneFrog(){
 }
 
 function createSceneSheep(){
+    window.addEventListener( 'mousemove', followMouse, false);
     currentScrren = "SHEEP";
     rotateCameraSheepScene();
     scene.remove(frogArea);
@@ -1638,10 +1635,10 @@ function createSceneSheep(){
     scene.add(group2);
     sheepBody.translateX(-2);
     setHomeButtonTexture('textures/homeSheep.jpg');
-    //homeButton.translateX(-0.6);
+    homeButton.translateX(-0.6);
     scene.add(homeButton);
     setResetAnimationButtonTexture('textures/resetSheep.jpg');
-    scene.add(resetAnimationButton);
+    //scene.add(resetAnimationButton);
     scene.remove(titleHomeArea);
     scene.remove(titleSheepArea);
     scene.remove(titleFrogArea);
@@ -1651,29 +1648,26 @@ function createSceneSheep(){
 
 
     let onWoolOverButton = function (event) {
-        mouseSetting(event);
-        if (intersects.length > 1) {
-            for (let i = 0; i < intersects.length; i += 1) {
-                for (let j=0; j<wool.length; j+=1) {
-                    if (intersects[i].object.id === wool[j])
-                        objectID = intersects[i].object.id;
-                }
-            }
-        }
-        switch (objectID) {
-            case objectID:
-                for (let j=0; j<woolArray.length; j+=1) {
-                    if (objectID==woolArray[j]) {
-                        //console.log("L'id wool è: "+woolArray[j]);
-                        //sheepBody.remove(wool[j]);
-                        animateWool(j);
-                        //count_array.splice(woolArray[j], 1);
-                        
-                        //count_wool -= 1;
+        if (currentScrren == "SHEEP") {
+            mouseSetting(event);
+            if (intersects.length > 1) {
+                for (let i = 0; i < intersects.length; i += 1) {
+                    for (let j=0; j<wool.length; j+=1) {
+                        if (intersects[i].object.id === wool[j])
+                            objectID = intersects[i].object.id;
                     }
                 }
-                break;
-    
+            }
+            switch (objectID) {
+                case objectID:
+                    for (let j=0; j<woolArray.length; j+=1) {
+                        if (objectID==woolArray[j]) {
+                            animateWool(j);
+                        }
+                    }
+                    break;
+        
+            }
         }
     };
     window.addEventListener('mousemove', onWoolOverButton);
@@ -1948,6 +1942,8 @@ function resetSceneHome(){
         scene.remove(titleSheepArea);
         scene.remove(subTitleSheepArea);
         scene.remove(playSheepArea);
+        scene.remove(happySheep);
+        
         
     }
     restartHomeAnimation();
@@ -1960,8 +1956,9 @@ function resetSceneHome(){
     scene.add(sheepArea);
     oldSelectedID = 0;
     scene.add(titleHomeArea);
-
 }
+
+
 function animateFrogHome(){
 
     // BELLY ANIMATION
@@ -2169,6 +2166,7 @@ function resetSheepPosition() {
             //SHEEP BODY ANIMATION
             createjs.Tween.get(sheepBody.rotation, {loop: false})  
             .to({ x: 0, y: 0, z: 0 }, 1500, createjs.Ease.linear);
+
     
 }
 
@@ -2183,7 +2181,7 @@ function jumpSheep() {
 
 function gameOver() {
     loadTexture('textures/happySheep2.jpg').then(texture => {
-        const titleAreaGeometry = new THREE.BoxGeometry(10, 3, 0);
+        const happySheepGeometry = new THREE.BoxGeometry(10, 3, 0);
         const materials = [
             new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
             new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
@@ -2192,10 +2190,10 @@ function gameOver() {
             new THREE.MeshBasicMaterial({map: texture}),
             new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
         ];
-        subTitleSheepArea = new THREE.Mesh( titleAreaGeometry, materials);
-        subTitleSheepArea.translateY(3.3);
-        subTitleSheepArea.translateZ(-1.5);
-        scene.add(subTitleSheepArea);
+        happySheep = new THREE.Mesh( happySheepGeometry, materials);
+        happySheep.translateY(3.3);
+        happySheep.translateZ(-1.5);
+        scene.add(happySheep);
     })
 
 
@@ -2248,7 +2246,12 @@ function animateWool(j) {
         resetSheepPosition();
         jumpSheep();
         gameOver();
+        controls.disableVerticalRotation();
+        controls.disableHorizontalRotation();
+        scene.add(resetAnimationButton);
+        homeButton.translateX(0.6);
         sheepPlayArea();
+        count_array = woolArray.slice();
     }
     woolFallingFlag=true;
     woolSmallFlag=true;
