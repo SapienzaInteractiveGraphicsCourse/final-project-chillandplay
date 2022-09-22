@@ -953,20 +953,21 @@ function createSheepWool(){
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
        // if (i === 9  || i === 12 || i === 3 || i === 5 )
         //    wool[i].scale.set(0.2, 0.2, 0.2);
-        if (i === 1 || i === 0 || i === 7)
-            wool[i].scale.set(0.25, 0.25, 0.25);
-        else
+       
             wool[i].scale.set(0.3, 0.3, 0.3);
-        wool[i].castShadow = true;
-        sheepBody.add(wool[i]);
-        wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
-        angle += 0.68;
-        if(i === 7){
-            wool[i].translateZ(-0.01);
-            wool[i].translateY(-0.05);
-        }
+            wool[i].castShadow = true;
+            sheepBody.add(wool[i]);
+            wool[i].position.set(radius * Math.cos(angle) , radius * Math.sin(angle), z);
+            angle += 0.68;
+            if(i === 7){
+                wool[i].translateZ(-0.01);
+                wool[i].translateY(-0.05);
+            }
+        
     }
 
+    sheepBody.remove(wool[82]);
+    
     // Extra wool
     radius = 0.36;
     angle = 0;
@@ -2211,7 +2212,7 @@ function animateWool(j) {
     console.log("count vale: "+count);
 
     console.log("TI STAMPO COUNT ARRAY: "+count_array);
-    if (count_array.length == 0) {
+    if (count_array.length == 1) {
         resetSheepPosition();
         jumpSheep();
         gameOver();
