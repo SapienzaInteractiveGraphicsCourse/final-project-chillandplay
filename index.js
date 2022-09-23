@@ -25,12 +25,16 @@ let soundFly;
 let timerFlyCatch;
 let soundFlyCatch;
 let frogJumpSound;
+let sheepScissorSound;
+let soundSheepFinal;
 let gameOverFlag = false;
 let chillAreaMaterials, warningAreaMaterials, deathAreaMaterials;
 woolFallingFlag=false;
 woolSmallFlag=false;
 
 let frogVisited = false;
+let createSounds;
+let timerSheepFinal;
 
 
 // -------------- ANIMATIONS VARIABLES --------------------
@@ -134,6 +138,7 @@ let timer; //timer per gestire la lingua che parte verso la mosca
 let timerSad;
 let timerEat;
 let flyTimer;
+let homeSound, frogSceneSound, sheepSceneSound;
 
 createSceneHome();
 
@@ -638,6 +643,7 @@ function backupSheepReset(){
     scene.remove(resetAnimationButton);
     homeButton.translateX(-0.6);
     scene.add(group2);
+    controls.setObjectToMove(sheepBody);
 
     //BACKUP WOOL POSITION
     for (var j=0 ; j<wool.length; j++) {
@@ -1181,7 +1187,6 @@ function animateFly(){
 }
 
 function createFlySound(){
-
     const listener = new THREE.AudioListener();
     const audioLoader = new THREE.AudioLoader();
     soundFly = new THREE.Audio( listener );
@@ -1494,6 +1499,7 @@ let onClickButton = function (event) {
                 resetSceneHome();
                 break;
             case "SHEEP":
+                window.removeEventListener( 'mousemove', createSounds, false);
                 homeButton.scale.multiplyScalar(0.625);
                 scene.remove(homeButton);
                 scene.remove(resetAnimationButton);
@@ -1669,9 +1675,44 @@ function createSceneFrog(){
     //createFrogAreaSubTitle();
     createFlySound();
 }
+let sheepFlag = false;
+function createSoundsSheep(){
+    let listenerScissor = new THREE.AudioListener();
+    let audioLoaderScissor = new THREE.AudioLoader();
+    sheepScissorSound = new THREE.Audio(listenerScissor);
+    audioLoaderScissor.load('sounds/scissor.ogg', function (buffer) {
+        sheepScissorSound.setBuffer(buffer);
+        sheepScissorSound.setLoop(true);
+        sheepScissorSound.setVolume(0);
+        sheepScissorSound.play();
+    })
+
+    const listenerSheep = new THREE.AudioListener();
+    const audioLoaderSheep = new THREE.AudioLoader();
+    soundSheepFinal = new THREE.Audio( listenerSheep );
+    audioLoaderSheep.load( 'sounds/Sheep2.ogg', function( buffer ) {
+        soundSheepFinal.setBuffer( buffer );
+        soundSheepFinal.setLoop( false );
+    });
+
+    createSounds = function (event) {
+        mouseSetting(event);
+        for (let i = 0; i < intersects.length; i++) {
+            if (intersects[i].object.id === 31) {
+                sheepFlag = true;
+                sheepScissorSound.setVolume(0.9);
+            }
+        }
+        if(!sheepFlag)
+            sheepScissorSound.setVolume(0);
+        sheepFlag = false;
+    }
+    window.addEventListener('mousemove', createSounds);
+}
 
 function createSceneSheep(){
     window.addEventListener( 'mousemove', followMouse, false);
+    createSoundsSheep();
     gameOverFlag = false;
     currentScrren = "SHEEP";
     rotateCameraSheepScene();
@@ -1691,7 +1732,6 @@ function createSceneSheep(){
     scene.remove(subTitleFrogArea);
     createSheepAreaSubTitle();
     animateSceneSheep();
-
 
     let onWoolOverButton = function (event) {
         if (currentScrren == "SHEEP") {
@@ -2271,6 +2311,13 @@ function jumpSheep() {
       .to({y: 1.5}, 500, createjs.Ease.circOut)
       .to({y: -0.4  }, 500, createjs.Ease.circOut)
       .wait(9000);
+
+    clearTimeout(timerSheepFinal);
+    timerSheepFinal = setTimeout(function() {
+        soundSheepFinal.play();
+        soundSheepFinal.setVolume(0.9);
+    }, 1600);
+
 }
 
 function gameOver() {
@@ -2643,7 +2690,6 @@ function animateScissors(){
 }
 
 function rotateCameraSheepScene(){
-
     /** instantiate ObjectControls**/
     controls = new ObjectControls( camera, renderer.domElement, sheepBody );
     controls.setObjectToMove(sheepBody);
@@ -2653,5 +2699,36 @@ function rotateCameraSheepScene(){
     controls.setMaxVerticalRotationAngle(Math.PI / 4, Math.PI / 4);
     //controls.setMaxHorizontalRotationAngle(Math.PI / 2, Math.PI / 2);
     controls.setRotationSpeed(0.02);
+}
 
+function createHomeAndSceneSounds() {
+    const homeListener = new THREE.AudioListener();
+    const homeAudioLoader = new THREE.AudioLoader();
+    homeSound = new THREE.Audio( homeListener );
+    homeAudioLoader.load( 'sounds/homeSound.ogg', function( buffer ) {
+        homeSound.setBuffer( buffer );
+        homeSound.setLoop( true );
+        homeSound.setVolume( 0.5 );
+     //   homeSound.play();
+    });
+
+    const frogSceneListener = new THREE.AudioListener();
+    const frogSceneAudioLoader = new THREE.AudioLoader();
+    frogSceneSound = new THREE.Audio( frogSceneListener );
+    frogSceneAudioLoader.load( 'sounds/frogSceneSound.ogg', function( buffer ) {
+        frogSceneSound.setBuffer( buffer );
+        frogSceneSound.setLoop( true );
+        frogSceneSound.setVolume( 0.5 );
+      //  frogSceneSound.play();
+    });
+
+    const sheepSceneListener = new THREE.AudioListener();
+    const sheepSceneAudioLoader = new THREE.AudioLoader();
+    sheepSceneSound = new THREE.Audio( sheepSceneListener );
+    sheepSceneAudioLoader.load( 'sounds/sheepSceneSound.ogg', function( buffer ) {
+        sheepSceneSound.setBuffer( buffer );
+        sheepSceneSound.setLoop( true );
+        sheepSceneSound.setVolume( 0.5 );
+    //    sheepSceneSound.play();
+    });
 }
