@@ -25,7 +25,8 @@ let soundFly;
 let timerFlyCatch;
 let soundFlyCatch;
 let frogJumpSound;
-
+let gameOverFlag = false;
+let chillAreaMaterials, warningAreaMaterials, deathAreaMaterials;
 woolFallingFlag=false;
 woolSmallFlag=false;
 
@@ -78,9 +79,9 @@ const pi = Math.PI;
 let objectID;
 let oldSelectedID = 13;
 const frogID = 12;
-const deathAreaID = 172;
-const warningAreaID = 171;
-const chillAreaID = 170;
+const deathAreaID = 164;
+const warningAreaID = 165;
+const chillAreaID = 166;
 const sheepID = 30;
 const goButtonID = 147;
 const homeButtonID = 148;
@@ -155,6 +156,8 @@ function createLights(){
 
 function backupFrogHome(){
 
+    if(frogJumpSound) frogJumpSound.setVolume(0.0);
+    if(soundFly) soundFly.setVolume(0.0);
     frogBody.position.x = -2;
     frogBody.position.y = -1;
     frogBody.position.z = 0;
@@ -1305,7 +1308,10 @@ let onclick = function (event) {
                 frogArea.add(goButton);
                 goButton.translateX(0.15);
             }
-            if (oldSelectedID == sheepID) sheepBody.translateY(-0.5); //la pecora torna alla sua posizione originale
+            if (oldSelectedID == sheepID) {
+                console.log("VADO GIù PERCHè HO CLICCATO SULLA FROG");
+                sheepBody.translateY(-0.5); //la pecora torna alla sua posizione originale
+            }
             oldSelectedID = objectID;
             selected = "FROG";
             scene.remove(titleHomeArea);
@@ -1317,14 +1323,16 @@ let onclick = function (event) {
                 scene.background = new THREE.Color(0xc9f0cf);
                 sheepBody.scale.multiplyScalar(2);
                 setButtonTexture('textures/goSheep.jpg');
-                sheepBody.translateY(0.5);
                 createSheepAreaTitle();
                 sheepAreaDescription();
                 resetButton(oldSelectedID);
                 resetScale(oldSelectedID);
                 sheepArea.add(goButton);
                 goButton.translateX(-0.15);
+                console.log("VADO Sù PERCHè HO CLICCATO SULLA SHEEP");
+                sheepBody.translateY(0.5);
             }
+           // if (oldSelectedID === frogID)
             oldSelectedID = objectID;
             selected = "SHEEP";
             scene.remove(titleHomeArea);
@@ -1380,7 +1388,6 @@ function mouseSetting(event){
     mouse = new THREE.Vector2(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1);
-
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects(scene.children);
     objectID = intersects.length > 0 ? intersects[0].object.id : "objectID";
@@ -1497,11 +1504,14 @@ let onClickButton = function (event) {
                 scene.remove(sheepBody);
                 scene.remove(scissorBody);
                 sheepBody.translateX(2);
-                sheepBody.translateY(-0.5);
+                console.log("VEDIAMO QUI HOME = " + gameOverFlag);
+                if (gameOverFlag) {
+                    console.log("VADO GIù PERCHè HO CLICCATO SULLA HOME");
+                    sheepBody.translateY(-0.5);
+                }
                 scene.remove(playSheepArea);
                 scene.remove(happySheep);
                 resetSceneHome();
-                
                 break;
             default:
                 break;
@@ -1623,6 +1633,14 @@ function stopHomeAnimation(){
     
 }
 function createSceneFrog(){
+    for (let i = 0; i<6; i++){
+        warningAreaMaterials[i].opacity = 1.0;
+        warningAreaMaterials[i].transparent = false;
+        deathAreaMaterials[i].opacity = 1.0;
+        deathAreaMaterials[i].transparent = false;
+        chillAreaMaterials[i].opacity = 1.0;
+        chillAreaMaterials[i].transparent = false;
+    }
     frogVisited = true;
     stopHomeAnimation();
     backupFrogHome();
@@ -1648,13 +1666,13 @@ function createSceneFrog(){
     scene.remove(titleSheepArea);
     scene.remove(titleFrogArea);
     scene.remove(subTitleSheepArea);
-    createFrogAreas();
     //createFrogAreaSubTitle();
     createFlySound();
 }
 
 function createSceneSheep(){
     window.addEventListener( 'mousemove', followMouse, false);
+    gameOverFlag = false;
     currentScrren = "SHEEP";
     rotateCameraSheepScene();
     scene.remove(frogArea);
@@ -1725,11 +1743,10 @@ function createAreaTitle() {
     })
 
 }
-
-function createFrogAreas() {
+function createFrogAreaChill(){
     loadTexture('textures/frogTitle.jpg').then(texture => {
         const chillAreaGeometry = new THREE.BoxGeometry(30, 30, 0);
-        const materials = [
+        chillAreaMaterials = [
             new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
             new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
             new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
@@ -1737,13 +1754,19 @@ function createFrogAreas() {
             new THREE.MeshBasicMaterial( { color: 0xfae2a1}), //map: texture}),
             new THREE.MeshBasicMaterial( { color: 0xfae2a1})
         ];
-        frogAreaChill = new THREE.Mesh( chillAreaGeometry, materials);
+        frogAreaChill = new THREE.Mesh( chillAreaGeometry, chillAreaMaterials);
+        for (let i = 0; i<6; i++){
+            chillAreaMaterials[i].opacity = 0.0;
+            chillAreaMaterials[i].transparent = true;
+        }
         scene.add(frogAreaChill);
     })
+}
 
-    loadTexture('textures/frogTitle.jpg').then(texture => {
+function createFrogAreaWarning(){
+    return loadTexture('textures/frogTitle.jpg').then(texture => {
         const warningAreaGeometry = new THREE.BoxGeometry(15, 10, 0);
-        const materials = [
+        warningAreaMaterials = [
             new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
             new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
             new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
@@ -1751,13 +1774,20 @@ function createFrogAreas() {
             new THREE.MeshBasicMaterial( { color: 0xf5bf83}), //map: texture}),
             new THREE.MeshBasicMaterial( { color: 0xf5bf83})
         ];
-        frogAreaWarning = new THREE.Mesh( warningAreaGeometry, materials);
+        frogAreaWarning = new THREE.Mesh( warningAreaGeometry, warningAreaMaterials);
+        for (let i = 0; i<6; i++){
+            warningAreaMaterials[i].opacity = 0.0;
+            warningAreaMaterials[i].transparent = true;
+        }
+        frogAreaWarning.translateZ(0.01);
         scene.add(frogAreaWarning);
     })
+}
 
-    loadTexture('textures/frogTitle.jpg').then(texture => {
+function createFrogAreaDeath(){
+    return loadTexture('textures/frogTitle.jpg').then(texture => {
         const deathAreaGeometry = new THREE.BoxGeometry(7, 6, 0);
-        const materials = [
+        deathAreaMaterials = [
             new THREE.MeshBasicMaterial( { color: 0xf79675}),
             new THREE.MeshBasicMaterial( { color: 0xf79675}),
             new THREE.MeshBasicMaterial( { color: 0xf79675}),
@@ -1765,10 +1795,23 @@ function createFrogAreas() {
             new THREE.MeshBasicMaterial( { color: 0xf79675}), //map: texture}),
             new THREE.MeshBasicMaterial( { color: 0xf79675})
         ];
-        frogAreaDeath = new THREE.Mesh( deathAreaGeometry, materials);
+        frogAreaDeath = new THREE.Mesh( deathAreaGeometry, deathAreaMaterials);
+        for (let i = 0; i<6; i++){
+            deathAreaMaterials[i].opacity = 0.0;
+            deathAreaMaterials[i].transparent = true;
+        }
         frogAreaDeath.translateY(0.3);
+        frogAreaDeath.translateZ(0.02);
         scene.add(frogAreaDeath);
     })
+}
+
+function createFrogAreas() {
+   createFrogAreaDeath().then(result =>{
+        createFrogAreaWarning().then(result =>{
+            createFrogAreaChill();
+        })
+      });
 }
 
 function createFrogAreaTitle() {
@@ -1957,9 +2000,14 @@ function resetSceneHome(){
         scene.remove(titleFrogArea);
         frogArea.remove(descriptionFrogArea);
         scene.remove(subTitleFrogArea);
-        scene.remove(frogAreaChill);
-        scene.remove(frogAreaWarning);
-        scene.remove(frogAreaDeath);
+        for (let i = 0; i<6; i++){
+            warningAreaMaterials[i].opacity = 0.0;
+            warningAreaMaterials[i].transparent = true;
+            deathAreaMaterials[i].opacity = 0.0;
+            deathAreaMaterials[i].transparent = true;
+            chillAreaMaterials[i].opacity = 0.0;
+            chillAreaMaterials[i].transparent = true;
+        }
     }
     else if (selected == "SHEEP") {
         if (frogVisited) {
@@ -2111,6 +2159,7 @@ function createSceneHome(){
     createScissor();
     createResetAnimationButton();
     createAreaTitle();
+    createFrogAreas();
     animateFrogHome();
     animateSheepHome();
     animate();
@@ -2211,20 +2260,17 @@ let count_array = woolArray.slice();
 //var count_wool = woolArray.length-1; //numero pallocchi
 
 function resetSheepPosition() {
-            //SHEEP BODY ANIMATION
-            createjs.Tween.get(sheepBody.rotation, {loop: false})  
-            .to({ x: 0, y: 0, z: 0 }, 1500, createjs.Ease.linear);
-
-    
+    //SHEEP BODY ANIMATION
+    createjs.Tween.get(sheepBody.rotation, {loop: false})
+      .to({x: 0, y: 0, z: 0}, 1500, createjs.Ease.linear);
 }
 
 function jumpSheep() {
-        // BODY ANIMATION
-        let initialY = sheepBody.position.y;
-        createjs.Tween.get(sheepBody.position, {loop: false}).wait(1600)
-            .to({ y: 1.5 }, 500, createjs.Ease.circOut)
-            .to({ y: initialY }, 500, createjs.Ease.circOut)
-            .wait(9000);
+    // BODY ANIMATION
+    createjs.Tween.get(sheepBody.position, {loop: false}).wait(1600)
+      .to({y: 1.5}, 500, createjs.Ease.circOut)
+      .to({y: -0.4  }, 500, createjs.Ease.circOut)
+      .wait(9000);
 }
 
 function gameOver() {
@@ -2243,9 +2289,6 @@ function gameOver() {
         happySheep.translateZ(-1.5);
         scene.add(happySheep);
     })
-
-
-
 }
 
 function sheepPlayArea() {
@@ -2286,10 +2329,6 @@ function animateWool(j) {
         }
 
     }
-  
-    //console.log("count vale: "+count);
-
-    console.log("TI STAMPO COUNT ARRAY: "+count_array);
     if (count_array.length == 1) {
         resetSheepPosition();
         jumpSheep();
@@ -2300,6 +2339,8 @@ function animateWool(j) {
         homeButton.translateX(0.6);
         sheepPlayArea();
         count_array = woolArray.slice();
+        gameOverFlag = true;
+        oldSelectedID = 0;
     }
     woolFallingFlag=true;
     woolSmallFlag=true;
@@ -2570,7 +2611,10 @@ let onMousePause = function (event) {
     timer = setTimeout(function() {
         if (currentScrren === "FROG"){
             mouseSetting(event);
-            console.log(intersects[2].object.id);
+            console.log("" + intersects[0].object.id);
+           // console.log(intersects[1].object.id);
+           // console.log(intersects[2].object.id);
+
             for (let i = 0; i < intersects.length; i += 1) {
                 if (intersects[i].object.id === deathAreaID) death = true;
                 else if (intersects[i].object.id  === warningAreaID) warning = true;
