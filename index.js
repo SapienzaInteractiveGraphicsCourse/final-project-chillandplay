@@ -13,7 +13,7 @@ let frogAnimation,  frogArea, frogBody, frogBelly, frogHead, frogMouth, frogEyeR
     frogAreaChill, frogAreaWarning, frogAreaDeath;
 let sheepArea, sheepBody, sheepFrontRightLeg, sheepFrontLeftLeg, sheepBackRightLeg, sheepBackLeftLeg, sheepEyeBalls,
     sheepHead, sheepEyes, sheepCheeks, titleSheepArea, descriptionSheepArea, subTitleSheepArea,gameOverSheep, wool=[], playSheepArea, positionWoolX=[], positionWoolY=[], positionWoolZ=[],
-    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[], woolFalling, woolSmall, woolFallingFlag, woolSmallFlag, happySheep;
+    scaleWoolX=[], scaleWoolY=[], scaleWoolZ=[], woolFalling, woolSmall, woolFallingFlag, woolSmallFlag, happySheep, instructionsSheepArea;
 let goButton, goButtonGeometry, goButtonMaterial, goButtonLoader;
 let homeButton, homeButtonGeometry, homeButtonMaterial, homeButtonLoader;
 let resetAnimationButton, resetAnimationButtonGeometry, resetAnimationButtonMaterial, resetAnimationButtonLoader;
@@ -88,8 +88,8 @@ let objectID;
 let oldSelectedID = 13;
 const frogID = 12;
 const deathAreaID = 164;
-const warningAreaID = 165;
-const chillAreaID = 166;
+const warningAreaID = 166;
+const chillAreaID = 167;
 const sheepID = 30;
 const goButtonID = 147;
 const homeButtonID = 148;
@@ -1546,6 +1546,7 @@ let onClickButton = function (event) {
                 }
                 scene.remove(playSheepArea);
                 scene.remove(happySheep);
+                scene.remove(instructionsSheepArea);
                 resetSceneHome();
                 break;
             default:
@@ -1752,6 +1753,7 @@ function createSceneSheep(){
     scene.remove(frogBody);
     scene.remove(sheepArea);
     scene.add(group2);
+    scene.add(instructionsSheepArea);
     sheepBody.translateX(-2);
     setHomeButtonTexture('textures/homeSheep.jpg');
     //homeButton.translateX(-0.6);
@@ -1987,7 +1989,7 @@ function createSheepAreaSubTitle() {
         ];
         subTitleSheepArea = new THREE.Mesh( titleAreaGeometry, materials);
         subTitleSheepArea.translateY(3.3);
-        subTitleSheepArea.translateZ(-1.5);
+        subTitleSheepArea.translateZ(-1.7);
         scene.add(subTitleSheepArea);
     })
 }
@@ -2246,6 +2248,7 @@ function createSceneHome(){
         createFrogAreas();
         animateFrogHome();
         animateSheepHome();
+        sheepInstructionsArea();
         animate();
         render();
 }
@@ -2399,6 +2402,24 @@ function sheepPlayArea() {
     })
 }
 
+function sheepInstructionsArea() {
+    loadTexture('textures/instructions.png').then(texture => {
+        const instructionsAreaGeometry = new THREE.BoxGeometry(6.7, 4, 0);
+        const materials = [
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd}),
+            new THREE.MeshBasicMaterial({map: texture}),
+            new THREE.MeshBasicMaterial( { color: 0xbfe3dd})
+        ];
+        instructionsSheepArea = new THREE.Mesh( instructionsAreaGeometry, materials);
+        instructionsSheepArea.translateY(-5.0);
+        instructionsSheepArea.translateX(0.1);
+    
+    })
+}
+
 var count=0;
 function animateWool(j) {
     // WOOL ANIMATION
@@ -2424,6 +2445,7 @@ function animateWool(j) {
         resetSheepPosition();
         jumpSheep();
         gameOver();
+        scene.remove(instructionsSheepArea);
         controls.disableVerticalRotation();
         controls.disableHorizontalRotation();
         window.removeEventListener("keydown", rotateSheepArrows, false)
@@ -2792,22 +2814,5 @@ function loadButtonSound() {
             buttonSound.play();
         });
 }
-
-/*
-let loadSound = function (event) {
-    const homeListener = new THREE.AudioListener();
-    const homeAudioLoader = new THREE.AudioLoader();
-    homeSound = new THREE.Audio( homeListener );
-    homeAudioLoader.load( 'sounds/homeSound.ogg', function( buffer ) {
-        homeSound.setBuffer( buffer );
-        homeSound.setLoop( true );
-        homeSound.setVolume( 0.5 );
-        homeSound.play();
-    });
-}
-
-window.addEventListener( 'load', loadSound);
-
- */
 
 
