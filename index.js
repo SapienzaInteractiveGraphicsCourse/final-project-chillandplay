@@ -613,6 +613,7 @@ function backupSheepHome(){
     frogEyeL.position.y = 0.3;
     frogEyeL.position.z = 0.3;
 
+    window.removeEventListener( 'keydown', rotateSheepArrows, false);
     window.removeEventListener( 'mousemove', followMouse, false);
     //STOP CAMERA MOVEMENT
 
@@ -1560,6 +1561,7 @@ let onClickButton = function (event) {
                 scene.remove(happySheep);
                 scene.remove(playSheepArea);
                 scene.add(subTitleSheepArea);
+                window.addEventListener("keydown", rotateSheepArrows, false);
                 controls.enableVerticalRotation();
                 controls.enableHorizontalRotation();
                 backupSheepReset();
@@ -1787,6 +1789,9 @@ function createSceneSheep(){
         }
     };
     window.addEventListener('mousemove', onWoolOverButton);
+
+    window.addEventListener("keydown", rotateSheepArrows );
+    rotateSheepArrows();
 
 }
 
@@ -2421,6 +2426,7 @@ function animateWool(j) {
         gameOver();
         controls.disableVerticalRotation();
         controls.disableHorizontalRotation();
+        window.removeEventListener("keydown", rotateSheepArrows, false)
         scene.add(resetAnimationButton);
         homeButton.translateX(0.6);
         sheepPlayArea();
@@ -2738,6 +2744,20 @@ function rotateCameraSheepScene(){
     controls.setMaxVerticalRotationAngle(Math.PI / 4, Math.PI / 4);
     //controls.setMaxHorizontalRotationAngle(Math.PI / 2, Math.PI / 2);
     controls.setRotationSpeed(0.02);
+}
+
+function rotateSheepArrows(event){
+    let keyCode = event.which;
+    let xSpeed = 0.05;
+    let ySpeed = 0.05;
+    if(keyCode === 40)  // down
+    sheepBody.rotation.x += xSpeed;
+    if(keyCode === 39)  // right
+    sheepBody.rotation.y += ySpeed;
+    if(keyCode === 38)  // up
+    sheepBody.rotation.x -= xSpeed;
+    if(keyCode === 37)  // left
+    sheepBody.rotation.y -= ySpeed;
 }
 
 function loadHomeSound(counter) {
