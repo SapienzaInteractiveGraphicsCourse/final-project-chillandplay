@@ -649,7 +649,6 @@ function backupSheepReset(){
     scene.remove(resetAnimationButton);
     homeButton.translateX(-0.6);
     scene.add(group2);
-    controls.setObjectToMove(sheepBody);
 
     //BACKUP WOOL POSITION
     for (var j=0 ; j<wool.length; j++) {
@@ -1561,7 +1560,8 @@ let onClickButton = function (event) {
                 scene.remove(happySheep);
                 scene.remove(playSheepArea);
                 scene.add(subTitleSheepArea);
-                controls.setObjectToMove(sheepBody);
+                controls.enableVerticalRotation();
+                controls.enableHorizontalRotation();
                 backupSheepReset();
                 break;
             default:
