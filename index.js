@@ -1810,14 +1810,14 @@ function createAreaTitle() {
 
 }
 function createFrogAreaChill(){
-    loadTexture('textures/frogTitle.jpg').then(texture => {
+    loadTexture('textures/chillArea9.jpeg').then(texture => {
         const chillAreaGeometry = new THREE.BoxGeometry(30, 30, 0);
         chillAreaMaterials = [
             new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
             new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
             new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
             new THREE.MeshBasicMaterial( { color: 0xfae2a1}),
-            new THREE.MeshBasicMaterial( { color: 0xfae2a1}), //map: texture}),
+            new THREE.MeshBasicMaterial( { map: texture}), //map: texture}),
             new THREE.MeshBasicMaterial( { color: 0xfae2a1})
         ];
         frogAreaChill = new THREE.Mesh( chillAreaGeometry, chillAreaMaterials);
@@ -1830,14 +1830,14 @@ function createFrogAreaChill(){
 }
 
 function createFrogAreaWarning(){
-    return loadTexture('textures/frogTitle.jpg').then(texture => {
+    return loadTexture('textures/warningArea4.png').then(texture => {
         const warningAreaGeometry = new THREE.BoxGeometry(15, 10, 0);
         warningAreaMaterials = [
             new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
             new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
             new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
             new THREE.MeshBasicMaterial( { color: 0xf5bf83}),
-            new THREE.MeshBasicMaterial( { color: 0xf5bf83}), //map: texture}),
+            new THREE.MeshBasicMaterial( { map: texture}), //map: texture}),
             new THREE.MeshBasicMaterial( { color: 0xf5bf83})
         ];
         frogAreaWarning = new THREE.Mesh( warningAreaGeometry, warningAreaMaterials);
@@ -1851,14 +1851,14 @@ function createFrogAreaWarning(){
 }
 
 function createFrogAreaDeath(){
-    return loadTexture('textures/frogTitle.jpg').then(texture => {
+    return loadTexture('textures/deathArea1.png').then(texture => {
         const deathAreaGeometry = new THREE.BoxGeometry(7, 6, 0);
         deathAreaMaterials = [
             new THREE.MeshBasicMaterial( { color: 0xf79675}),
             new THREE.MeshBasicMaterial( { color: 0xf79675}),
             new THREE.MeshBasicMaterial( { color: 0xf79675}),
             new THREE.MeshBasicMaterial( { color: 0xf79675}),
-            new THREE.MeshBasicMaterial( { color: 0xf79675}), //map: texture}),
+            new THREE.MeshBasicMaterial( { map: texture}), //map: texture}),
             new THREE.MeshBasicMaterial( { color: 0xf79675})
         ];
         frogAreaDeath = new THREE.Mesh( deathAreaGeometry, deathAreaMaterials);
