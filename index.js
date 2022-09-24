@@ -2751,11 +2751,17 @@ function rotateSheepArrows(event){
     let xSpeed = 0.05;
     let ySpeed = 0.05;
     if(keyCode === 40)  // down
-    sheepBody.rotation.x += xSpeed;
+    {
+        if(sheepBody.rotation.x <= 0.8)
+        sheepBody.rotation.x += xSpeed;
+    }
     if(keyCode === 39)  // right
     sheepBody.rotation.y += ySpeed;
     if(keyCode === 38)  // up
-    sheepBody.rotation.x -= xSpeed;
+    {
+        if(sheepBody.rotation.x >= -0.8)
+            sheepBody.rotation.x -= xSpeed;
+    }
     if(keyCode === 37)  // left
     sheepBody.rotation.y -= ySpeed;
 }
