@@ -665,17 +665,17 @@ function backupSheepReset(){
 // ------------- SHEEP ----------------------------------------
 
 function createSheep(scale){
-    createSheepArea();
-    createSheepBody(scale);
-    createSheepHead();
-    createSheepEyes();
-    createSheepEyeBalls();
-    createSheepTail();
-    createSheepHair();
-    createSheepLegs(scale);
-    createSheepWool();
-    createSheepCheeks();
-    sheepBody.scale.multiplyScalar(0.8);
+        createSheepArea();
+        createSheepBody(scale);
+        createSheepHead();
+        createSheepEyes();
+        createSheepEyeBalls();
+        createSheepTail();
+        createSheepHair();
+        createSheepLegs(scale);
+        createSheepWool();
+        createSheepCheeks();
+        sheepBody.scale.multiplyScalar(0.8);
 }
 
 // ------------- SHEEP PARTS ----------------------------------
@@ -865,17 +865,10 @@ function createSheepWool(){
     let angle = 0;
     let z = 0.4;
     let woolGeometry = new THREE.IcosahedronGeometry(0.4, 0);
-    const textureLoader2 = new THREE.TextureLoader();
-    const furNormalMap2 = textureLoader2.load('./textures/normalMap.jpg');
-    furNormalMap2.wrapS = THREE.RepeatWrapping;
-    furNormalMap2.wrapT = THREE.RepeatWrapping;
     const sheepWoolMaterial = new THREE.MeshStandardMaterial({
-        color: 0xf3f2f7,
-        //map: furMap,
-        normalMap: furNormalMap2, 
-        
-    });
-
+            color: 0xf3f2f7
+          //  normalMap: furNormalMap2
+        });
     // First circle of wool from the head
     for (let i = 0; i < 8; i++) {
         wool[i] = new THREE.Mesh(woolGeometry, sheepWoolMaterial);
@@ -921,7 +914,7 @@ function createSheepWool(){
         if (i === 9 || i === 5 || i === 7 || i === 12 || i === 4 || i === 3)
             wool[i].scale.set(0.2, 0.2, 0.2);
         else if (i === 1 || i === 0)
-            woole[i].scale.set(0.25, 0.25, 0.25);
+            wool[i].scale.set(0.25, 0.25, 0.25);
         else
             wool[i].scale.set(0.3, 0.3, 0.3);
         wool[i].castShadow = true;
@@ -1055,21 +1048,25 @@ function createSheepWool(){
     wool[92].castShadow = true;
     sheepBody.add(wool[92]);
 
-    //Create array of wool positions
-    for (var j=0 ; j<wool.length; j++) {
-        positionWoolX[j] = wool[j].position.x;
-        positionWoolY[j] = wool[j].position.y;
-        positionWoolZ[j] = wool[j].position.z;
+        //Create array of wool positions
+        for (let j = 0; j < wool.length; j++) {
+            positionWoolX[j] = wool[j].position.x;
+            positionWoolY[j] = wool[j].position.y;
+            positionWoolZ[j] = wool[j].position.z;
+            scaleWoolX[j] = wool[j].scale.x;
+            scaleWoolY[j] = wool[j].scale.y;
+            scaleWoolZ[j] = wool[j].scale.z;
+        }
 
-        scaleWoolX[j] = wool[j].scale.x;
-        scaleWoolY[j] = wool[j].scale.y;
-        scaleWoolZ[j] = wool[j].scale.z;
-
+    loadTexture('./textures/normalMap.jpg').then(furNormalMap2=> {
+        furNormalMap2.wrapS = THREE.RepeatWrapping;
+        furNormalMap2.wrapT = THREE.RepeatWrapping;
+        for (let j = 0; j < wool.length; j++) {
+            wool[j].material.normalMap = furNormalMap2;
+            wool[j].material.needsUpdate = true;
+        }
+    })
 }
-
-
-}
-
 
 // ----------------------------------------------------------
 
