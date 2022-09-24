@@ -31,10 +31,13 @@ let gameOverFlag = false;
 let chillAreaMaterials, warningAreaMaterials, deathAreaMaterials;
 woolFallingFlag=false;
 woolSmallFlag=false;
+let flagHomeSound = false;
 
 let frogVisited = false;
 let createSounds;
 let timerSheepFinal;
+let sheepOneTime = 0;
+let frogOneTime = 0;
 
 
 // -------------- ANIMATIONS VARIABLES --------------------
@@ -141,6 +144,7 @@ let flyTimer;
 let homeSound, frogSceneSound, sheepSceneSound;
 
 createSceneHome();
+
 
 // ------------- LIGHTS --------------------------------------
 function createLights(){
@@ -1302,6 +1306,7 @@ let onclick = function (event) {
     mouseSetting(event);
     switch (objectID) {
         case frogID:
+            loadHomeSound(++frogOneTime);
             if (selected != "FROG") {
                 frogBody.scale.multiplyScalar(2);
                 scene.background = new THREE.Color(0xfafad2);
@@ -1324,6 +1329,7 @@ let onclick = function (event) {
             sheepArea.remove(descriptionSheepArea);
             break;
         case sheepID:
+            loadHomeSound(++sheepOneTime);
             if (selected != "SHEEP") {
                 scene.background = new THREE.Color(0xc9f0cf);
                 sheepBody.scale.multiplyScalar(2);
@@ -1475,9 +1481,29 @@ let onClickButton = function (event) {
     if (objectID === goButtonID) {
         switch (selected) {
             case "FROG":
+                homeSound.setVolume( 0 );
+                const frogSceneListener = new THREE.AudioListener();
+                const frogSceneAudioLoader = new THREE.AudioLoader();
+                frogSceneSound = new THREE.Audio( frogSceneListener );
+                frogSceneAudioLoader.load( 'sounds/frogSceneSound.ogg', function( buffer ) {
+                    frogSceneSound.setBuffer( buffer );
+                    frogSceneSound.setLoop( true );
+                    frogSceneSound.setVolume( 0.35 );
+                    frogSceneSound.play();
+                });
                 createSceneFrog();
                 break;
             case "SHEEP":
+                homeSound.setVolume( 0 );
+                const sheepSceneListener = new THREE.AudioListener();
+                const sheepSceneAudioLoader = new THREE.AudioLoader();
+                sheepSceneSound = new THREE.Audio( sheepSceneListener );
+                sheepSceneAudioLoader.load( 'sounds/sheepSceneSound.ogg', function( buffer ) {
+                    sheepSceneSound.setBuffer( buffer );
+                    sheepSceneSound.setLoop( true );
+                    sheepSceneSound.setVolume( 0.3 );
+                    sheepSceneSound.play();
+                });
                 createSceneSheep();
                 break;
             default:
@@ -2048,6 +2074,7 @@ function resetSceneHome(){
             chillAreaMaterials[i].opacity = 0.0;
             chillAreaMaterials[i].transparent = true;
         }
+        frogSceneSound.setVolume( 0 );
     }
     else if (selected == "SHEEP") {
         if (frogVisited) {
@@ -2063,9 +2090,17 @@ function resetSceneHome(){
         scene.remove(subTitleSheepArea);
         scene.remove(playSheepArea);
         scene.remove(happySheep);
-        
-        
+        sheepSceneSound.setVolume( 0 );
     }
+    const homeListener = new THREE.AudioListener();
+    const homeAudioLoader = new THREE.AudioLoader();
+    homeSound = new THREE.Audio( homeListener );
+    homeAudioLoader.load( 'sounds/homeSound.ogg', function( buffer ) {
+        homeSound.setBuffer( buffer );
+        homeSound.setLoop( true );
+        homeSound.setVolume( 0.5 );
+        homeSound.play();
+    });
     restartHomeAnimation();
     selected = "HOME";
     currentScrren = "HOME";
@@ -2184,39 +2219,37 @@ function animateSheepHome(){
 }
 
 function createSceneHome(){
-    currentScrren = "HOME";
-    groupPivotLegR = new THREE.Group();
-    groupPivotLegL = new THREE.Group();
-    createFrog(1);
-    createSheep(2);
-    createPlane();
-    createLights();
-    createButton();
-    createHomeButton();
-    flyGroup = new THREE.Group();
-    createFly();
-    group2 = new THREE.Group();
-    createScissor();
-    createResetAnimationButton();
-    createAreaTitle();
-    createFrogAreas();
-    animateFrogHome();
-    animateSheepHome();
-    animate();
-    render();
+        currentScrren = "HOME";
+        groupPivotLegR = new THREE.Group();
+        groupPivotLegL = new THREE.Group();
+        createFrog(1);
+        createSheep(2);
+        createPlane();
+        createLights();
+        createButton();
+        createHomeButton();
+        flyGroup = new THREE.Group();
+        createFly();
+        group2 = new THREE.Group();
+        createScissor();
+        createResetAnimationButton();
+        createAreaTitle();
+        createFrogAreas();
+        animateFrogHome();
+        animateSheepHome();
+        animate();
+        render();
 }
 
 function animateSceneFrog(){
     animateFrogJump();
     animateFrogHeadAndEyes();
-
 }
 
 function animateFrogHeadAndEyes(){ //attenzione: l'animazione della rana continua anche quando si ritorna nella schermata home
     frogRequestAnimationFrame =  requestAnimationFrame( animateFrogHeadAndEyes ); //serve solo per il movimento degli occhi
     animateFrogEyeBalls();
     animateFrogHead();
-
 }
 
 function animateFrogJump(){
@@ -2701,7 +2734,22 @@ function rotateCameraSheepScene(){
     controls.setRotationSpeed(0.02);
 }
 
-function createHomeAndSceneSounds() {
+function loadHomeSound(counter) {
+    if(counter === 1 && !flagHomeSound) {
+        const homeListener = new THREE.AudioListener();
+        const homeAudioLoader = new THREE.AudioLoader();
+        homeSound = new THREE.Audio(homeListener);
+        homeAudioLoader.load('sounds/homeSound.ogg', function (buffer) {
+            homeSound.setBuffer(buffer);
+            homeSound.setLoop(true);
+            homeSound.setVolume(0.5);
+            homeSound.play();
+        });
+        flagHomeSound = true;
+    }
+}
+/*
+let loadSound = function (event) {
     const homeListener = new THREE.AudioListener();
     const homeAudioLoader = new THREE.AudioLoader();
     homeSound = new THREE.Audio( homeListener );
@@ -2709,26 +2757,12 @@ function createHomeAndSceneSounds() {
         homeSound.setBuffer( buffer );
         homeSound.setLoop( true );
         homeSound.setVolume( 0.5 );
-     //   homeSound.play();
-    });
-
-    const frogSceneListener = new THREE.AudioListener();
-    const frogSceneAudioLoader = new THREE.AudioLoader();
-    frogSceneSound = new THREE.Audio( frogSceneListener );
-    frogSceneAudioLoader.load( 'sounds/frogSceneSound.ogg', function( buffer ) {
-        frogSceneSound.setBuffer( buffer );
-        frogSceneSound.setLoop( true );
-        frogSceneSound.setVolume( 0.5 );
-      //  frogSceneSound.play();
-    });
-
-    const sheepSceneListener = new THREE.AudioListener();
-    const sheepSceneAudioLoader = new THREE.AudioLoader();
-    sheepSceneSound = new THREE.Audio( sheepSceneListener );
-    sheepSceneAudioLoader.load( 'sounds/sheepSceneSound.ogg', function( buffer ) {
-        sheepSceneSound.setBuffer( buffer );
-        sheepSceneSound.setLoop( true );
-        sheepSceneSound.setVolume( 0.5 );
-    //    sheepSceneSound.play();
+        homeSound.play();
     });
 }
+
+window.addEventListener( 'load', loadSound);
+
+ */
+
+
