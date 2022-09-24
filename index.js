@@ -38,6 +38,7 @@ let createSounds;
 let timerSheepFinal;
 let sheepOneTime = 0;
 let frogOneTime = 0;
+let buttonSound;
 
 
 // -------------- ANIMATIONS VARIABLES --------------------
@@ -643,6 +644,7 @@ function backupSheepHome(){
 
 function backupSheepReset(){
 
+    sheepSceneSound.setVolume(0.3)
     resetAnimationButton.scale.multiplyScalar(0.625);
     scene.remove(resetAnimationButton);
     homeButton.translateX(-0.6);
@@ -1306,6 +1308,7 @@ let onclick = function (event) {
     mouseSetting(event);
     switch (objectID) {
         case frogID:
+            loadButtonSound();
             loadHomeSound(++frogOneTime);
             if (selected != "FROG") {
                 frogBody.scale.multiplyScalar(2);
@@ -1329,6 +1332,7 @@ let onclick = function (event) {
             sheepArea.remove(descriptionSheepArea);
             break;
         case sheepID:
+            loadButtonSound();
             loadHomeSound(++sheepOneTime);
             if (selected != "SHEEP") {
                 scene.background = new THREE.Color(0xc9f0cf);
@@ -1479,6 +1483,7 @@ window.addEventListener('mousemove', onMouseOverButton);
 let onClickButton = function (event) {
     mouseSetting(event);
     if (objectID === goButtonID) {
+        loadButtonSound();
         switch (selected) {
             case "FROG":
                 homeSound.setVolume( 0 );
@@ -1510,6 +1515,7 @@ let onClickButton = function (event) {
                 break;
         }
     } else if (objectID === homeButtonID) {
+        loadButtonSound();
         switch (selected) {
             case "FROG":
                 homeButton.scale.multiplyScalar(0.625);
@@ -1549,6 +1555,7 @@ let onClickButton = function (event) {
                 break;
         }
     } else if (objectID === resetAnimationButtonID){
+        loadButtonSound();
         switch (selected) {
             case "FROG":
                 break;
@@ -2339,6 +2346,7 @@ function resetSheepPosition() {
 }
 
 function jumpSheep() {
+    sheepSceneSound.setVolume(0.1)
     // BODY ANIMATION
     createjs.Tween.get(sheepBody.position, {loop: false}).wait(1600)
       .to({y: 1.5}, 500, createjs.Ease.circOut)
@@ -2410,6 +2418,7 @@ function animateWool(j) {
 
     }
     if (count_array.length == 1) {
+        sheepSceneSound.setVolume(0.3)
         resetSheepPosition();
         jumpSheep();
         gameOver();
@@ -2748,6 +2757,19 @@ function loadHomeSound(counter) {
         flagHomeSound = true;
     }
 }
+
+function loadButtonSound() {
+        const buttonListener = new THREE.AudioListener();
+        const buttonAudioLoader = new THREE.AudioLoader();
+        buttonSound = new THREE.Audio(buttonListener);
+        buttonAudioLoader.load('sounds/button.ogg', function (buffer) {
+            buttonSound.setBuffer(buffer);
+            buttonSound.setLoop(false);
+            buttonSound.setVolume(0.2);
+            buttonSound.play();
+        });
+}
+
 /*
 let loadSound = function (event) {
     const homeListener = new THREE.AudioListener();
