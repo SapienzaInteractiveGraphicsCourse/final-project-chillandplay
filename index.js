@@ -393,8 +393,6 @@ function createFrogEyeL(scale){
     frogEyeL.translateZ(0.3);
     frogEyeL.scale.multiplyScalar(scale);
     frogHead.add( frogEyeL );
-    console.log(frogEyeL.position.x + " " + frogEyeL.position.y + " " + frogEyeL.position.z)
-
 }
 
 function createFrogPupilR(scale){
@@ -1319,7 +1317,6 @@ let onclick = function (event) {
                 goButton.translateX(0.15);
             }
             if (oldSelectedID == sheepID) {
-                console.log("VADO GIù PERCHè HO CLICCATO SULLA FROG");
                 sheepBody.translateY(-0.5); //la pecora torna alla sua posizione originale
             }
             oldSelectedID = objectID;
@@ -1341,7 +1338,6 @@ let onclick = function (event) {
                 resetScale(oldSelectedID);
                 sheepArea.add(goButton);
                 goButton.translateX(-0.15);
-                console.log("VADO Sù PERCHè HO CLICCATO SULLA SHEEP");
                 sheepBody.translateY(0.5);
             }
            // if (oldSelectedID === frogID)
@@ -1539,9 +1535,7 @@ let onClickButton = function (event) {
                 scene.remove(sheepBody);
                 scene.remove(scissorBody);
                 sheepBody.translateX(2);
-                console.log("VEDIAMO QUI HOME = " + gameOverFlag);
                 if (gameOverFlag) {
-                    console.log("VADO GIù PERCHè HO CLICCATO SULLA HOME");
                     sheepBody.translateY(-0.5);
                 }
                 scene.remove(playSheepArea);
@@ -2334,14 +2328,11 @@ function arrayWoolID() {
     for (let i=47; i<=139; i+=1) {
         woolArray.push(i);
     }
-    //console.log("L'array di wool è: "+woolArray);
-    //console.log("L'array : "+wool);
 
 }
 arrayWoolID();
 let count_array = woolArray.slice();
-//console.log("count array è: "+count_array.splice(0, 1));
-//console.log("count array nuovo è: "+count_array.length);
+
 //var count_wool = woolArray.length-1; //numero pallocchi
 
 function resetSheepPosition() {
@@ -2432,7 +2423,6 @@ function animateWool(j) {
     for (var i=0; i<count_array.length; i++) {
         if (count_array[i]===woolArray[j]) {
             count_array.splice(i, 1);
-            //console.log("HO ELIMINATO: "+count_array.splice(i, 1));
             count += 1;
         }
         else {
@@ -2704,7 +2694,6 @@ function sadFrogAnimation(){ //AREA WARNING
     clearTimeout(timerSad);
     timerSad = setTimeout(function() {
         animateFrogHeadAndEyes();
-        console.log("riattivo animation frame");
     }, 1050);
     
 }
@@ -2725,9 +2714,6 @@ let onMousePause = function (event) {
     timer = setTimeout(function() {
         if (currentScrren === "FROG"){
             mouseSetting(event);
-            console.log("" + intersects[0].object.id);
-           // console.log(intersects[1].object.id);
-           // console.log(intersects[2].object.id);
 
             for (let i = 0; i < intersects.length; i += 1) {
                 if (intersects[i].object.id === deathAreaID) death = true;
