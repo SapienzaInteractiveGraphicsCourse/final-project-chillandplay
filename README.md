@@ -1,4 +1,4 @@
-![Game Logo](textures/readme.jpg)
+![Game Logo](textures/readme.png)
 
 ## How to play
 Click here and enjoy :sunglasses: :
