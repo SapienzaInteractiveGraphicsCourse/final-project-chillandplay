@@ -1,14 +1,19 @@
-# Final Project for Interactive Graphics 2021/2022
-Welcome to the Github page of our Interactive Graphics project: Chill&Play.
+# Chill&Play
+Final Project for Interactive Graphics course 2021/22 held by Prof. Marco Schaerf.
 
-Authors: 
-* Mario Cosimo Angelini
-* Daniela Rieti
-* Laura Papi
-* Francesca Restante
+![Game Logo](textures/readme.jpg)
+
+
 
 ## How to play
 Click here and enjoy :sunglasses: :
  [Chill&Play](https://sapienzainteractivegraphicscourse.github.io/final-project-chillandplay/) 
 
-Documentation: 
+## Report
+The documentation: [Chill&PlayReport.pdf](https://github.com/SapienzaInteractiveGraphicsCourse/final-project-chillandplay/blob/main/Report.pdf).
+
+## Authors
+* [Mario Cosimo Angelini](https://github.com/2029254) [2029254]
+* [Daniela Rieti](https://github.com/danielarieti) [1762973]
+* [Laura Papi](https://github.com/laurapapi) [1760732]
+* [Francesca Restante](https://github.com/francescarestante) [1745106]
