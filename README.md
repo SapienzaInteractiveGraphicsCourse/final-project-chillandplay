@@ -1,9 +1,4 @@
-# Chill&Play
-Final Project for Interactive Graphics course 2021/22 held by Prof. Marco Schaerf.
-
 ![Game Logo](textures/readme.jpg)
-
-
 
 ## How to play
 Click here and enjoy :sunglasses: :
